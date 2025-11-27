@@ -1,0 +1,4 @@
+pro-ecommerce/.env
+pro-ecommerce/node_modules/
+node_modules/
+.env
