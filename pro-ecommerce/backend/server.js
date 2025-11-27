@@ -3,27 +3,38 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 dotenv.config();
 import connectDB from './config/db.js';
+import { notFound, errorHandler } from './middleware/errorMiddleware.js';
+
+// 1. Import routes
+import productRoutes from './routes/productRoutes.js';
 import userRoutes from './routes/userRoutes.js';
-import productRoutes from './routes/productRoutes.js'
+import orderRoutes from './routes/orderRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js'; // <--- Add this import
 
 connectDB();
 
 const app = express();
 
-// Body parser middleware (to read JSON data)
+// Body parser middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Cookie parser middleware (to read the JWT)
+// Cookie parser middleware
 app.use(cookieParser());
 
 app.get('/', (req, res) => {
     res.send('API is running...');
 });
 
-// Mount the routes
-app.use('/api/users', userRoutes);
+// 2. Mount routes
 app.use('/api/products', productRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/payments', paymentRoutes); // <--- Add this line
+
+// Error Handling
+app.use(notFound);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
