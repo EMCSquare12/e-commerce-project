@@ -46,7 +46,7 @@ const SubHeader = ({ onClick }) => {
           <IoSearch className="absolute text-xl text-gray-500 left-2 " />
           <IoFilter
             className={`absolute text-xl  cursor-pointer right-2 hover:text-amber-500 ${
-              categoriesOpen ? "text-gray-500" : "text-amber-500"
+              categoriesOpen ? "text-amber-500" : "text-gray-500"
             }`}
             onClick={() => isCategoriesOpen(onClick)}
           />

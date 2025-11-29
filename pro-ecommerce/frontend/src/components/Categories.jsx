@@ -18,7 +18,7 @@ const Categories = () => {
   ];
 
   return (
-    <div className="absolute flex flex-col items-start w-full h-auto gap-4 px-20 py-4 bg-white shadow top-100 ">
+    <div className="absolute flex flex-col items-start w-full h-auto gap-4 px-20 py-4 bg-white shadow animate-slideDown ">
       <div className="flex flex-row items-start justify-start gap-2 mb-2 w-fit">
         <input
           type="checkbox"
