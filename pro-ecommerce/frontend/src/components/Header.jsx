@@ -11,6 +11,7 @@ import {
   FaUserCircle,
 } from "react-icons/fa";
 import SubHeader from "./SubHeader";
+import Categories from "./Categories";
 
 const Header = () => {
   // 1. Get cart info from Redux
@@ -27,6 +28,7 @@ const Header = () => {
 
   // State for the dropdown menu
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   const logoutHandler = async () => {
@@ -62,7 +64,7 @@ const Header = () => {
           <i className="fa-solid fa-shop text-amber-500"></i>
           <span>ProShop</span>
         </Link>
-        <SubHeader/>
+        <SubHeader onClick={() => setCategoriesOpen(!categoriesOpen)} />
 
         {/* Navigation */}
         <nav className="flex items-center gap-6 text-sm font-medium tracking-wider uppercase">
@@ -118,6 +120,7 @@ const Header = () => {
           )}
         </nav>
       </div>
+      {categoriesOpen && <Categories />}
     </header>
   );
 };

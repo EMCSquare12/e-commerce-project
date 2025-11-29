@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const CheckoutSteps = ({ step1, step2, step3, step4 }) => {
+const CheckoutSteps = ({ step1, step2 }) => {
   // Helper to render steps
   const renderStep = (step, path, label) => {
     return step ? (
@@ -19,10 +19,8 @@ const CheckoutSteps = ({ step1, step2, step3, step4 }) => {
   return (
     <nav className="flex justify-center mb-8">
       <ul className="flex items-center gap-8">
-        <li>{renderStep(step1, "/login", "Sign In")}</li>
-        <li>{renderStep(step2, "/shipping", "Shipping")}</li>
-        <li>{renderStep(step3, "/payment", "Payment")}</li>
-        <li>{renderStep(step4, "/placeorder", "Place Order")}</li>
+        <li>{renderStep(step1, "/shipping", "Shipping")}</li>
+        <li>{renderStep(step2, "/placeorder", "Place Order")}</li>
       </ul>
     </nav>
   );

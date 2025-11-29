@@ -1,28 +1,36 @@
 import { Link } from "react-router-dom";
 import { IoSearch } from "react-icons/io5";
+import { IoFilter } from "react-icons/io5";
+import { useState } from "react";
 
-const SubHeader = () => {
+const SubHeader = ({ onClick }) => {
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
+
+  const isCategoriesOpen = (onClick) => {
+    onClick(onClick);
+    setCategoriesOpen(!categoriesOpen);
+  };
   return (
     <div>
       <nav className="flex items-center gap-6 text-sm font-medium tracking-wider uppercase">
         <Link
-          to="/cart"
+          to="/"
           className="relative flex items-center gap-1 transition hover:text-amber-500"
         >
           Home
-        </Link>
-        <Link
-          to="/cart"
-          className="relative flex items-center gap-1 transition hover:text-amber-500"
-        >
-          Products
         </Link>
         {/* <Link
           to="/cart"
           className="relative flex items-center gap-1 transition hover:text-amber-500"
         >
-          Blog
+          Products
         </Link> */}
+        <Link
+          to="/cart"
+          className="relative flex items-center gap-1 transition hover:text-amber-500"
+        >
+          Blog
+        </Link>
         <Link
           to="/cart"
           className="relative flex items-center gap-1 transition hover:text-amber-500"
@@ -32,10 +40,16 @@ const SubHeader = () => {
         <div className="relative flex flex-row items-center justify-center w-fit">
           <input
             type="text"
-            className="w-full py-2 pl-3 pr-8 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:ring-2 focus:ring-amber-500"
+            className="w-full px-10 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:ring-2 focus:ring-amber-500"
           />
 
-          <IoSearch className="absolute text-xl text-gray-700 right-2 hover:text-gray-500" />
+          <IoSearch className="absolute text-xl text-gray-500 left-2 " />
+          <IoFilter
+            className={`absolute text-xl  cursor-pointer right-2 hover:text-amber-500 ${
+              categoriesOpen ? "text-gray-500" : "text-amber-500"
+            }`}
+            onClick={() => isCategoriesOpen(onClick)}
+          />
         </div>
       </nav>
     </div>

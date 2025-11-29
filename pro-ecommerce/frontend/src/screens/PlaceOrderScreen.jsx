@@ -105,7 +105,7 @@ const PlaceOrderScreen = () => {
 
   return (
     <>
-      <CheckoutSteps step1 step2 step3 step4 />
+      <CheckoutSteps step1 step2 />
       <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
         {/* Left Column: Order Details */}
         <div className="md:col-span-8">

@@ -31,8 +31,6 @@ const router = createBrowserRouter(
       <Route path="/shipping" element={<ShippingScreen />} />
       <Route path="/payment" element={<PaymentScreen />} />
 
-      {/* 2. Wrap PlaceOrderScreen with StripeWrapper */}
-      {/* This gives PlaceOrderScreen access to the Stripe context */}
       <Route element={<StripeWrapper />}>
         <Route path="/placeorder" element={<PlaceOrderScreen />} />
       </Route>
