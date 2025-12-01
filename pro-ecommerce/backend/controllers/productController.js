@@ -2,7 +2,7 @@ import asyncHandler from 'express-async-handler';
 import Product from '../models/productModel.js';
 
 // @desc    Fetch all products
-// @route   GET /api/products
+// @route   GET /api/products?keyword=abc&category=Electronics,Cameras&pageNumber=1
 // @access  Public
 const getProducts = asyncHandler(async (req, res) => {
   const pageSize = 4;
@@ -17,8 +17,17 @@ const getProducts = asyncHandler(async (req, res) => {
     }
     : {};
 
-  const count = await Product.countDocuments({ ...keyword });
-  const products = await Product.find({ ...keyword })
+  // Handle Category Filter (Support Multiple)
+  let category = {};
+  if (req.query.category) {
+    const categories = req.query.category.split(',');
+    category = { category: { $in: categories } };
+  }
+
+  const filter = { ...keyword, ...category };
+
+  const count = await Product.countDocuments(filter);
+  const products = await Product.find(filter)
     .limit(pageSize)
     .skip(pageSize * (page - 1));
 
@@ -54,4 +63,13 @@ const deleteProduct = asyncHandler(async (req, res) => {
   }
 });
 
-export { getProducts, getProductById, deleteProduct };
+// @desc    Get all unique categories
+// @route   GET /api/products/categories
+// @access  Public
+const getCategories = asyncHandler(async (req, res) => {
+  // .distinct('category') finds every unique value in the "category" field
+  const categories = await Product.find({}).distinct('category');
+  res.json(categories);
+});
+
+export { getProducts, getProductById, deleteProduct, getCategories };
