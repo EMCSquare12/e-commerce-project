@@ -2,13 +2,17 @@ import { Link } from "react-router-dom";
 import { IoSearch } from "react-icons/io5";
 import { IoFilter } from "react-icons/io5";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { clearCategories } from "../slices/categorySlice";
 
 const SubHeader = ({ onClick }) => {
   const [categoriesOpen, setCategoriesOpen] = useState(false);
+  const dispatch = useDispatch();
 
   const isCategoriesOpen = (onClick) => {
     onClick(onClick);
     setCategoriesOpen(!categoriesOpen);
+    dispatch(clearCategories());
   };
   return (
     <div>
