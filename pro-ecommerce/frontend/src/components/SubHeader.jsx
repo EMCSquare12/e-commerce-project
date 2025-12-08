@@ -3,7 +3,7 @@ import { IoSearch } from "react-icons/io5";
 import { IoFilter } from "react-icons/io5";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { clearCategories } from "../slices/categorySlice";
+import { clearCategories, searchItem } from "../slices/filterSlice";
 
 const SubHeader = ({ onClick }) => {
   const [categoriesOpen, setCategoriesOpen] = useState(false);
@@ -14,6 +14,11 @@ const SubHeader = ({ onClick }) => {
     setCategoriesOpen(!categoriesOpen);
     dispatch(clearCategories());
   };
+
+  const handleSearch = (event) => {
+    dispatch(searchItem(event));
+  };
+
   return (
     <div>
       <nav className="flex items-center gap-6 text-sm font-medium tracking-wider uppercase">
@@ -43,6 +48,7 @@ const SubHeader = ({ onClick }) => {
         </Link>
         <div className="relative flex flex-row items-center justify-center w-fit">
           <input
+            onChange={(e) => handleSearch(e.target.value)}
             type="text"
             className="w-full px-10 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:ring-2 focus:ring-amber-500"
           />

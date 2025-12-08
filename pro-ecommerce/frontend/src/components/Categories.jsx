@@ -2,13 +2,10 @@ import { useGetProductCategoriesQuery } from "../slices/productsApiSlice";
 import Loader from "./Loader";
 import Message from "./Message";
 import { useDispatch, useSelector } from "react-redux";
-import { setCategory } from "../slices/categorySlice";
-import { useEffect } from "react";
+import { setCategory } from "../slices/filterSlice";
 
 const Categories = () => {
-  const selectedCategory = useSelector(
-    (state) => state.category.selectedCategory
-  );
+  const selectedCategory = useSelector((state) => state.filter.category);
   const dispatch = useDispatch();
   const { data, isLoading, error } = useGetProductCategoriesQuery();
 

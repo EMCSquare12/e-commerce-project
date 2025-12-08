@@ -3,16 +3,15 @@ import { useGetProductsQuery } from "../slices/productsApiSlice";
 import Product from "../components/Product";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const HomeScreen = () => {
   // This hook automatically fetches data from /api/products
-  const selectedCategory = useSelector(
-    (state) => state.category.selectedCategory
-  );
+  const { keyword, category } = useSelector((state) => state.filter);
   const { data, isLoading, error } = useGetProductsQuery({
-    category: selectedCategory,
+    keyword,
+    category,
   });
 
   return (
