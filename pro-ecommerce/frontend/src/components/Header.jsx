@@ -27,7 +27,6 @@ const Header = () => {
 
   // State for the dropdown menu
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [categoriesOpen, setCategoriesOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   const logoutHandler = async () => {
@@ -63,7 +62,7 @@ const Header = () => {
           <i className="fa-solid fa-shop text-amber-500"></i>
           <span>ProShop</span>
         </Link>
-        <SubHeader onClick={() => setCategoriesOpen(!categoriesOpen)} />
+        <SubHeader />
 
         {/* Navigation */}
         <nav className="flex items-center gap-6 text-sm font-medium tracking-wider uppercase">
@@ -101,7 +100,7 @@ const Header = () => {
                   </Link>
                   <button
                     onClick={logoutHandler}
-                    className="flex items-center block w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-100"
+                    className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-100"
                   >
                     <FaSignOutAlt /> Logout
                   </button>
