@@ -63,12 +63,23 @@ const deleteProduct = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Get all unique categories
+
+// @desc    Get all categories with counts
 // @route   GET /api/products/categories
 // @access  Public
 const getCategories = asyncHandler(async (req, res) => {
-  // .distinct('category') finds every unique value in the "category" field
-  const categories = await Product.find({}).distinct('category');
+  const categories = await Product.aggregate([
+    {
+      $group: {
+        _id: '$category',      // Group by the 'category' field
+        count: { $sum: 1 },    // Count how many items match
+      },
+    },
+    {
+      $sort: { _id: 1 },       // Optional: Sort alphabetically A-Z
+    },
+  ]);
+
   res.json(categories);
 });
 
