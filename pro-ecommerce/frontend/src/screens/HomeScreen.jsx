@@ -18,8 +18,7 @@ const HomeScreen = () => {
     category,
   });
 
-  console.log(data?.page);
-  console.log(data?.pages);
+  console.log(data);
 
   return (
     <>
