@@ -4,7 +4,6 @@ import { useGetProductCategoriesQuery } from "../slices/productsApiSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { setCategory, clearCategories } from "../slices/filterSlice";
 import { closeDrawer } from "../slices/toggleSlice";
-
 import Loader from "./Loader";
 import Message from "./Message";
 
@@ -35,9 +34,7 @@ const Drawer = () => {
   const { data, isLoading, error } = useGetProductCategoriesQuery();
   const selectedCategory = useSelector((state) => state.filter.category);
   const dispatch = useDispatch();
-  const isOpen = useSelector((state) => state.toggle.isOpen);
   // --- State Management ---
-  console.log(data);
   const [isCategoryOpen, setIsCategoryOpen] = useState(true);
   const [isBrandOpen, setIsBrandOpen] = useState(true);
 
@@ -100,28 +97,31 @@ const Drawer = () => {
                   {error?.data?.Message || error.error}
                 </Message>
               ) : (
-                <ul className="flex flex-col gap-3 px-6 pb-6">
+                <ul className="flex flex-col gap-1 px-3 pb-6">
                   {data?.map((category) => (
                     <li
-                      key={category}
-                      className="flex flex-row items-center justify-between"
+                      key={category._id}
+                      className="flex flex-row items-center justify-between px-3 py-1 hover:bg-gray-100"
+                      onClick={() => handleCategories(category._id)}
                     >
                       <div className="flex flex-row items-center gap-3">
                         <input
                           type="checkbox"
-                          id={category}
-                          checked={selectedCategory.includes(category)}
-                          onChange={() => handleCategories(category)}
+                          id={category._id}
+                          checked={selectedCategory.includes(category._id)}
+                          onChange={() => handleCategories(category._id)}
                           className="w-5 h-5 border-gray-300 rounded cursor-pointer text-amber-600 focus:ring-amber-500"
                         />
                         <label
-                          htmlFor={category}
+                          htmlFor={category._id}
                           className="text-sm font-medium text-gray-700 cursor-pointer select-none"
                         >
-                          {category}
+                          {category._id}
                         </label>
                       </div>
-                      {/* <span className="text-xs text-gray-400">()</span> */}
+                      <span className="text-xs text-gray-400">
+                        ({category.count})
+                      </span>
                     </li>
                   ))}
                 </ul>
