@@ -2,10 +2,10 @@ import asyncHandler from 'express-async-handler';
 import Product from '../models/productModel.js';
 
 // @desc    Fetch all products
-// @route   GET /api/products?keyword=abc&category=Electronics,Cameras&pageNumber=1
+// @route   GET /api/products?keyword=abc&category=Electronics,Cameras&pageNumber=1 
 // @access  Public
 const getProducts = asyncHandler(async (req, res) => {
-  const pageSize = 4;
+  const pageSize = 8;
   const page = Number(req.query.pageNumber) || 1;
 
   const keyword = req.query.keyword

@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     keyword: "",
-    pageNumber: 0,
+    pageNumber: 1,
     category: [],
 };
 const filterSlice = createSlice({
@@ -12,6 +12,9 @@ const filterSlice = createSlice({
         searchItem: (state, action) => {
             state.keyword = action.payload
 
+        },
+        setItemPages: (state, action) => {
+            state.pageNumber = action.payload
         },
         setCategory: (state, action) => {
             const category = action.payload;
@@ -34,6 +37,6 @@ const filterSlice = createSlice({
     },
 });
 
-export const { searchItem, setCategory, clearCategories } = filterSlice.actions;
+export const { searchItem, setItemPages, setCategory, clearCategories } = filterSlice.actions;
 
 export default filterSlice.reducer;

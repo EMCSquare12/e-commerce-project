@@ -5,14 +5,21 @@ import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import Pagination from "../components/Pagination";
 
 const HomeScreen = () => {
   // This hook automatically fetches data from /api/products
-  const { keyword, category } = useSelector((state) => state.filter);
+  const { keyword, pageNumber, category } = useSelector(
+    (state) => state.filter
+  );
   const { data, isLoading, error } = useGetProductsQuery({
     keyword,
+    pageNumber,
     category,
   });
+
+  console.log(data?.page);
+  console.log(data?.pages);
 
   return (
     <>
@@ -47,6 +54,7 @@ const HomeScreen = () => {
           ))}
         </div>
       )}
+      <Pagination page={pageNumber} pages={data?.pages} />
     </>
   );
 };
