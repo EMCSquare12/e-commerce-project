@@ -4,11 +4,14 @@ import Product from "../components/Product";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Pagination from "../components/Pagination";
+import { PiFunnel } from "react-icons/pi";
+import { openDrawer } from "../slices/toggleSlice";
 
 const HomeScreen = () => {
   // This hook automatically fetches data from /api/products
+  const dispatch = useDispatch();
   const { keyword, pageNumber, category } = useSelector(
     (state) => state.filter
   );
@@ -23,6 +26,7 @@ const HomeScreen = () => {
   return (
     <>
       {/* Hero Section */}
+
       <div className="p-10 mb-10 text-center text-white shadow-lg bg-slate-800 rounded-xl">
         <h1 className="mb-4 text-5xl font-bold">Welcome to ProShop</h1>
         <p className="mb-6 text-xl text-slate-300">
@@ -39,7 +43,15 @@ const HomeScreen = () => {
       <h1 className="mb-6 text-3xl font-bold text-slate-800">
         Latest Products
       </h1>
-
+      <div className="flex flex-row items-center justify-between p-2 mb-2 bg-gray-100">
+        <button
+          onClick={() => dispatch(openDrawer())}
+          className="flex flex-row items-center gap-2 px-4 font-normal text-gray-500 bg-white border border-gray-500 text-md hover:bg-gray-100 hover:text-gray-700"
+        >
+          Filter
+          <PiFunnel className="text-sm" />
+        </button>
+      </div>
       {isLoading ? (
         <Loader />
       ) : error ? (

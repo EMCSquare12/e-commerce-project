@@ -11,7 +11,6 @@ import {
   FaUserCircle,
 } from "react-icons/fa";
 import SubHeader from "./SubHeader";
-import Categories from "./Categories";
 
 const Header = () => {
   // 1. Get cart info from Redux
@@ -54,7 +53,7 @@ const Header = () => {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 text-white shadow-md bg-slate-900">
+    <header className="sticky top-0 z-10 text-white shadow-md bg-slate-900">
       <div className="container flex items-center justify-between px-4 py-4 mx-auto">
         {/* Logo */}
         <Link
@@ -120,7 +119,6 @@ const Header = () => {
           )}
         </nav>
       </div>
-      {categoriesOpen && <Categories />}
     </header>
   );
 };

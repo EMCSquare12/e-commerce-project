@@ -3,6 +3,8 @@ import { apiSlice } from './slices/apiSlice';
 import cartSliceReducer from './slices/cartSlice';
 import authSliceReducer from './slices/authSlice';
 import categorySliceReducer from './slices/filterSlice';
+import toggleSliceReducer from './slices/toggleSlice';
+
 
 
 const store = configureStore({
@@ -10,7 +12,8 @@ const store = configureStore({
         [apiSlice.reducerPath]: apiSlice.reducer,
         cart: cartSliceReducer,
         auth: authSliceReducer,
-        filter: categorySliceReducer
+        filter: categorySliceReducer,
+        toggle: toggleSliceReducer
 
     },
     middleware: (getDefaultMiddleware) =>

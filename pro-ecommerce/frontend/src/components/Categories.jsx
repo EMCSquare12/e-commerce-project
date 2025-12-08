@@ -15,7 +15,6 @@ const Categories = () => {
     dispatch(setCategory(category)); // toggle add/remove
   };
 
-  useEffect(() => {}, []);
 
   return (
     <div className="absolute flex flex-col w-full gap-4 px-20 py-4 bg-white shadow">

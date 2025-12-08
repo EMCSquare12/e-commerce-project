@@ -1,12 +1,10 @@
 import { Link } from "react-router-dom";
 import { IoSearch } from "react-icons/io5";
 import { IoFilter } from "react-icons/io5";
-import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { clearCategories, searchItem } from "../slices/filterSlice";
 
 const SubHeader = ({ onClick }) => {
-  const [categoriesOpen, setCategoriesOpen] = useState(false);
   const dispatch = useDispatch();
 
   const isCategoriesOpen = (onClick) => {
@@ -46,16 +44,10 @@ const SubHeader = ({ onClick }) => {
           <input
             onChange={(e) => dispatch(searchItem(e.target.value))}
             type="text"
-            className="w-full px-10 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:ring-2 focus:ring-amber-500"
+            className="py-2 pl-4 pr-10 leading-tight text-gray-700 border rounded appearance-none w-80 focus:outline-none focus:ring-2 focus:ring-amber-500"
           />
 
-          <IoSearch className="absolute text-xl text-gray-500 left-2 " />
-          <IoFilter
-            className={`absolute text-xl  cursor-pointer right-2 hover:text-amber-500 ${
-              categoriesOpen ? "text-amber-500" : "text-gray-500"
-            }`}
-            onClick={() => isCategoriesOpen(onClick)}
-          />
+          <IoSearch className="absolute text-xl text-gray-500 right-2 " />
         </div>
       </nav>
     </div>
