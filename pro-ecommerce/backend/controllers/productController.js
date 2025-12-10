@@ -24,7 +24,13 @@ const getProducts = asyncHandler(async (req, res) => {
     category = { category: { $in: categories } };
   }
 
-  const filter = { ...keyword, ...category };
+  // Handle Brand Filter (Support Multiple)
+  let brand = {}
+  if (req.query.brand) {
+    const brands = req.query.brand.split(',');
+    brand = { brand: { $in: brands } };
+  }
+  const filter = { ...keyword, ...category, ...brand };
 
   const count = await Product.countDocuments(filter);
   const products = await Product.find(filter)
@@ -63,7 +69,6 @@ const deleteProduct = asyncHandler(async (req, res) => {
   }
 });
 
-
 // @desc    Get all categories with counts
 // @route   GET /api/products/categories
 // @access  Public
@@ -80,7 +85,15 @@ const getCategories = asyncHandler(async (req, res) => {
     },
   ]);
 
+  // The result will look like:
+  // [ { _id: "Electronics", count: 12 }, { _id: "Audio", count: 5 } ]
+
   res.json(categories);
 });
 
-export { getProducts, getProductById, deleteProduct, getCategories };
+const getBrands = asyncHandler(async (req, res) => {
+  const brands = (await Product.distinct("brand")).sort();
+  res.json(brands);
+});
+
+export { getProducts, getProductById, deleteProduct, getCategories, getBrands };

@@ -4,11 +4,13 @@ import {
     getProducts,
     getProductById,
     deleteProduct,
-    getCategories
+    getCategories,
+    getBrands
 } from '../controllers/productController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
 
 router.get('/categories', getCategories);
+router.get('/brands', getBrands)
 
 // Route for /api/products
 router.route('/').get(getProducts);

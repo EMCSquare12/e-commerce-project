@@ -1,38 +1,31 @@
 import React, { useState, useMemo } from "react";
 import { FaChevronUp, FaChevronDown, FaSearch, FaTimes } from "react-icons/fa";
-import { useGetProductCategoriesQuery } from "../slices/productsApiSlice";
+import {
+  useGetProductCategoriesQuery,
+  useGetProductBrandsQuery,
+} from "../slices/productsApiSlice";
 import { useSelector, useDispatch } from "react-redux";
-import { setCategory, clearCategories } from "../slices/filterSlice";
+import { setCategory, clearFilter, setBrand } from "../slices/filterSlice";
 import { closeDrawer } from "../slices/toggleSlice";
 import Loader from "./Loader";
 import Message from "./Message";
 
-const BRANDS = [
-  "Samsung",
-  "Apple",
-  "Sony",
-  "Logitech",
-  "Dell",
-  "Amazon",
-  "LG",
-  "Razer",
-  "GoPro",
-  "Microsoft",
-  "Canon",
-  "NVIDIA",
-  "Fitbit",
-  "Bose",
-  "DJI",
-  "Roku",
-  "Asus",
-  "HP",
-  "Garmin",
-  "Meta",
-];
-
 const Drawer = () => {
-  const { data, isLoading, error } = useGetProductCategoriesQuery();
-  const selectedCategory = useSelector((state) => state.filter.category);
+  const {
+    data: filteredCategory,
+    isLoading: isLoadingCategory,
+    error: errorCategory,
+  } = useGetProductCategoriesQuery();
+  const {
+    data: filteredBrand,
+    isLoading: isLoadingBrand,
+    error: errorBrand,
+  } = useGetProductBrandsQuery();
+
+  console.log(filteredBrand);
+  const { category: selectedCategory, brand: selectedBrand } = useSelector(
+    (state) => state.filter
+  );
   const dispatch = useDispatch();
   // --- State Management ---
   const [isCategoryOpen, setIsCategoryOpen] = useState(true);
@@ -40,6 +33,10 @@ const Drawer = () => {
 
   const handleCategories = (category) => {
     dispatch(setCategory(category)); // toggle add/remove
+  };
+
+  const handleBrand = (brand) => {
+    dispatch(setBrand(brand)); // toggle add/remove
   };
 
   //   if (!isOpen) return null;
@@ -59,7 +56,7 @@ const Drawer = () => {
           <h1 className="text-xl font-bold text-gray-800">Filters</h1>
           <div className="flex items-center gap-4">
             <button
-              onClick={() => dispatch(clearCategories())}
+              onClick={() => dispatch(clearFilter())}
               className="text-sm font-semibold text-blue-600 hover:text-blue-800"
             >
               Clear All
@@ -90,15 +87,16 @@ const Drawer = () => {
             </button>
 
             {isCategoryOpen &&
-              (isLoading ? (
+              (isLoadingCategory ? (
                 <Loader />
-              ) : error ? (
+              ) : errorCategory ? (
                 <Message variant="danger">
-                  {error?.data?.Message || error.error}
+                  {errorCategory?.filteredCategory?.Message ||
+                    errorCategory.error}
                 </Message>
               ) : (
                 <ul className="flex flex-col gap-1 px-3 pb-6">
-                  {data?.map((category) => (
+                  {filteredCategory?.map((category) => (
                     <li
                       key={category._id}
                       className="flex flex-row items-center justify-between px-3 py-1 hover:bg-gray-100"
@@ -159,9 +157,9 @@ const Drawer = () => {
                 </div>
 
                 {/* Brand List */}
-                {/* <ul className="flex flex-col gap-3 pr-2 overflow-y-auto max-h-60 custom-scrollbar">
-                  {filteredBrands.length > 0 ? (
-                    filteredBrands.map((brand) => (
+                <ul className="flex flex-col gap-3 pr-2 overflow-y-auto max-h-60 custom-scrollbar">
+                  {
+                    filteredBrand?.map((brand) => (
                       <li
                         key={brand}
                         className="flex flex-row items-center gap-3"
@@ -169,14 +167,8 @@ const Drawer = () => {
                         <input
                           type="checkbox"
                           id={`brand-${brand}`}
-                          checked={selectedBrands.includes(brand)}
-                          onChange={() =>
-                            toggleSelection(
-                              brand,
-                              selectedBrands,
-                              setSelectedBrands
-                            )
-                          }
+                          checked={selectedBrand.includes(brand)}
+                          onChange={() => handleBrand(brand)}
                           className="w-5 h-5 border-gray-300 rounded cursor-pointer text-amber-600 focus:ring-amber-500"
                         />
                         <label
@@ -187,12 +179,12 @@ const Drawer = () => {
                         </label>
                       </li>
                     ))
-                  ) : (
-                    <li className="py-2 text-sm italic text-gray-400">
-                      No brands found
-                    </li>
-                  )}
-                </ul> */}
+
+                    // <li className="py-2 text-sm italic text-gray-400">
+                    //   No brands found
+                    // </li>
+                  }
+                </ul>
               </div>
             )}
           </div>

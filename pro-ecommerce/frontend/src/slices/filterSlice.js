@@ -4,6 +4,7 @@ const initialState = {
     keyword: "",
     pageNumber: 1,
     category: [],
+    brand: []
 };
 const filterSlice = createSlice({
     name: "filter",
@@ -30,13 +31,29 @@ const filterSlice = createSlice({
             }
 
         },
+        setBrand: (state, action) => {
+            const brand = action.payload;
+
+            if (state.brand.includes(brand)) {
+                // Remove it
+                state.brand = state.brand.filter(
+                    (c) => c !== brand
+                );
+            } else {
+                // Add it
+                state.brand.push(brand);
+            }
+
+        },
         // Helper to reset
-        clearCategories: (state) => {
+        clearFilter: (state) => {
             state.category = [];
+            state.brand = [];
+            state.pageNumber = 1
         }
     },
 });
 
-export const { searchItem, setItemPages, setCategory, clearCategories } = filterSlice.actions;
+export const { searchItem, setItemPages, setCategory, clearFilter, setBrand } = filterSlice.actions;
 
 export default filterSlice.reducer;

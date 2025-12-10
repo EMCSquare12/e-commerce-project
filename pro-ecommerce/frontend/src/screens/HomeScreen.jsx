@@ -7,21 +7,21 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Pagination from "../components/Pagination";
 import { PiFunnel } from "react-icons/pi";
-import { openDrawer, closeDrawer } from "../slices/toggleSlice"; // Import closeDrawer too
-import Drawer from "../components/Drawer"; // <--- 1. Import your Drawer
-import { clearCategories } from "../slices/filterSlice";
+import { openDrawer } from "../slices/toggleSlice"; // Import closeDrawer too
+import { clearFilter } from "../slices/filterSlice";
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
 
   // Redux: Get Filter State
-  const { keyword, pageNumber, category } = useSelector(
+  const { keyword, pageNumber, category, brand   } = useSelector(
     (state) => state.filter
   );
   const { data, isLoading, error } = useGetProductsQuery({
     keyword,
     pageNumber,
     category: category.length > 0 ? category : undefined,
+    brand: brand.length > 0 ? brand : undefined,
   });
 
   return (
@@ -65,10 +65,10 @@ const HomeScreen = () => {
             </button>
             {category.length > 0 && (
               <button
-                onClick={() => dispatch(clearCategories())}
+                onClick={() => dispatch(clearFilter())}
                 className="flex flex-row items-center gap-2 px-4 py-2 font-medium text-red-500 transition-colors hover:text-red-600"
               >
-                Clear Items ({category.length})
+                Clear Filter ({category.length + brand.length})
               </button>
             )}
           </div>
