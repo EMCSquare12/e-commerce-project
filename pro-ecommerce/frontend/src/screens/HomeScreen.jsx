@@ -14,7 +14,7 @@ const HomeScreen = () => {
   const dispatch = useDispatch();
 
   // Redux: Get Filter State
-  const { keyword, pageNumber, category, brand   } = useSelector(
+  const { keyword, pageNumber, category, brand } = useSelector(
     (state) => state.filter
   );
   const { data, isLoading, error } = useGetProductsQuery({
@@ -63,7 +63,7 @@ const HomeScreen = () => {
               <PiFunnel className="text-lg" />
               Filter
             </button>
-            {category.length > 0 && (
+            {(category.length > 0 || brand.length > 0) && (
               <button
                 onClick={() => dispatch(clearFilter())}
                 className="flex flex-row items-center gap-2 px-4 py-2 font-medium text-red-500 transition-colors hover:text-red-600"

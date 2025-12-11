@@ -8,13 +8,19 @@ import { useSelector } from "react-redux";
 const App = () => {
   const isOpen = useSelector((state) => state.toggle.isOpen);
   return (
-    <div className="flex flex-col min-h-screen font-sans text-slate-900 bg-gray-50">
+    <div className="flex flex-row w-full min-h-screen ">
       {isOpen && <Drawer />}
-      <Header />
-      <main className="container flex-grow px-4 py-8 mx-auto">
-        <Outlet />
-      </main>
-      <Footer />
+      <div
+        className={`flex flex-col w-full font-sans text-slate-900 bg-gray-50 ${
+          isOpen ? "ml-80" : ""
+        }`}
+      >
+        <Header />
+        <main className="container flex-grow px-4 py-8 mx-auto">
+          <Outlet />
+        </main>
+        <Footer />
+      </div>
     </div>
   );
 };

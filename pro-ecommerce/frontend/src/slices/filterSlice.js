@@ -47,6 +47,7 @@ const filterSlice = createSlice({
         },
         // Helper to reset
         clearFilter: (state) => {
+            state.keyword = ""
             state.category = [];
             state.brand = [];
             state.pageNumber = 1

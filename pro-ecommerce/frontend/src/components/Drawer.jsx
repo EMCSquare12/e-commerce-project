@@ -39,18 +39,14 @@ const Drawer = () => {
     dispatch(setBrand(brand)); // toggle add/remove
   };
 
-  //   if (!isOpen) return null;
-
+  const handleCloseDrawer = () => {
+    dispatch(clearFilter());
+    dispatch(closeDrawer());
+  };
   return (
     <>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 z-40 bg-black/50"
-        onClick={() => dispatch(closeDrawer())}
-      />
-
       {/* Drawer Container */}
-      <div className="fixed top-0 left-0 z-50 flex flex-col h-screen transition-transform transform bg-white shadow-2xl w-80 sm:w-96">
+      <div className="fixed inset-y-0 left-0 z-50 flex flex-col h-screen transition-transform transform bg-white shadow-2xl w-80 sm:w-80">
         {/* --- Header --- */}
         <div className="flex flex-row items-center justify-between px-6 py-5 border-b border-gray-100">
           <h1 className="text-xl font-bold text-gray-800">Filters</h1>
@@ -62,7 +58,7 @@ const Drawer = () => {
               Clear All
             </button>
             <button
-              onClick={() => dispatch(closeDrawer())}
+              onClick={() => handleCloseDrawer()}
               className="text-gray-400 hover:text-gray-600"
             >
               <FaTimes />
@@ -140,53 +136,61 @@ const Drawer = () => {
               )}
             </button>
 
-            {isBrandOpen && (
-              <div className="px-6 pb-6">
-                {/* Brand Search Input */}
-                <div className="relative mb-4">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                    <FaSearch className="text-xs" />
-                  </span>
-                  <input
-                    type="text"
-                    placeholder="Find a brand..."
-                    // value={brandSearch}
-                    // onChange={(e) => setBrandSearch(e.target.value)}
-                    className="w-full py-2 pr-4 text-sm text-gray-700 transition-colors border border-gray-200 rounded-lg pl-9 bg-gray-50 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                  />
-                </div>
+            {isBrandOpen &&
+              (isLoadingBrand ? (
+                <Loader />
+              ) : errorBrand ? (
+                <Message variant="danger">
+                  {errorBrand?.filteredBrand?.message || errorBrand.error}
+                </Message>
+              ) : (
+                <div className="px-6 pb-6">
+                  {/* Brand Search Input */}
+                  {/* <div className="relative mb-4">
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                      <FaSearch className="text-xs" />
+                    </span>
+                    <input
+                      type="text"
+                      placeholder="Find a brand..."
+                      // value={brandSearch}
+                      // onChange={(e) => setBrandSearch(e.target.value)}
+                      className="w-full py-2 pr-4 text-sm text-gray-700 transition-colors border border-gray-200 rounded-lg pl-9 bg-gray-50 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                    />
+                  </div> */}
 
-                {/* Brand List */}
-                <ul className="flex flex-col gap-3 pr-2 overflow-y-auto max-h-60 custom-scrollbar">
-                  {
-                    filteredBrand?.map((brand) => (
-                      <li
-                        key={brand}
-                        className="flex flex-row items-center gap-3"
-                      >
-                        <input
-                          type="checkbox"
-                          id={`brand-${brand}`}
-                          checked={selectedBrand.includes(brand)}
-                          onChange={() => handleBrand(brand)}
-                          className="w-5 h-5 border-gray-300 rounded cursor-pointer text-amber-600 focus:ring-amber-500"
-                        />
-                        <label
-                          htmlFor={`brand-${brand}`}
-                          className="text-sm font-medium text-gray-700 cursor-pointer select-none"
+                  {/* Brand List */}
+                  <ul className="flex flex-col gap-3 pr-2 overflow-y-auto max-h-60 custom-scrollbar">
+                    {
+                      filteredBrand?.map((brand) => (
+                        <li
+                          key={brand}
+                          onClick={() => handleBrand(brand)}
+                          className="flex flex-row items-center gap-3 py-1 hover:bg-gray-100"
                         >
-                          {brand}
-                        </label>
-                      </li>
-                    ))
+                          <input
+                            type="checkbox"
+                            id={brand}
+                            checked={selectedBrand.includes(brand)}
+                            onChange={() => handleBrand(brand)}
+                            className="w-5 h-5 border-gray-300 rounded cursor-pointer text-amber-600 focus:ring-amber-500"
+                          />
+                          <label
+                            htmlFor={brand}
+                            className="text-sm font-medium text-gray-700 cursor-pointer select-none"
+                          >
+                            {brand}
+                          </label>
+                        </li>
+                      ))
 
-                    // <li className="py-2 text-sm italic text-gray-400">
-                    //   No brands found
-                    // </li>
-                  }
-                </ul>
-              </div>
-            )}
+                      // <li className="py-2 text-sm italic text-gray-400">
+                      //   No brands found
+                      // </li>
+                    }
+                  </ul>
+                </div>
+              ))}
           </div>
         </div>
 
