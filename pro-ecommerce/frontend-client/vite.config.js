@@ -5,13 +5,14 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
     plugins: [react()],
     server: {
-        port: 3000,
+        port: 3000, // <--- CHANGED: Use 3000 to avoid conflict with Client (3000)
         proxy: {
-            // This proxies calls from localhost:3000/api/* to localhost:5000/api/*
+            // Connects to your backend
             '/api': {
                 target: 'http://localhost:5000',
                 changeOrigin: true,
             },
+            // Allows displaying images served by backend
             '/uploads': {
                 target: 'http://localhost:5000',
                 changeOrigin: true,
