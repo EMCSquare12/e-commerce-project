@@ -11,6 +11,7 @@ import {
 import DashboardScreen from "./screen/DashboardScreen.jsx";
 import OrdersScreen from "./screen/OrdersScreen.jsx";
 import ProductsScreen from "./screen/ProductsScreen.jsx";
+import CustomersScreen from "./screen/CustomersScreen.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -18,6 +19,11 @@ const router = createBrowserRouter(
       <Route index={true} path="/admin" element={<DashboardScreen />} />
       <Route index={true} path="/admin/orders" element={<OrdersScreen />} />
       <Route index={true} path="/admin/products" element={<ProductsScreen />} />
+      <Route
+        index={true}
+        path="/admin/customers"
+        element={<CustomersScreen />}
+      />
     </Route>
   )
 );
