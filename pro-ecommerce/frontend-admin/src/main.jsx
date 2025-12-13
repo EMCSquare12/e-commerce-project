@@ -9,11 +9,13 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import DashboardScreen from "./screen/DashboardScreen.jsx";
+import OrdersScreen from "./screen/OrdersScreen.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route index={true} path="/admin" element={<DashboardScreen />} />
+      <Route index={true} path="/admin/orders" element={<OrdersScreen />} />
     </Route>
   )
 );
