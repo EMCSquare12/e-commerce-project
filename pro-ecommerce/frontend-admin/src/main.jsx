@@ -12,6 +12,9 @@ import DashboardScreen from "./screen/DashboardScreen.jsx";
 import OrdersScreen from "./screen/OrdersScreen.jsx";
 import ProductsScreen from "./screen/ProductsScreen.jsx";
 import CustomersScreen from "./screen/CustomersScreen.jsx";
+import AnalyticsScreen from "./screen/AnalyticsScreen.jsx";
+import MarketingScreen from "./screen/MarketingScreen.jsx";
+import SettingsScreen from "./screen/SettingsScreen.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -24,6 +27,17 @@ const router = createBrowserRouter(
         path="/admin/customers"
         element={<CustomersScreen />}
       />
+      <Route
+        index={true}
+        path="/admin/analytics"
+        element={<AnalyticsScreen />}
+      />
+      <Route
+        index={true}
+        path="/admin/marketing"
+        element={<MarketingScreen />}
+      />
+      <Route index={true} path="/admin/settings" element={<SettingsScreen />} />
     </Route>
   )
 );
