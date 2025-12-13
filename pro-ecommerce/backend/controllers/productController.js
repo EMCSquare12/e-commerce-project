@@ -85,15 +85,23 @@ const getCategories = asyncHandler(async (req, res) => {
     },
   ]);
 
-  // The result will look like:
-  // [ { _id: "Electronics", count: 12 }, { _id: "Audio", count: 5 } ]
+
 
   res.json(categories);
 });
 
 const getBrands = asyncHandler(async (req, res) => {
-  const brands = (await Product.distinct("brand")).sort();
-  res.json(brands);
+  const brands = await Product.aggregate([
+    {
+      $group: {
+        _id: '$brand',      // Group by the 'category' field
+        count: { $sum: 1 },    // Count how many items match
+      },
+    },
+    {
+      $sort: { _id: 1 },       // Optional: Sort alphabetically A-Z
+    },
+  ]); res.json(brands);
 });
 
 export { getProducts, getProductById, deleteProduct, getCategories, getBrands };
