@@ -84,9 +84,6 @@ const getCategories = asyncHandler(async (req, res) => {
       $sort: { _id: 1 },       // Optional: Sort alphabetically A-Z
     },
   ]);
-
-
-
   res.json(categories);
 });
 
@@ -99,9 +96,22 @@ const getBrands = asyncHandler(async (req, res) => {
       },
     },
     {
-      $sort: { _id: 1 },       // Optional: Sort alphabetically A-Z
+      $sort: { _id: 1 },
     },
   ]); res.json(brands);
 });
+const getProductsAdmin = asyncHandler(async (req, res) => {
+  const products = await Product.find({});
+  res.json(products);
+})
 
-export { getProducts, getProductById, deleteProduct, getCategories, getBrands };
+const updateProduct = asyncHandler(async (req, res) => {
+  const product = await Product.findById(req.params.id)
+
+  if (product) {
+    product.countInStock = req.body.countInStock
+    await product.save()
+    res.json(product)
+  }
+})
+export { getProducts, getProductById, deleteProduct, getCategories, getBrands, getProductsAdmin, updateProduct };

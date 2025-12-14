@@ -8,6 +8,8 @@ import {
   Route,
   RouterProvider,
 } from "react-router-dom";
+import { Provider } from "react-redux";
+import store from "./store";
 import DashboardScreen from "./screen/DashboardScreen.jsx";
 import OrdersScreen from "./screen/OrdersScreen.jsx";
 import ProductsScreen from "./screen/ProductsScreen.jsx";
@@ -43,6 +45,8 @@ const router = createBrowserRouter(
 );
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
   </StrictMode>
 );

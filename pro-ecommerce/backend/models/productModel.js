@@ -27,10 +27,10 @@ const productSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    image: {
+    image: [{
       type: String,
       required: true,
-    },
+    }],
     brand: {
       type: String,
       required: true,
@@ -42,6 +42,11 @@ const productSchema = mongoose.Schema(
     description: {
       type: String,
       required: true,
+    },
+    status: {
+      type: String,
+      required: true,
+      default: 'In Stock'
     },
     reviews: [reviewSchema], // Array of reviews
     rating: {
@@ -69,6 +74,19 @@ const productSchema = mongoose.Schema(
     timestamps: true,
   }
 );
+
+productSchema.pre('save', function (next) {
+  if (this.countInStock === 0) {
+    this.status = "Out of Stock"
+  }
+  else if (this.countInStock > 0 && this.countInStock <= 10) {
+    this.status = "Low Stock"
+  }
+  else {
+    this.status = "In Stock"
+  }
+  next()
+})
 
 const Product = mongoose.model('Product', productSchema);
 

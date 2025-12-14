@@ -41,4 +41,9 @@ const addOrderItems = asyncHandler(async (req, res) => {
     }
 });
 
-export { addOrderItems };
+const getOrder = asyncHandler(async (req, res) => {
+    // Populate 'user' so you can show "John Doe" in the table
+    const orders = await Order.find({}).populate('user', 'id name email').sort({ createdAt: -1 })
+    res.json(orders)
+})
+export { addOrderItems, getOrder };
