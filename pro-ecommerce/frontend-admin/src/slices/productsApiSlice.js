@@ -6,8 +6,8 @@ export const productsApiSlice = apiSlice.injectEndpoints({
 
     // --- READ: Get All Products (Admin Mode) ---
     getProducts: builder.query({
-      query: () => ({
-        // Append '/admin' to fetch the full list (active + drafts)
+      query: ({ keyword, category, status, pageNumber }) => ({
+        params: { keyword, category, status, pageNumber },
         url: `${PRODUCTS_URL}/admin`,
       }),
       providesTags: ["Product"],
@@ -59,6 +59,19 @@ export const productsApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+    getProductCategories: builder.query({
+      query: () => ({
+        url: `${PRODUCTS_URL}/categories`,
+      }),
+      keepUnusedDataFor: 5,
+    }),
+    getProductStatus: builder.query({
+      query: () => ({
+        url: `${PRODUCTS_URL}/status`,
+      }),
+      keepUnusedDataFor: 5,
+    }),
+
   }),
 });
 
@@ -69,4 +82,6 @@ export const {
   useUpdateProductMutation,
   useDeleteProductMutation,
   useUploadProductImageMutation,
+  useGetProductCategoriesQuery,
+  useGetProductStatusQuery
 } = productsApiSlice;

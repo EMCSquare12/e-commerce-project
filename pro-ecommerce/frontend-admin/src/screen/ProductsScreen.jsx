@@ -1,16 +1,25 @@
 import { useState } from "react";
+import { Download, MoreHorizontal } from "lucide-react";
 import {
-  Search,
-  Download,
-  MoreHorizontal,
-  ChevronLeft,
-  ChevronRight,
-  Filter,
-} from "lucide-react";
-import { useGetProductsQuery } from "../slices/productsApiSlice";
+  useGetProductCategoriesQuery,
+  useGetProductsQuery,
+  useGetProductStatusQuery,
+} from "../slices/productsApiSlice";
+import Message from "../components/Message";
+import Loader from "../components/Loader";
+import Pagination from "../components/Pagination";
 
 const ProductsScreen = () => {
-  const { data, isLoading, error } = useGetProductsQuery({});
+  const [category, setCategory] = useState("");
+  const [status, setStatus] = useState("");
+  const [pageNumber, setPageNumber] = useState(1);
+  const { data, isLoading, error } = useGetProductsQuery({
+    category,
+    status,
+    pageNumber,
+  });
+  const { data: categories } = useGetProductCategoriesQuery();
+  const { data: stockStatus } = useGetProductStatusQuery();
   console.log(data);
 
   const checkStatus = {
@@ -37,12 +46,19 @@ const ProductsScreen = () => {
                 Category
               </span>
               <div className="relative">
-                <select className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 pr-8">
-                  <option>All, Electronics, Clothing, Home...</option>
-                  <option>Electronics</option>
-                  <option>Clothing</option>
-                  <option>Home</option>
+                <select
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="appearance-none overflow-y-scroll bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 pr-8"
+                >
+                  <option value="">All</option>
+
+                  {categories?.map((category) => (
+                    <option key={category._id} value={category._id}>
+                      {category._id}
+                    </option>
+                  ))}
                 </select>
+
                 <div className="absolute inset-y-0 right-0 flex items-center px-2 text-gray-500 pointer-events-none">
                   <svg
                     className="w-4 h-4"
@@ -67,11 +83,17 @@ const ProductsScreen = () => {
                 Stock Status
               </span>
               <div className="relative">
-                <select className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 pr-8">
-                  <option>All, In Stock, Low...</option>
-                  <option>In Stock</option>
-                  <option>Low Stock</option>
-                  <option>Out of Stock</option>
+                <select
+                  onChange={(e) => setStatus(e.target.value)}
+                  className="appearance-none overflow-y-scroll bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 pr-8"
+                >
+                  <option value="">All</option>
+
+                  {stockStatus?.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))}
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center px-2 text-gray-500 pointer-events-none">
                   <svg
@@ -94,17 +116,6 @@ const ProductsScreen = () => {
 
           {/* Right Side: Search & Export */}
           <div className="flex flex-col gap-3 sm:flex-row">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <Search className="w-4 h-4 text-gray-400" />
-              </div>
-              {/* <input
-                type="text"
-                className="bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5"
-                placeholder="Search Product Name, SKU"
-              /> */}
-            </div>
-
             <button className="flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 hover:text-gray-900 transition-colors">
               <Download className="w-4 h-4" />
               Export
@@ -114,91 +125,94 @@ const ProductsScreen = () => {
 
         {/* --- Table Section --- */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead className="text-xs font-semibold text-gray-600 uppercase bg-gray-50">
-              <tr>
-                <th className="w-10 px-6 py-4">
-                  <span className="sr-only">Select</span>
-                </th>
-                <th className="px-6 py-4">Product Image</th>
-                <th className="px-6 py-4">Product Name</th>
-                <th className="px-6 py-4">SKU</th>
-                <th className="px-6 py-4">Category</th>
-                <th className="px-6 py-4">Price</th>
-                <th className="px-6 py-4">Stock</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="text-sm divide-y divide-gray-100">
-              {data?.map((product) => (
-                <tr
-                  key={product.name}
-                  className="transition-colors hover:bg-gray-50"
-                >
-                  <td className="px-6 py-4">
-                    <input
-                      type="checkbox"
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                    />
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="w-10 h-10 overflow-hidden bg-gray-100 border border-gray-200 rounded-md">
-                      <img
-                        src={product.image[0]}
-                        alt={product.name}
-                        className="object-cover w-full h-full"
-                      />
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 font-medium text-gray-900">
-                    {product.name}
-                  </td>
-                  <td className="px-6 py-4 text-gray-900">{product.sku}</td>
-                  <td className="px-6 py-4 text-gray-900">
-                    {product.category}
-                  </td>
-                  <td className="px-6 py-4 font-medium text-gray-900">
-                    {product.price}
-                  </td>
-                  <td className="px-6 py-4 text-gray-900">
-                    {product.countInStock}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        checkStatus[product.status]
-                      }`}
-                    >
-                      {product.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <button className="p-1 text-gray-400 rounded-md hover:text-gray-600 hover:bg-gray-100">
-                      <MoreHorizontal className="w-5 h-5" />
-                    </button>
-                  </td>
+          {isLoading ? (
+            <Loader />
+          ) : error ? (
+            <Message variant="danger">
+              {error?.data?.message || error.error}
+            </Message>
+          ) : (
+            <table className="w-full text-left border-collapse">
+              <thead className="text-xs font-semibold text-gray-600 uppercase bg-gray-50">
+                <tr>
+                  <th className="w-10 px-6 py-4">
+                    <span className="sr-only">Select</span>
+                  </th>
+                  <th className="p-4">Product Image</th>
+                  <th className="p-4">Product Name</th>
+                  <th className="p-4">SKU</th>
+                  <th className="p-4">Category</th>
+                  <th className="p-4">Price</th>
+                  <th className="p-4">Stock</th>
+                  <th className="p-4">Status</th>
+                  <th className="p-4 text-right">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody className="text-sm divide-y divide-gray-100">
+                {data.products?.map((product) => (
+                  <tr
+                    key={product.name}
+                    className="transition-colors hover:bg-gray-50"
+                  >
+                    <td className="p-4">
+                      <input
+                        type="checkbox"
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                      />
+                    </td>
+                    <td className="p-4">
+                      <div className="w-10 h-10 overflow-hidden bg-gray-100 border border-gray-200 rounded-md ">
+                        <img
+                          src={product.image[0]}
+                          alt={product.name}
+                          className="object-cover w-full h-full"
+                        />
+                      </div>
+                    </td>
+                    <td className="p-4 font-medium text-gray-900">
+                      {product.name}
+                    </td>
+                    <td className="p-4 font-medium text-gray-900">
+                      {product.sku}
+                    </td>
+                    <td className="p-4 font-medium text-gray-900">
+                      {product.category}
+                    </td>
+                    <td className="p-4 font-medium text-gray-900">
+                      {product.price}
+                    </td>
+                    <td className="p-4 font-medium text-gray-900">
+                      {product.countInStock}
+                    </td>
+                    <td className="p-4">
+                      <span
+                        className={`px-3 py-1  rounded-full text-xs font-medium whitespace-nowrap ${
+                          checkStatus[product.status]
+                        }`}
+                      >
+                        {product.status}
+                      </span>
+                    </td>
+                    <td className="p-4 text-right">
+                      <button className="p-1 text-gray-400 rounded-md hover:text-gray-600 hover:bg-gray-100">
+                        <MoreHorizontal className="w-5 h-5" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
 
         {/* --- Pagination Footer --- */}
-        <div className="flex items-center justify-end gap-2 p-4 border-t border-gray-100">
-          <button className="p-2 text-gray-400 rounded-lg hover:text-gray-600 hover:bg-gray-100 disabled:opacity-50">
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-
-          <button className="px-3 py-1 text-sm font-medium text-blue-600 border border-blue-200 rounded-md bg-blue-50">
-            1
-          </button>
-
-          <button className="p-2 text-gray-400 rounded-lg hover:text-gray-600 hover:bg-gray-100">
-            <ChevronRight className="w-5 h-5" />
-          </button>
-        </div>
       </div>
+      <Pagination
+        setItemPages={(num) => setPageNumber(num)}
+        page={pageNumber}
+        pages={data?.pages}
+      />
     </div>
   );
 };

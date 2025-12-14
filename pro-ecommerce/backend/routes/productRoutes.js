@@ -6,12 +6,16 @@ import {
     deleteProduct,
     getCategories,
     getBrands,
-    getProductsAdmin
+    getProductsAdmin,
+    getStockStatus
+
 } from '../controllers/productController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
 
 router.get('/categories', getCategories);
 router.get('/brands', getBrands)
+router.get('/status', getStockStatus)
+
 router.route('/').get(getProducts);
 
 router.get('/admin', getProductsAdmin);
