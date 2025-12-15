@@ -4,6 +4,7 @@ import {
   useGetProductCategoriesQuery,
   useGetProductsQuery,
   useGetProductStatusQuery,
+  useDeleteProductMutation,
 } from "../slices/productsApiSlice";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
@@ -13,6 +14,8 @@ const ProductsScreen = () => {
   const [category, setCategory] = useState("");
   const [status, setStatus] = useState("");
   const [pageNumber, setPageNumber] = useState(1);
+  const [isOpenAction, setIsOpenAction] = useState(false);
+  const [actionId, setAcionId] = useState(0);
   const { data, isLoading, error } = useGetProductsQuery({
     category,
     status,
@@ -20,6 +23,8 @@ const ProductsScreen = () => {
   });
   const { data: categories } = useGetProductCategoriesQuery();
   const { data: stockStatus } = useGetProductStatusQuery();
+  const [deleteProduct, { isLoading: deleteLoading }] =
+    useDeleteProductMutation();
   console.log(data);
 
   const checkStatus = {
@@ -27,6 +32,24 @@ const ProductsScreen = () => {
     "Low Stock": "bg-yellow-100 text-yellow-700",
     "In Stock": "bg-green-100 text-green-700",
   };
+
+  const handleAction = (index) => {
+    setIsOpenAction(!isOpenAction);
+    setAcionId(index);
+  };
+
+  const handleDelete = async (productId) => {
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      try {
+        await deleteProduct(productId).unwrap();
+
+        toast.success("Product deleted successfully");
+      } catch (err) {
+        toast.error(err?.data?.message || "Error deleting product");
+      }
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* --- Page Title --- */}
@@ -150,7 +173,7 @@ const ProductsScreen = () => {
               </thead>
 
               <tbody className="text-sm divide-y divide-gray-100">
-                {data.products?.map((product) => (
+                {data.products?.map((product, index) => (
                   <tr
                     key={product.name}
                     className="transition-colors hover:bg-gray-50"
@@ -194,10 +217,26 @@ const ProductsScreen = () => {
                         {product.status}
                       </span>
                     </td>
-                    <td className="p-4 text-right">
-                      <button className="p-1 text-gray-400 rounded-md hover:text-gray-600 hover:bg-gray-100">
+                    <td className="relative p-4 text-right">
+                      <button
+                        onClick={() => handleAction(index)}
+                        className="p-1 text-gray-400 rounded-md hover:text-gray-600 hover:bg-gray-100"
+                      >
                         <MoreHorizontal className="w-5 h-5" />
                       </button>
+                      {isOpenAction && actionId === index && (
+                        <ul className="absolute left-0 z-20 bg-white rounded shadow-md">
+                          <li className="px-4 py-2 font-medium text-gray-600 cursor-pointer text-md hover:bg-blue-200 hover:text-blue-600">
+                            Update
+                          </li>
+                          <li
+                            onClick={() => handleDelete(product._id)}
+                            className="px-4 py-2 font-medium text-gray-600 cursor-pointer text-md hover:bg-red-200 hover:text-red-600"
+                          >
+                            {isLoading ? "Deleting..." : "Delete"}
+                          </li>
+                        </ul>
+                      )}
                     </td>
                   </tr>
                 ))}

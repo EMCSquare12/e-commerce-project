@@ -47,7 +47,7 @@ const Drawer = () => {
   return (
     <>
       {/* Drawer Container */}
-      <div className="fixed inset-y-0 left-0 z-50 flex flex-col h-screen transition-transform transform bg-white shadow-2xl w-80 sm:w-80">
+      <div className="fixed inset-y-0 left-0 z-50 flex flex-col h-screen transition-transform transform bg-white border-r border-gray-200 w-80 sm:w-80">
         {/* --- Header --- */}
         <div className="flex flex-row items-center justify-between px-6 py-5 border-b border-gray-100">
           <h1 className="text-xl font-bold text-gray-800">Filters</h1>
@@ -146,20 +146,6 @@ const Drawer = () => {
                 </Message>
               ) : (
                 <div className="pb-6 ">
-                  {/* Brand Search Input */}
-                  {/* <div className="relative mb-4">
-                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                      <FaSearch className="text-xs" />
-                    </span>
-                    <input
-                      type="text"
-                      placeholder="Find a brand..."
-                      // value={brandSearch}
-                      // onChange={(e) => setBrandSearch(e.target.value)}
-                      className="w-full py-2 pr-4 text-sm text-gray-700 transition-colors border border-gray-200 rounded-lg pl-9 bg-gray-50 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                    />
-                  </div> */}
-
                   {/* Brand List */}
                   <ul className="flex flex-col gap-1 px-3 pb-6">
                     {filteredBrand?.map((brand) => (
@@ -193,13 +179,6 @@ const Drawer = () => {
               ))}
           </div>
         </div>
-
-        {/* --- Sticky Footer --- */}
-        {/* <div className="p-6 bg-white border-t border-gray-100">
-          <button className="flex items-center justify-center w-full gap-2 text-white transition-colors bg-gray-900 rounded-lg shadow-lg py-3.5 hover:bg-gray-800 font-bold">
-            Show {totalFilterResult()} Results
-          </button>
-        </div> */}
       </div>
     </>
   );

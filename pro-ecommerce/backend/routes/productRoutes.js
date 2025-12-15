@@ -23,7 +23,7 @@ router.get('/admin', getProductsAdmin);
 router
     .route('/:id')
     .get(getProductById)
-    .delete(protect, admin, deleteProduct); // <--- This is the new delete route
+    .delete(deleteProduct); // <--- This is the new delete route
 
 
 export default router;

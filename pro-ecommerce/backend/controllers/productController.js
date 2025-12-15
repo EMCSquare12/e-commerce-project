@@ -102,7 +102,7 @@ const getBrands = asyncHandler(async (req, res) => {
 });
 
 const getProductsAdmin = asyncHandler(async (req, res) => {
-  const pageSize = 20;
+  const pageSize = 10;
   const page = Number(req.query.pageNumber) || 1;
 
   const keyword = req.query.keyword
