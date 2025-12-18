@@ -144,12 +144,58 @@ const getStockStatus = asyncHandler(async (req, res) => {
 })
 
 const updateProduct = asyncHandler(async (req, res) => {
-  const product = await Product.findById(req.params.id)
+  const { name, price, countInStock } = req.body;
+
+  const product = await Product.findById(req.params.id);
 
   if (product) {
-    product.countInStock = req.body.countInStock
-    await product.save()
-    res.json(product)
+    product.name = name || product.name;
+    product.price = price !== undefined ? price : product.price;
+    product.countInStock = countInStock !== undefined ? countInStock : product.countInStock;
+
+    const updatedProduct = await product.save();
+    res.json(updatedProduct);
+
+  } else {
+    res.status(404);
+    throw new Error('Product not found');
   }
+});
+const createProduct = asyncHandler(async (req, res) => {
+  const {
+    name,
+    price,
+    image,
+    brand,
+    category,
+    countInStock,
+    description,
+    sku
+  } = req.body;
+
+  const product = new Product({
+    user: req.use._d,
+    name,
+    price,
+    image: image ? [image] : ['/images/sample.jpg'],
+    brand,
+    category,
+    countInStock,
+    description,
+    sku
+  })
+
+  const createProduct = await product.save()
+  res.status(200).json(createProduct)
 })
-export { getProducts, getProductById, deleteProduct, getCategories, getBrands, getProductsAdmin, updateProduct, getStockStatus };
+export {
+  getProducts,
+  getProductById,
+  deleteProduct,
+  getCategories,
+  getBrands,
+  getProductsAdmin,
+  updateProduct,
+  getStockStatus,
+  createProduct
+};

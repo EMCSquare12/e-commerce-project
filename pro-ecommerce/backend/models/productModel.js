@@ -48,6 +48,10 @@ const productSchema = mongoose.Schema(
       required: true,
       default: 'In Stock'
     },
+    sku: {
+      type: String,
+      required: true,
+    },
     reviews: [reviewSchema], // Array of reviews
     rating: {
       type: Number,

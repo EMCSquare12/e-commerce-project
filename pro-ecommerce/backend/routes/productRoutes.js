@@ -7,7 +7,9 @@ import {
     getCategories,
     getBrands,
     getProductsAdmin,
-    getStockStatus
+    getStockStatus,
+    updateProduct,
+    createProduct
 
 } from '../controllers/productController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
@@ -23,7 +25,9 @@ router.get('/admin', getProductsAdmin);
 router
     .route('/:id')
     .get(getProductById)
-    .delete(deleteProduct); // <--- This is the new delete route
+    .delete(deleteProduct)
+    .put(updateProduct)
+    .post(createProduct)
 
 
 export default router;

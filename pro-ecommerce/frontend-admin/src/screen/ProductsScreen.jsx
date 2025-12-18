@@ -1,17 +1,19 @@
 import { useState } from "react";
-import { Download, MoreHorizontal, ChevronDown, Search } from "lucide-react";
+import { Download, MoreHorizontal, ChevronDown } from "lucide-react"; // Removed unused 'Search'
 import { toast } from "react-toastify";
 import {
   useGetProductCategoriesQuery,
   useGetProductsQuery,
   useGetProductStatusQuery,
   useDeleteProductMutation,
+  useUpdateProductMutation,
 } from "../slices/productsApiSlice";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
 import Pagination from "../components/Pagination";
 import DeleteConfirmationModal from "../components/modal/DeleteConfirmationModal";
 import UpdateProductModal from "../components/modal/UpdateProductModal";
+import CreateProductModal from "../components/modal/CreateProductModal";
 
 // --- Constants ---
 const STATUS_STYLES = {
@@ -21,15 +23,25 @@ const STATUS_STYLES = {
 };
 
 const ProductsScreen = () => {
+  // --- State ---
   const [filter, setFilter] = useState({ category: "", status: "", page: 1 });
+
+  // Delete Modal State
   const [deleteModal, setDeleteModal] = useState({
     open: false,
     id: null,
     name: "",
   });
 
+  // Update Modal State (Simplified)
+  const [updateModal, setUpdateModal] = useState({
+    open: false,
+    product: null,
+  });
+
   const [activeActionIndex, setActiveActionIndex] = useState(null);
 
+  // --- API Hooks ---
   const { data, isLoading, error } = useGetProductsQuery({
     category: filter.category,
     status: filter.status,
@@ -40,7 +52,9 @@ const ProductsScreen = () => {
   const { data: stockStatus } = useGetProductStatusQuery();
 
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
+  const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
 
+  // --- Handlers ---
   const handleFilterChange = (key, value) => {
     setFilter((prev) => ({ ...prev, [key]: value, page: 1 }));
   };
@@ -49,11 +63,19 @@ const ProductsScreen = () => {
     setActiveActionIndex(activeActionIndex === index ? null : index);
   };
 
+  // Open Delete Modal
   const openDeleteModal = (product) => {
     setDeleteModal({ open: true, id: product._id, name: product.name });
     setActiveActionIndex(null);
   };
 
+  // Open Update Modal
+  const openUpdateModal = (product) => {
+    setUpdateModal({ open: true, product: product });
+    setActiveActionIndex(null);
+  };
+
+  // Confirm Delete
   const handleConfirmDelete = async () => {
     try {
       await deleteProduct(deleteModal.id).unwrap();
@@ -64,8 +86,20 @@ const ProductsScreen = () => {
     }
   };
 
+  // Confirm Update
+  const handleConfirmUpdate = async (productId, formData) => {
+    try {
+      await updateProduct({ productId, formData }).unwrap();
+      toast.success("Product Updated!");
+      setUpdateModal({ open: false, product: null });
+    } catch (err) {
+      toast.error(err?.data?.message || "Update failed");
+    }
+  };
+
   return (
     <>
+      {/* Delete Modal */}
       <DeleteConfirmationModal
         isOpen={deleteModal.open}
         itemName={deleteModal.name}
@@ -74,7 +108,15 @@ const ProductsScreen = () => {
         onConfirm={handleConfirmDelete}
       />
 
-      <UpdateProductModal  />
+      {/* Update Modal */}
+      <UpdateProductModal
+        isOpen={updateModal.open}
+        product={updateModal.product}
+        onClose={() => setUpdateModal({ ...updateModal, open: false })}
+        isLoading={isUpdating}
+        onUpdate={handleConfirmUpdate}
+      />
+      <CreateProductModal isOpen={true} />
 
       <div className="space-y-6">
         {/* --- Header --- */}
@@ -82,11 +124,8 @@ const ProductsScreen = () => {
           <h1 className="text-2xl font-bold text-gray-800">Products</h1>
         </div>
 
-        {/* --- Main Card --- */}
         <div className="bg-white border border-gray-200 shadow-sm rounded-xl">
-          {/* --- Toolbar --- */}
           <div className="flex flex-col justify-between gap-4 p-4 border-b border-gray-100 lg:flex-row lg:items-center">
-            {/* Filters */}
             <div className="flex flex-col gap-4 sm:flex-row">
               <FilterDropdown
                 label="Category"
@@ -100,9 +139,11 @@ const ProductsScreen = () => {
               />
             </div>
 
-            {/* Actions */}
             <div className="flex flex-col gap-3 sm:flex-row">
-              <button className="flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">
+              <button className="flex items-center justify-center cursor-pointer gap-2 px-4 py-2.5 bg-blue-600   text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                New
+              </button>
+              <button className="flex items-center justify-center cursor-pointer gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">
                 <Download className="w-4 h-4" />
                 Export
               </button>
@@ -125,12 +166,7 @@ const ProductsScreen = () => {
               <table className="w-full text-left border-collapse">
                 <thead className="text-xs font-semibold text-gray-600 uppercase bg-gray-50">
                   <tr>
-                    <th className="w-10 px-6 py-4">
-                      {/* <input
-                        type="checkbox"
-                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      /> */}
-                    </th>
+                    <th className="w-10 px-6 py-4"></th>
                     <th className="p-4">Product</th>
                     <th className="p-4">SKU</th>
                     <th className="p-4">Category</th>
@@ -149,6 +185,7 @@ const ProductsScreen = () => {
                       isOpen={activeActionIndex === index}
                       onToggle={() => toggleActionMenu(index)}
                       onDelete={() => openDeleteModal(product)}
+                      onUpdate={() => openUpdateModal(product)}
                     />
                   ))}
                   {data.products?.length === 0 && (
@@ -177,10 +214,8 @@ const ProductsScreen = () => {
   );
 };
 
-// --- Sub-Components ---
-
-// 1. Reusable Row Component to clean up main file
-const ProductRow = ({ product, isOpen, onToggle, onDelete }) => {
+// Sub-components remain the same...
+const ProductRow = ({ product, isOpen, onToggle, onDelete, onUpdate }) => {
   return (
     <tr className="transition-colors hover:bg-gray-50 group">
       <td className="p-4">
@@ -219,23 +254,26 @@ const ProductRow = ({ product, isOpen, onToggle, onDelete }) => {
       <td className="relative p-4 text-right">
         <button
           onClick={onToggle}
-          className="p-1 text-gray-400 rounded-md hover:text-gray-600 hover:bg-gray-100 focus:outline-none"
+          className="p-1 text-gray-400 rounded-md cursor-pointer hover:text-gray-600 hover:bg-gray-100 focus:outline-none"
         >
           <MoreHorizontal className="w-5 h-5" />
         </button>
 
         {isOpen && (
-          <div className="absolute right-4 top-12 z-20 w-32 bg-white border border-gray-100 rounded-lg shadow-lg">
+          <div className="absolute z-20 w-32 bg-white border border-gray-100 rounded-lg shadow-lg right-4 top-12">
             <ul className="py-1 text-left">
               <li>
-                <button className="w-full px-4 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 text-left">
+                <button
+                  onClick={onUpdate}
+                  className="w-full px-4 py-2 text-sm text-left text-gray-600 cursor-pointer hover:bg-blue-50 hover:text-blue-600"
+                >
                   Update
                 </button>
               </li>
               <li>
                 <button
                   onClick={onDelete}
-                  className="w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 text-left"
+                  className="w-full px-4 py-2 text-sm text-left text-red-600 cursor-pointer hover:bg-red-50"
                 >
                   Delete
                 </button>
@@ -248,14 +286,13 @@ const ProductRow = ({ product, isOpen, onToggle, onDelete }) => {
   );
 };
 
-// 2. Reusable Filter Component
 const FilterDropdown = ({ label, options, onChange }) => (
   <div className="flex items-center gap-2">
     <span className="text-sm font-medium text-gray-700">{label}</span>
     <div className="relative">
       <select
         onChange={(e) => onChange(e.target.value)}
-        className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 pr-8"
+        className="appearance-none cursor-pointer bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 pr-8"
       >
         <option value="">All</option>
         {options?.map((opt) => (
