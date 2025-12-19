@@ -24,9 +24,10 @@ export const productsApiSlice = apiSlice.injectEndpoints({
 
     // --- CREATE: Add a new product ---
     createProduct: builder.mutation({
-      query: () => ({
-        url: `${PRODUCTS_URL}/admin`, // Matches router.route('/admin').post(...)
+      query: (data) => ({
+        url: PRODUCTS_URL, // Matches router.route('/admin').post(...)
         method: "POST",
+        body: data
       }),
       invalidatesTags: ["Product"], // Forces the list to refresh automatically
     }),

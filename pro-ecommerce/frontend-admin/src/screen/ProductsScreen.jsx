@@ -7,6 +7,7 @@ import {
   useGetProductStatusQuery,
   useDeleteProductMutation,
   useUpdateProductMutation,
+  useCreateProductMutation,
 } from "../slices/productsApiSlice";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
@@ -33,8 +34,14 @@ const ProductsScreen = () => {
     name: "",
   });
 
-  // Update Modal State (Simplified)
+  // Update Modal State
   const [updateModal, setUpdateModal] = useState({
+    open: false,
+    product: null,
+  });
+
+  // Create New Product Modal State
+  const [createNewProductModal, setCreatNewProductModal] = useState({
     open: false,
     product: null,
   });
@@ -53,6 +60,7 @@ const ProductsScreen = () => {
 
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
   const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
+  const [newProduct, { isLoading: isCreating }] = useCreateProductMutation();
 
   // --- Handlers ---
   const handleFilterChange = (key, value) => {
@@ -97,6 +105,15 @@ const ProductsScreen = () => {
     }
   };
 
+  const handleCreateNewProduct = async (product) => {
+    try {
+      await newProduct(product).unwrap();
+      toast.success("New Product Added!");
+      setCreatNewProductModal({ open: false, product: null });
+    } catch (err) {
+      toast.error(err?.data.message || "Error to dd new item");
+    }
+  };
   return (
     <>
       {/* Delete Modal */}
@@ -116,7 +133,17 @@ const ProductsScreen = () => {
         isLoading={isUpdating}
         onUpdate={handleConfirmUpdate}
       />
-      <CreateProductModal isOpen={true} />
+      <CreateProductModal
+        isOpen={createNewProductModal.open}
+        onClose={() =>
+          setCreatNewProductModal(() => ({
+            ...createNewProductModal,
+            open: false,
+          }))
+        }
+        isLoading={isCreating}
+        onCreate={handleCreateNewProduct}
+      />
 
       <div className="space-y-6">
         {/* --- Header --- */}
@@ -140,7 +167,15 @@ const ProductsScreen = () => {
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row">
-              <button className="flex items-center justify-center cursor-pointer gap-2 px-4 py-2.5 bg-blue-600   text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+              <button
+                onClick={() =>
+                  setCreatNewProductModal(() => ({
+                    ...createNewProductModal,
+                    open: true,
+                  }))
+                }
+                className="flex items-center justify-center cursor-pointer gap-2 px-4 py-2.5 bg-blue-600   text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+              >
                 New
               </button>
               <button className="flex items-center justify-center cursor-pointer gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">

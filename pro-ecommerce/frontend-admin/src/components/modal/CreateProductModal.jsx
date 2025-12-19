@@ -9,7 +9,7 @@ const CreateProductModal = ({ isOpen, onClose, onCreate, isLoading }) => {
     category: "",
     brand: "",
     description: "",
-    image: "", // We take a single string here, backend wraps it in []
+    image: "",
   };
 
   const [formData, setFormData] = useState(initialData);
@@ -32,7 +32,7 @@ const CreateProductModal = ({ isOpen, onClose, onCreate, isLoading }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto bg-gray-900 bg-opacity-50">
+    <div className="fixed inset-0 z-50 flex items-start justify-center p-4 overflow-y-auto bg-gray-900 bg-opacity-50">
       <div className="w-full max-w-2xl my-8 bg-white rounded-lg shadow-xl animate-fade-in">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-100">
@@ -49,7 +49,7 @@ const CreateProductModal = ({ isOpen, onClose, onCreate, isLoading }) => {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* Row 1: Name & Brand */}
+          {/* Row 1: Name & SKU */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <label className="block mb-1 text-sm font-medium text-gray-700">
@@ -67,6 +67,23 @@ const CreateProductModal = ({ isOpen, onClose, onCreate, isLoading }) => {
             </div>
             <div>
               <label className="block mb-1 text-sm font-medium text-gray-700">
+                SKU
+              </label>
+              <input
+                required
+                type="text"
+                name="sku"
+                value={formData.sku}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded-lg outline-none focus:ring-blue-500"
+                placeholder="e.g. Logitech"
+              />
+            </div>
+          </div>
+          {/* Row 1: Brand & Category */}{" "}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label className="block mb-1 text-sm font-medium text-gray-700">
                 Brand
               </label>
               <input
@@ -76,11 +93,24 @@ const CreateProductModal = ({ isOpen, onClose, onCreate, isLoading }) => {
                 value={formData.brand}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border rounded-lg outline-none focus:ring-blue-500"
+                placeholder="e.g. Wireless Mouse"
+              />
+            </div>
+            <div>
+              <label className="block mb-1 text-sm font-medium text-gray-700">
+                Category
+              </label>
+              <input
+                required
+                type="text"
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded-lg outline-none focus:ring-blue-500"
                 placeholder="e.g. Logitech"
               />
             </div>
           </div>
-
           {/* Row 2: Price, Stock, Category */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div>
@@ -114,39 +144,22 @@ const CreateProductModal = ({ isOpen, onClose, onCreate, isLoading }) => {
             </div>
             <div>
               <label className="block mb-1 text-sm font-medium text-gray-700">
-                Category
+                Image URL
               </label>
               <input
                 required
                 type="text"
-                name="category"
-                value={formData.category}
+                name="image"
+                value={formData.image}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border rounded-lg outline-none focus:ring-blue-500"
-                placeholder="e.g. Electronics"
+                placeholder="/images/sample.jpg"
               />
+              <p className="mt-1 text-xs text-gray-500">
+                Enter a single image URL.
+              </p>
             </div>
           </div>
-
-          {/* Row 3: Image URL */}
-          <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">
-              Image URL
-            </label>
-            <input
-              required
-              type="text"
-              name="image"
-              value={formData.image}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-lg outline-none focus:ring-blue-500"
-              placeholder="/images/sample.jpg"
-            />
-            <p className="mt-1 text-xs text-gray-500">
-              Enter a single image URL.
-            </p>
-          </div>
-
           {/* Row 4: Description */}
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-700">
@@ -162,7 +175,6 @@ const CreateProductModal = ({ isOpen, onClose, onCreate, isLoading }) => {
               placeholder="Product details..."
             ></textarea>
           </div>
-
           {/* Actions */}
           <div className="flex justify-end gap-3 pt-4">
             <button

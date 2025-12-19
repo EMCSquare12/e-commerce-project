@@ -18,16 +18,18 @@ router.get('/categories', getCategories);
 router.get('/brands', getBrands)
 router.get('/status', getStockStatus)
 
-router.route('/').get(getProducts);
+router
+    .route('/').get(getProducts)
+    .post(protect, admin, createProduct)
+
 
 router.get('/admin', getProductsAdmin);
 // Route for /api/products/:id
 router
     .route('/:id')
     .get(getProductById)
-    .delete(deleteProduct)
-    .put(updateProduct)
-    .post(createProduct)
+    .delete(protect, admin, deleteProduct)
+    .put(protect, admin, updateProduct)
 
 
 export default router;

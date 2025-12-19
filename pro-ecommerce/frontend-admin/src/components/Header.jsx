@@ -1,4 +1,5 @@
 import { Search, Bell } from "lucide-react";
+import ProfileMenu from "./ProfileMenu"; // Import your new component
 
 const Header = () => {
   return (
@@ -25,14 +26,9 @@ const Header = () => {
           <span className="absolute block w-2 h-2 bg-red-500 rounded-full top-1 right-1 ring-2 ring-white" />
         </button>
 
-        {/* User Profile */}
-        <div className="flex items-center space-x-3 cursor-pointer">
-          {/* Placeholder Avatar Image */}
-          <img
-            className="object-cover w-8 h-8 rounded-full"
-            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-            alt="User profile"
-          />
+        {/* User Profile Dropdown */}
+        <div className="relative z-50">
+          <ProfileMenu />
         </div>
       </div>
     </header>
