@@ -46,4 +46,56 @@ const getOrder = asyncHandler(async (req, res) => {
     const orders = await Order.find({}).populate('user', 'id name email').sort({ createdAt: -1 })
     res.json(orders)
 })
-export { addOrderItems, getOrder };
+
+const buildFilter = (query) => {
+    const { keyword, status, from, to } = query;
+    const filter = {};
+
+    if (keyword) {
+        filter.name = { $regex: keyword, $options: 'i' };
+    }
+
+    // 2. Status Filter
+    if (status) {
+        if (status === "Shipped") {
+            filter.isDelivered = true;
+        } else if (status === "Pending") {
+            filter.isDelivered = false;
+        }
+    }
+
+    // 3. Date Range Filter
+    if (from || to) {
+        filter.createdAt = {}
+
+        if (from) {
+            const startDate = new Date(from)
+            startDate.setHours(0, 0, 0, 0)
+            filter.createdAt.$gte = startDate
+        }
+        if (to) {
+            const endDate = new Date(to)
+            endDate.setHours(23, 59, 59, 999)
+            filter.createdAt.$lte = endDate
+        }
+    }
+
+    return filter;
+};
+
+const getOrdersAdmin = asyncHandler(async (req, res) => {
+    const pageSize = 10
+    const page = Number(req.query.pageNumber)
+
+    const filter = buildFilter(req.query)
+
+    const count = await Order.countDocuments(filter)
+    const orders = await Order.find(filter)
+        .populate('user', 'name')
+        .limit(pageSize)
+        .skip(pageSize * (page - 1))
+        .sort({ createdAt: -1 })
+
+    res.json({ orders, page, pages: Math.ceil(count / pageSize) })
+})
+export { addOrderItems, getOrder, getOrdersAdmin };
