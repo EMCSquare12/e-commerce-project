@@ -149,7 +149,9 @@ const OrdersScreen = () => {
                 <th className="px-6 py-4">Order ID</th>
                 <th className="px-6 py-4">Customer</th>
                 <th className="px-6 py-4">Date</th>
+                <th className="px-6 py-4">Items</th>
                 <th className="px-6 py-4">Total</th>
+                <th className="px-6 py-4">Address</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
@@ -169,9 +171,13 @@ const OrdersScreen = () => {
                   <td className="px-6 py-4 font-medium text-gray-700">
                     {order.customer}
                   </td>
+                  <td className="px-6 py-4 text-gray-500">{order.date}</td>{" "}
                   <td className="px-6 py-4 text-gray-500">{order.date}</td>
                   <td className="px-6 py-4 font-medium text-gray-900">
                     {order.total}
+                  </td>
+                  <td className="px-6 py-4 font-medium text-gray-900">
+                    {"address"}
                   </td>
                   <td className="px-6 py-4">
                     <span

@@ -239,7 +239,9 @@ const ProductsScreen = () => {
         {/* --- Pagination --- */}
         {!isLoading && !error && (
           <Pagination
-            setItemPages={(num) => handleFilterChange("page", num)}
+            setItemPages={(num) =>
+              setFilter((prev) => ({ ...prev, page: num }))
+            }
             page={filter.page}
             pages={data?.pages}
           />

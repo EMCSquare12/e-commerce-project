@@ -1,7 +1,12 @@
 import mongoose from 'mongoose';
+import Counter from './counterModel.js';
 
 const orderSchema = mongoose.Schema(
     {
+        orderId: {
+            type: Number,
+            unique: true
+        },
         user: {
             type: mongoose.Schema.Types.ObjectId,
             required: true,
@@ -72,6 +77,26 @@ const orderSchema = mongoose.Schema(
         timestamps: true,
     }
 );
+
+orderSchema.pre('save', async function (next) {
+    if (!this.isNew) {
+        return next()
+    }
+    try {
+        const counter = await Counter.findByIdAndUpdate(
+            { _id: 'orderId' },
+            { $inc: { seq: 1 } },
+            { new: true, upsert: true }
+        )
+
+        this.orderId = counter.seq
+        next()
+
+    } catch (error) {
+        next(error)
+    }
+
+})
 
 const Order = mongoose.model('Order', orderSchema);
 
