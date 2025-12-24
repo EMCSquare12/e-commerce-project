@@ -20,6 +20,40 @@ const userSchema = new mongoose.Schema({
         required: true,
         default: false,
     },
+    phoneNumber: {
+        type: Number, // Note: String is often better for phones (e.g., "+639...")
+        required: true,
+        unique: true
+    },
+    totalSpent: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    // --- Updated Field ---
+    totalOrder: [{
+        product: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Product', // Links to your Product model
+            required: true
+        },
+        quantity: {
+            type: Number,
+            required: true,
+            default: 1
+        },
+        purchasedAt: {
+            type: Date,
+            default: Date.now
+        }
+    }],
+    // ---------------------
+    status: {
+        type: String,
+        required: true,
+        default: 'active', // Added default to prevent creation errors
+        enum: ['active', 'inactive', 'suspended'] // Optional: Good practice
+    }
 }, {
     timestamps: true,
 });

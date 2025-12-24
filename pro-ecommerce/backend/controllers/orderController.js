@@ -1,5 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import Order from '../models/orderModel.js';
+import User from '../models/userModel.js';
+
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -18,7 +20,6 @@ const addOrderItems = asyncHandler(async (req, res) => {
     if (orderItems && orderItems.length === 0) {
         res.status(400);
         throw new Error('No order items');
-        return;
     } else {
         const order = new Order({
             orderItems: orderItems.map((x) => ({
@@ -34,8 +35,17 @@ const addOrderItems = asyncHandler(async (req, res) => {
             shippingPrice,
             totalPrice,
         });
-
         const createdOrder = await order.save();
+
+        const userOrderHistory = orderItems.map((item) => ({
+            product: item._id,
+            quantity: item.qty || item.quantity,
+            purchasedAt: Date.now()
+        }));
+        await User.findByIdAndUpdate(req.user._id, {
+            $inc: { totalSpent: totalPrice },
+            $push: { totalOrder: { $each: userOrderHistory } }
+        })
 
         res.status(201).json(createdOrder);
     }

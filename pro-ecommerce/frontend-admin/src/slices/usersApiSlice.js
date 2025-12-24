@@ -23,7 +23,15 @@ export const usersApiSlice = apiSlice.injectEndpoints({
                 method: 'POST',
             }),
         }),
+        getUsers: builder.query({
+            query: ({ keyword, status, pageNumber }) => ({
+                params: { keyword, status, pageNumber },
+                url: `${USERS_URL}/admin`,
+            }),
+            providesTags: ["Users"],
+            keepUnusedDataFor: 5,
+        })
     }),
 });
 
-export const { useLoginMutation, useRegisterMutation, useLogoutMutation } = usersApiSlice;
+export const { useLoginMutation, useRegisterMutation, useLogoutMutation, useGetUsersQuery } = usersApiSlice;

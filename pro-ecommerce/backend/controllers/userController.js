@@ -30,7 +30,7 @@ const authUser = asyncHandler(async (req, res) => {
 // @route   POST /api/users
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, phoneNumber } = req.body;
 
   const userExists = await User.findOne({ email });
 
@@ -43,6 +43,7 @@ const registerUser = asyncHandler(async (req, res) => {
     name,
     email,
     password,
+    phoneNumber
   });
 
   if (user) {
@@ -52,6 +53,8 @@ const registerUser = asyncHandler(async (req, res) => {
       name: user.name,
       email: user.email,
       isAdmin: user.isAdmin,
+      phoneNumber: user.phoneNumber,
+      totalSpent: user.totalSpent,
     });
   } else {
     res.status(400);
@@ -70,4 +73,38 @@ const logoutUser = asyncHandler(async (req, res) => {
   res.status(200).json({ message: 'Logged out successfully' });
 });
 
-export { authUser, registerUser, logoutUser };
+
+const getUserAdmin = asyncHandler(async (req, res) => {
+  const pageSize = 10
+  const page = Number(req.query.pageNumber)
+  const filter = {}
+
+  const { keyword, status } = req.query
+
+  if (keyword) {
+    filter.name = { $regex: keyword, $options: 'i' };
+  }
+
+  if (status) {
+    if (status === "active") {
+      filter.status = "active";
+    } else if (status === "inactive") {
+      filter.status = "inactive";
+    } else if (status === "suspended") {
+      filter.status = "suspended"
+    }
+  }
+
+  const count = await User.countDocuments(filter)
+  const users = await User.find(filter)
+    .populate('totalOrder.product', 'name price image')
+    .limit(pageSize)
+    .skip(pageSize * (page - 1))
+    .sort({ createdAt: -1 })
+
+
+  res.json({ users, page, pages: Math.ceil(count / pageSize) })
+
+})
+
+export { authUser, registerUser, logoutUser, getUserAdmin };
