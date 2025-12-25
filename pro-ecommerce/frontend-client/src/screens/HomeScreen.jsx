@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Pagination from "../components/Pagination";
 import { PiFunnel } from "react-icons/pi";
-import { openDrawer, toggleDrawer } from "../slices/toggleSlice"; // Import closeDrawer too
+import { openDrawer, toggleDrawer } from "../slices/toggleSlice";
 import { clearFilter } from "../slices/filterSlice";
 
 const HomeScreen = () => {

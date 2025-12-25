@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import axios from "axios";
+
 import {
   Download,
   MoreHorizontal,
@@ -198,7 +200,7 @@ const ProductsScreen = () => {
           },
         });
 
-        updatedData.images = [uploadRes.data.image];
+        updatedData.image = [uploadRes.data.image];
 
         delete updatedData.imageFile;
       }
@@ -213,13 +215,30 @@ const ProductsScreen = () => {
     }
   };
 
-  const handleCreateNewProduct = async (product) => {
+  const handleCreateNewProduct = async (productData) => {
     try {
-      await newProduct(product).unwrap();
+      let finalProductData = { ...productData };
+
+      if (productData.imageFile) {
+        const uploadFormData = new FormData();
+        uploadFormData.append("image", productData.imageFile);
+        const uploadRes = await axios.post("/api/upload", uploadFormData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        finalProductData.image = [uploadRes.data.image];
+
+        delete finalProductData.imageFile;
+      }
+
+      await newProduct(finalProductData).unwrap();
+
       toast.success("New Product Added!");
       setCreatNewProductModal({ open: false, product: null });
     } catch (err) {
-      toast.error(err?.data?.message || "Error adding new item");
+      console.error(err);
+      toast.error(err?.data?.message || err.message || "Error adding new item");
     }
   };
 

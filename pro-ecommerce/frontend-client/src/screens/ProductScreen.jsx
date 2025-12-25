@@ -45,7 +45,7 @@ const ProductScreen = () => {
           {/* Image Column */}
           <div className="md:col-span-1 lg:col-span-2">
             <img
-              src={product.image[1]}
+              src={product.image[0]}
               alt={product.name}
               className="object-cover w-full rounded-lg shadow-lg"
             />

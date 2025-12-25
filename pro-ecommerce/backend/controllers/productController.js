@@ -98,11 +98,19 @@ const createProduct = asyncHandler(async (req, res) => {
     sku
   } = req.body;
 
+  let imageArray;
+  if (image) {
+    imageArray = Array.isArray(image) ? image : [image];
+  } else {
+    imageArray = ['/images/sample.jpg'];
+  }
+  // ---------------------
+
   const product = new Product({
-    user: req.user._id, // <--- FIXED: Was req.use._d
+    user: req.user._id,
     name,
     price,
-    image: image ? [image] : ['/images/sample.jpg'], // Ensure array
+    image: imageArray,
     brand,
     category,
     countInStock,
@@ -111,7 +119,7 @@ const createProduct = asyncHandler(async (req, res) => {
   });
 
   const createdProduct = await product.save();
-  res.status(201).json(createdProduct); // 201 = Created
+  res.status(201).json(createdProduct);
 });
 
 // @desc    Update a product (Name, Price, Stock only)

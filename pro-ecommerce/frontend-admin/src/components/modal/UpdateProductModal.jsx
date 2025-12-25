@@ -97,7 +97,7 @@ const UpdateProductModal = ({
 
   return (
     // Backdrop
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center h-screen p-4 overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm">
       {/* Modal Container */}
       <div className="w-full max-w-md bg-white rounded-xl shadow-2xl animate-fade-in flex flex-col max-h-[90vh]">
         {/* Header */}

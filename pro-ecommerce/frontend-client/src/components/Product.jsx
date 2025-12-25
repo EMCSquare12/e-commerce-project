@@ -7,7 +7,7 @@ const Product = ({ product }) => {
     <div className="flex flex-col h-full overflow-hidden transition-shadow duration-300 bg-white border rounded-lg shadow-md hover:shadow-xl border-slate-200">
       <Link to={`/product/${product._id}`}>
         <img
-          src={product.image[1]}
+          src={product.image[0]}
           alt={product.name}
           className="object-cover object-center w-full h-64"
         />
