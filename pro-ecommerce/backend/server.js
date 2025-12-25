@@ -11,6 +11,8 @@ import userRoutes from './routes/userRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import imageRoutes from './routes/imageRoutes.js';
+
 
 
 connectDB();
@@ -34,7 +36,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/admin', adminRoutes);
-
+app.use('/api/upload', imageRoutes);
 
 // Error Handling
 app.use(notFound);

@@ -18,6 +18,7 @@ import {
 import { useGetTotalRevenueQuery } from "../slices/adminApiSlice";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
+import Pagination from "../components/Pagination";
 
 // --- Helper: Currency Formatter ---
 const formatCurrency = (amount) => {
@@ -103,7 +104,7 @@ const SalesChart = ({ data }) => (
 
 // --- Sub-Component: Recent Orders Table ---
 const RecentOrdersTable = ({ orders }) => (
-  <div className="overflow-hidden bg-white border border-gray-200 shadow-sm rounded-xl">
+  <div className="pb-4 overflow-hidden bg-white border border-gray-200 shadow-sm rounded-xl">
     <div className="flex items-center justify-between p-6 border-b border-gray-100">
       <h2 className="text-lg font-bold text-gray-800">Recent Orders</h2>
       <button className="text-sm font-medium text-blue-600 hover:underline">
@@ -265,6 +266,7 @@ const DashboardScreen = () => {
 
       {/* Bottom: Table */}
       <RecentOrdersTable orders={data?.dailyOrders} />
+      {data?.pages > 1 && <Pagination />}
     </div>
   );
 };

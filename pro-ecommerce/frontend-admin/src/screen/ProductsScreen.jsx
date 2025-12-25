@@ -67,17 +67,19 @@ const ProductRow = ({ product, isOpen, onToggle, onDelete, onUpdate }) => {
               <Package className="w-5 h-5 text-gray-400" />
             )}
           </div>
-          <span className="font-medium text-gray-900 line-clamp-1">
+          <span className="text-sm font-medium text-gray-700 line-clamp-1">
             {product.name}
           </span>
         </div>
       </td>
-      <td className="p-4 font-mono text-sm text-gray-600">
+      <td className="p-4 text-sm font-medium text-gray-700 whitespace-nowrap">
         {product.sku || "N/A"}
       </td>
-      <td className="p-4 text-sm text-gray-600">{product.category}</td>
-      <td className="p-4 font-medium text-gray-900">${product.price}</td>
-      <td className="p-4 text-sm text-gray-600">
+      <td className="p-4 text-sm font-medium text-gray-700">
+        {product.category}
+      </td>
+      <td className="p-4 font-mono text-sm text-gray-700">${product.price}</td>
+      <td className="p-4 text-sm font-medium text-gray-700 whitespace-nowrap">
         {product.countInStock} units
       </td>
       <td className="p-4">
@@ -184,11 +186,30 @@ const ProductsScreen = () => {
 
   const handleConfirmUpdate = async (productId, formData) => {
     try {
-      await updateProduct({ productId, formData }).unwrap();
-      toast.success("Product Updated!");
+      let updatedData = { ...formData };
+
+      if (formData.imageFile) {
+        const uploadFormData = new FormData();
+        uploadFormData.append("image", formData.imageFile);
+
+        const uploadRes = await axios.post("/api/upload", uploadFormData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        updatedData.images = [uploadRes.data.image];
+
+        delete updatedData.imageFile;
+      }
+
+      await updateProduct({ productId, formData: updatedData }).unwrap();
+
+      toast.success("Product Updated Successfully!");
       setUpdateModal({ open: false, product: null });
     } catch (err) {
-      toast.error(err?.data?.message || "Update failed");
+      console.error(err);
+      toast.error(err?.data?.message || err.message || "Update failed");
     }
   };
 
@@ -309,15 +330,11 @@ const ProductsScreen = () => {
 
         {/* --- Table Content --- */}
         {isLoading ? (
-          <div className="flex items-center justify-center h-64">
-            <Loader />
-          </div>
+          <Loader />
         ) : error ? (
-          <div className="p-6">
-            <Message variant="danger">
-              {error?.data?.message || error.error || "Error loading products"}
-            </Message>
-          </div>
+          <Message variant="danger">
+            {error?.data?.message || error.error || "Error loading products"}
+          </Message>
         ) : (
           <>
             <div className="overflow-x-auto min-h-[400px]">

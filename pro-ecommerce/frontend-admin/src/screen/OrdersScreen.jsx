@@ -69,19 +69,19 @@ const OrderRow = ({ order, isExpanded, onToggle, copiedId, onCopy }) => {
             className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
           />
         </td>
-        <td className="p-4 font-mono text-sm font-medium text-gray-900">
+        <td className="p-4 text-sm font-medium text-gray-900">
           {/* FIX: Safe substring check */}
           {orderId.length > 10 ? `${orderId.substring(0, 10)}...` : orderId}
         </td>
         <td className="p-4 font-medium text-gray-700">
           <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 text-slate-500">
+            {/* <div className="flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 text-slate-500">
               <Package className="w-3 h-3" />
-            </div>
+            </div> */}
             {order.user ? order.user.name : "Guest"}
           </div>
         </td>
-        <td className="p-4 text-sm text-gray-500 whitespace-nowrap">
+        <td className="p-4 text-sm font-medium text-gray-700 whitespace-nowrap">
           {new Date(order.createdAt).toLocaleDateString("en-US", {
             year: "numeric",
             month: "short",
@@ -94,8 +94,8 @@ const OrderRow = ({ order, isExpanded, onToggle, copiedId, onCopy }) => {
           className="p-4 text-gray-500 cursor-pointer select-none group"
           onClick={onToggle}
         >
-          <div className="flex items-center gap-1 transition-colors group-hover:text-blue-600">
-            <span className="text-sm font-medium">
+          <div className="flex flex-row items-center gap-1 text-gray-700 transition-colors group-hover:text-blue-600">
+            <span className="flex flex-row text-sm font-medium whitespace-nowrap">
               {order.orderItems.length} items
             </span>
             <ChevronDown
@@ -106,7 +106,7 @@ const OrderRow = ({ order, isExpanded, onToggle, copiedId, onCopy }) => {
           </div>
         </td>
 
-        <td className="p-4 font-mono text-sm font-medium text-gray-900">
+        <td className="p-4 font-mono text-sm font-medium text-gray-900 ">
           ${order.totalPrice}
         </td>
 
@@ -116,8 +116,8 @@ const OrderRow = ({ order, isExpanded, onToggle, copiedId, onCopy }) => {
           onClick={() => onCopy(fullAddress, orderId)}
           title={fullAddress}
         >
-          <div className="flex items-center justify-between gap-2 px-2 py-1 transition-all border border-transparent rounded-md hover:bg-white hover:shadow-sm hover:border-gray-200">
-            <span className="text-sm text-gray-600 truncate">
+          <div className="flex items-center justify-between gap-2 px-2 py-1 font-medium transition-all border border-transparent rounded-md hover:bg-white hover:shadow-sm hover:border-gray-200">
+            <span className="text-sm text-gray-700 truncate">
               {order.shippingAddress?.city || "N/A"}
             </span>
             {isCopied ? (
