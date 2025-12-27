@@ -5,8 +5,10 @@ import {
   useGetProductBrandsQuery,
   useGetProductCategoriesQuery,
 } from "../../slices/productsApiSlice";
+import { useSelector } from "react-redux";
 
-const CreateProductModal = ({ isOpen, onClose, onCreate, isLoading }) => {
+const CreateProductModal = ({ isOpen, onClose, onCreate }) => {
+  const { isLoadingGlobal } = useSelector((state) => state.product);
   const initialData = {
     name: "",
     price: 0,
@@ -242,6 +244,7 @@ const CreateProductModal = ({ isOpen, onClose, onCreate, isLoading }) => {
           <button
             type="button"
             onClick={onClose}
+            disabled={isLoadingGlobal}
             className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-800 transition-all focus:outline-none focus:ring-2 focus:ring-gray-200"
           >
             Cancel
@@ -249,10 +252,10 @@ const CreateProductModal = ({ isOpen, onClose, onCreate, isLoading }) => {
           <button
             type="submit"
             form="create-form"
-            disabled={isLoading}
+            disabled={isLoadingGlobal}
             className="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
           >
-            {isLoading ? "Creating..." : "Create Product"}
+            {isLoadingGlobal ? "Creating..." : "Create Product"}
           </button>
         </div>
       </div>

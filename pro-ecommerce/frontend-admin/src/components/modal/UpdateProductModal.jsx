@@ -2,14 +2,15 @@ import React, { useState, useEffect } from "react";
 import { X, UploadCloud, Plus, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { setUpdateModal, setLoadingGlobal } from "../../slices/productSlice";
 
-const UpdateProductModal = ({
-  isOpen,
-  onClose,
-  product,
-  onUpdate,
-  isLoading,
-}) => {
+const UpdateProductModal = ({ onUpdate }) => {
+  const {
+    isLoadingGlobal,
+    updateModal: { open, product },
+  } = useSelector((state) => state.product);
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     name: "",
     price: 0,
@@ -21,7 +22,6 @@ const UpdateProductModal = ({
   const [imageList, setImageList] = useState([]);
   const [imageToRemove, setImageToRemove] = useState([]);
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
   useEffect(() => {
     if (product) {
       setFormData({
@@ -76,8 +76,8 @@ const UpdateProductModal = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (isSubmitting || isLoading) return;
-    setIsSubmitting(true);
+    if (isLoadingGlobal) return;
+    dispatch(setLoadingGlobal(true));
     let finalImageUrls = [];
 
     try {
@@ -101,7 +101,7 @@ const UpdateProductModal = ({
       toast.error("Image upload failed");
       return;
     } finally {
-      setIsSubmitting(false);
+      dispatch(setLoadingGlobal(false));
     }
 
     onUpdate(product._id, {
@@ -113,7 +113,7 @@ const UpdateProductModal = ({
     });
   };
 
-  if (!isOpen) return null;
+  if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center h-screen p-4 bg-gray-900 bg-opacity-50 backdrop-blur-sm">
@@ -122,7 +122,7 @@ const UpdateProductModal = ({
         <div className="flex items-center justify-between p-5 border-b border-gray-100">
           <h3 className="text-xl font-bold text-gray-800">Update Product</h3>
           <button
-            onClick={onClose}
+            onClick={() => dispatchEvent()}
             className="p-1 text-gray-400 transition-colors rounded-full hover:bg-gray-100 hover:text-gray-600"
           >
             <X className="w-5 h-5" />
@@ -245,7 +245,10 @@ const UpdateProductModal = ({
         <div className="flex gap-3 p-5 border-t border-gray-100 bg-gray-50 rounded-b-xl">
           <button
             type="button"
-            onClick={onClose}
+            onClick={() =>
+              dispatch(setUpdateModal({ ...updateModal, open: false }))
+            }
+            disabled={isLoadingGlobal}
             className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
           >
             Cancel
@@ -253,10 +256,10 @@ const UpdateProductModal = ({
           <button
             type="submit"
             form="update-form"
-            disabled={isLoading || isSubmitting}
+            disabled={isLoadingGlobal}
             className="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
-            {isLoading || isSubmitting ? "Saving..." : "Save Changes"}{" "}
+            {isLoadingGlobal ? "Saving..." : "Save Changes"}{" "}
           </button>
         </div>
       </div>

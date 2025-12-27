@@ -25,6 +25,13 @@ import Pagination from "../components/Pagination";
 import DeleteConfirmationModal from "../components/modal/DeleteConfirmationModal";
 import UpdateProductModal from "../components/modal/UpdateProductModal";
 import CreateProductModal from "../components/modal/CreateProductModal";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  filterChange,
+  setDeleteModal,
+  setLoadingGlobal,
+  setUpdateModal,
+} from "../slices/productSlice";
 
 // --- 1. Helper: Status Badge ---
 const StatusBadge = ({ status }) => {
@@ -131,20 +138,9 @@ const ProductRow = ({ product, isOpen, onToggle, onDelete, onUpdate }) => {
 
 // --- 3. Main Component ---
 const ProductsScreen = () => {
-  // --- State ---
-  const [isLoadingGlobal, setIsLoadingGlobal] = useState(false);
-  const [filter, setFilter] = useState({ category: "", status: "", page: 1 });
+  const dispatch = useDispatch();
+  const { filter } = useSelector((state) => state.product);
 
-  // Modal States
-  const [deleteModal, setDeleteModal] = useState({
-    open: false,
-    id: null,
-    name: "",
-  });
-  const [updateModal, setUpdateModal] = useState({
-    open: false,
-    product: null,
-  });
   const [createNewProductModal, setCreatNewProductModal] = useState({
     open: false,
     product: null,
@@ -164,15 +160,12 @@ const ProductsScreen = () => {
   const { data: stockStatus } = useGetProductStatusQuery();
 
   //API Mutation
-  const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
   const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
   const [newProduct, { isLoading: isCreating }] = useCreateProductMutation();
 
-  const globalLoading =
-    isLoadingGlobal || isCreating || isUpdating || isDeleting;
   // --- Handlers ---
   const handleFilterChange = (key, value) => {
-    setFilter((prev) => ({ ...prev, [key]: value, page: 1 }));
+    dispatch(filterChange({ key, value }));
     setActiveActionIndex(null);
   };
 
@@ -180,22 +173,8 @@ const ProductsScreen = () => {
     setActiveActionIndex(activeActionIndex === index ? null : index);
   };
 
-  // Modal Handlers
-  const handleConfirmDelete = async () => {
-    setIsLoadingGlobal(true);
-    try {
-      await deleteProduct(deleteModal.id).unwrap();
-      toast.success("Product deleted successfully");
-      setDeleteModal({ open: false, id: null, name: "" });
-    } catch (err) {
-      toast.error(err?.data?.message || "Error deleting product");
-    } finally {
-      setIsLoadingGlobal(false);
-    }
-  };
-
   const handleConfirmUpdate = async (productId, formData) => {
-    setIsLoadingGlobal(true);
+    dispatch(setLoadingGlobal(true));
     try {
       let updatedData = { ...formData };
 
@@ -217,17 +196,17 @@ const ProductsScreen = () => {
       await updateProduct({ productId, formData: updatedData }).unwrap();
 
       toast.success("Product Updated Successfully!");
-      setUpdateModal({ open: false, product: null });
+      dispatch(setUpdateModal({ open: false, product: null }));
     } catch (err) {
       console.error(err);
       toast.error(err?.data?.message || err.message || "Update failed");
     } finally {
-      setIsLoadingGlobal(false);
+      dispatch(setLoadingGlobal(false));
     }
   };
 
   const handleCreateNewProduct = async (productData) => {
-    setIsLoadingGlobal(true);
+    dispatch(setLoadingGlobal(true));
     try {
       let finalProductData = { ...productData };
       let uploadedImageUrls = [];
@@ -259,35 +238,22 @@ const ProductsScreen = () => {
       console.error(err);
       toast.error(err?.data?.message || "Error adding new item");
     } finally {
-      setIsLoadingGlobal(false);
+      dispatch(setLoadingGlobal(false));
     }
   };
 
   return (
     <div className="mx-auto space-y-6 max-w-7xl">
       {/* --- Modals --- */}
-      <DeleteConfirmationModal
-        isOpen={deleteModal.open}
-        itemName={deleteModal.name}
-        onClose={() => setDeleteModal({ ...deleteModal, open: false })}
-        isLoading={globalLoading}
-        onConfirm={handleConfirmDelete}
-      />
+      <DeleteConfirmationModal />
 
-      <UpdateProductModal
-        isOpen={updateModal.open}
-        product={updateModal.product}
-        onClose={() => setUpdateModal({ ...updateModal, open: false })}
-        isLoading={globalLoading}
-        onUpdate={handleConfirmUpdate}
-      />
+      <UpdateProductModal onUpdate={handleConfirmUpdate} />
 
       <CreateProductModal
         isOpen={createNewProductModal.open}
         onClose={() =>
           setCreatNewProductModal({ ...createNewProductModal, open: false })
         }
-        isLoading={globalLoading}
         onCreate={handleCreateNewProduct}
       />
 
@@ -382,10 +348,9 @@ const ProductsScreen = () => {
                 <thead className="border-b border-gray-200 bg-gray-50">
                   <tr>
                     <th className="w-10 p-4">
-                      <input
-                        type="checkbox"
-                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                      />
+                      <button className="flex items-center w-full gap-2 text-sm text-red-600 transition-colors hover:bg-red-50 hover:text-red-700">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </th>
                     <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
                       Product
@@ -419,16 +384,20 @@ const ProductsScreen = () => {
                       isOpen={activeActionIndex === index}
                       onToggle={() => toggleActionMenu(index)}
                       onDelete={() => {
-                        setDeleteModal({
-                          open: true,
-                          id: product._id,
-                          name: product.name,
-                        });
+                        dispatch(
+                          setDeleteModal({
+                            open: true,
+                            id: product._id,
+                            name: product.name,
+                          })
+                        );
+
                         setActiveActionIndex(null);
                       }}
                       onUpdate={() => {
-                        setUpdateModal({ open: true, product: product });
-                        console.log(product);
+                        dispatch(
+                          setUpdateModal({ open: true, product: product })
+                        );
                         setActiveActionIndex(null);
                       }}
                     />
@@ -449,7 +418,7 @@ const ProductsScreen = () => {
               <div className="bg-white border-t border-gray-100">
                 <Pagination
                   setItemPages={(num) =>
-                    setFilter((prev) => ({ ...prev, page: num }))
+                    dispatch(filterChange({ key: "page", value: num }))
                   }
                   page={filter.page}
                   pages={data?.pages}

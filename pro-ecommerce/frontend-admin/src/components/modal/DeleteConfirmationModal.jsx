@@ -1,11 +1,26 @@
-const DeleteConfirmationModal = ({
-  isOpen,
-  onClose,
-  onConfirm,
-  itemName,
-  isLoading,
-}) => {
-  if (!isOpen) return null;
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import { setDeleteModal, setLoadingGlobal } from "../../slices/productSlice";
+import { useDeleteProductMutation } from "../../slices/productsApiSlice";
+
+const DeleteConfirmationModal = ({ onConfirm }) => {
+  const [deleteProduct, { isLoading }] = useDeleteProductMutation();
+  const { deleteModal } = useSelector((state) => state.product);
+  const dispatch = useDispatch();
+
+  const handleConfirmDelete = async () => {
+    dispatch(setLoadingGlobal(true));
+    try {
+      await deleteProduct(deleteModal.id).unwrap();
+      toast.success("Product deleted successfully");
+      dispatch(setDeleteModal({ open: false, id: null, name: "" }));
+    } catch (err) {
+      toast.error(err?.data?.message || "Error deleting product");
+    } finally {
+      dispatch(setLoadingGlobal(false));
+    }
+  };
+  if (!deleteModal.open) return null;
 
   return (
     <div
@@ -43,7 +58,7 @@ const DeleteConfirmationModal = ({
                 className="text-lg font-medium leading-6 text-gray-900"
                 id="modal-title"
               >
-                Delete {itemName || "Item"}
+                Delete {deleteModal.name || "Item"}
               </h3>
               <div className="mt-2">
                 <p className="text-sm text-gray-500">
@@ -59,7 +74,7 @@ const DeleteConfirmationModal = ({
         <div className="px-4 py-3 rounded-b-lg bg-gray-50 sm:px-6 sm:flex sm:flex-row-reverse">
           <button
             type="button"
-            onClick={onConfirm}
+            onClick={handleConfirmDelete}
             disabled={isLoading}
             className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-red-600 border border-transparent rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -67,7 +82,9 @@ const DeleteConfirmationModal = ({
           </button>
           <button
             type="button"
-            onClick={onClose}
+            onClick={() =>
+              dispatch(setDeleteModal({ ...deleteModal, open: false }))
+            }
             disabled={isLoading}
             className="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
           >
