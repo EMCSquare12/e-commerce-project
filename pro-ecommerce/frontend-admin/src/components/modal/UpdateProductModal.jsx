@@ -21,6 +21,7 @@ const UpdateProductModal = ({
   const [imageList, setImageList] = useState([]);
   const [imageToRemove, setImageToRemove] = useState([]);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
   useEffect(() => {
     if (product) {
       setFormData({
@@ -65,9 +66,9 @@ const UpdateProductModal = ({
   };
 
   // 3. Handle Removing an Image
-  const handleRemoveImage = (indexToRemove, imageToRemove) => {
+  const handleRemoveImage = (indexToRemove, newImageToRemove) => {
     setImageList((prev) => prev.filter((_, index) => index !== indexToRemove));
-    setImageToRemove((prev) => [...prev, imageToRemove]);
+    setImageToRemove([...imageToRemove, newImageToRemove]);
     console.log("Image to Remove: ", imageToRemove);
   };
 
@@ -75,6 +76,8 @@ const UpdateProductModal = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (isSubmitting || isLoading) return;
+    setIsSubmitting(true);
     let finalImageUrls = [];
 
     try {
@@ -97,6 +100,8 @@ const UpdateProductModal = ({
       console.error(err);
       toast.error("Image upload failed");
       return;
+    } finally {
+      setIsSubmitting(false);
     }
 
     onUpdate(product._id, {
@@ -248,10 +253,10 @@ const UpdateProductModal = ({
           <button
             type="submit"
             form="update-form"
-            disabled={isLoading}
+            disabled={isLoading || isSubmitting}
             className="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
-            {isLoading ? "Saving..." : "Save Changes"}
+            {isLoading || isSubmitting ? "Saving..." : "Save Changes"}{" "}
           </button>
         </div>
       </div>

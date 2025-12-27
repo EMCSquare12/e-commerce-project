@@ -132,7 +132,7 @@ const ProductRow = ({ product, isOpen, onToggle, onDelete, onUpdate }) => {
 // --- 3. Main Component ---
 const ProductsScreen = () => {
   // --- State ---
-  const [isUploading, setIsUploading] = useState(false);
+  const [isLoadingGlobal, setIsLoadingGlobal] = useState(false);
   const [filter, setFilter] = useState({ category: "", status: "", page: 1 });
 
   // Modal States
@@ -159,14 +159,17 @@ const ProductsScreen = () => {
     pageNumber: filter.page,
   });
 
+  //API Query
   const { data: categories } = useGetProductCategoriesQuery();
   const { data: stockStatus } = useGetProductStatusQuery();
 
+  //API Mutation
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
   const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
   const [newProduct, { isLoading: isCreating }] = useCreateProductMutation();
 
-  const globalLoading = isUploading || isCreating || isUpdating || isDeleting;
+  const globalLoading =
+    isLoadingGlobal || isCreating || isUpdating || isDeleting;
   // --- Handlers ---
   const handleFilterChange = (key, value) => {
     setFilter((prev) => ({ ...prev, [key]: value, page: 1 }));
@@ -179,7 +182,7 @@ const ProductsScreen = () => {
 
   // Modal Handlers
   const handleConfirmDelete = async () => {
-    setIsUploading(true);
+    setIsLoadingGlobal(true);
     try {
       await deleteProduct(deleteModal.id).unwrap();
       toast.success("Product deleted successfully");
@@ -187,12 +190,12 @@ const ProductsScreen = () => {
     } catch (err) {
       toast.error(err?.data?.message || "Error deleting product");
     } finally {
-      setIsUploading(false);
+      setIsLoadingGlobal(false);
     }
   };
 
   const handleConfirmUpdate = async (productId, formData) => {
-    setIsUploading(true);
+    setIsLoadingGlobal(true);
     try {
       let updatedData = { ...formData };
 
@@ -219,12 +222,12 @@ const ProductsScreen = () => {
       console.error(err);
       toast.error(err?.data?.message || err.message || "Update failed");
     } finally {
-      setIsUploading(false);
+      setIsLoadingGlobal(false);
     }
   };
 
   const handleCreateNewProduct = async (productData) => {
-    setIsUploading(true);
+    setIsLoadingGlobal(true);
     try {
       let finalProductData = { ...productData };
       let uploadedImageUrls = [];
@@ -256,7 +259,7 @@ const ProductsScreen = () => {
       console.error(err);
       toast.error(err?.data?.message || "Error adding new item");
     } finally {
-      setIsUploading(false);
+      setIsLoadingGlobal(false);
     }
   };
 
