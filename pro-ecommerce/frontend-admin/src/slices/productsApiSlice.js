@@ -66,6 +66,13 @@ export const productsApiSlice = apiSlice.injectEndpoints({
       }),
       keepUnusedDataFor: 5,
     }),
+
+    getProductBrands: builder.query({
+      query: () => ({
+        url: `${PRODUCTS_URL}/brands`,
+      }),
+      keepUnusedDataFor: 5,
+    }),
     getProductStatus: builder.query({
       query: () => ({
         url: `${PRODUCTS_URL}/status`,
@@ -84,5 +91,6 @@ export const {
   useDeleteProductMutation,
   useUploadProductImageMutation,
   useGetProductCategoriesQuery,
+  useGetProductBrandsQuery,
   useGetProductStatusQuery
 } = productsApiSlice;

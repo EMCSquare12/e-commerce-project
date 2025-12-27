@@ -2,11 +2,6 @@ import asyncHandler from 'express-async-handler';
 import Product from '../models/productModel.js';
 
 // --- Helper Functions ---
-
-/**
- * Builds a Mongoose filter object from request query parameters.
- * Handles search (keyword), category, brand, and status filtering.
- */
 const buildFilter = (query) => {
   const { keyword, category, brand, status } = query;
   const filter = {};
@@ -104,7 +99,6 @@ const createProduct = asyncHandler(async (req, res) => {
   } else {
     imageArray = ['/images/sample.jpg'];
   }
-  // ---------------------
 
   const product = new Product({
     user: req.user._id,
@@ -126,30 +120,34 @@ const createProduct = asyncHandler(async (req, res) => {
 // @route   PUT /api/products/:id
 // @access  Private/Admin
 const updateProduct = asyncHandler(async (req, res) => {
-  const { name, price, countInStock, image } = req.body;
+  const { name, price, countInStock, image, imageToDelete } = req.body;
 
   const product = await Product.findById(req.params.id);
 
-  if (product) {
-    product.name = name || product.name;
-    // Check undefined to allow setting value to 0
-    product.price = price !== undefined ? price : product.price;
-    product.countInStock = countInStock !== undefined ? countInStock : product.countInStock;
-
-    if (image) {
-      if (Array.isArray(image)) {
-        product.image.push(...image)
-      }
-      else {
-        product.image(image)
-      }
-    }
-    const updatedProduct = await product.save();
-    res.json(updatedProduct);
-  } else {
+  if (!product) {
     res.status(404);
-    throw new Error('Product not found');
+    throw new Error("Product not found");
   }
+
+  product.name = name || product.name;
+  product.price = price !== undefined ? price : product.price;
+  product.countInStock =
+    countInStock !== undefined ? countInStock : product.countInStock;
+
+  if (Array.isArray(imageToDelete) && imageToDelete.length > 0) {
+    const deleteUrls = imageToDelete.map((img) => img.url);
+
+    product.image = product.image.filter(
+      (img) => !deleteUrls.includes(img)
+    );
+  }
+
+  if (Array.isArray(image)) {
+    product.image = image;
+  }
+
+  const updatedProduct = await product.save();
+  res.json(updatedProduct);
 });
 
 // @desc    Delete a product

@@ -168,7 +168,7 @@ const ProductsScreen = () => {
   // --- Handlers ---
   const handleFilterChange = (key, value) => {
     setFilter((prev) => ({ ...prev, [key]: value, page: 1 }));
-    setActiveActionIndex(null); // Close menus on filter change
+    setActiveActionIndex(null);
   };
 
   const toggleActionMenu = (index) => {
@@ -218,19 +218,27 @@ const ProductsScreen = () => {
   const handleCreateNewProduct = async (productData) => {
     try {
       let finalProductData = { ...productData };
+      let uploadedImageUrls = [];
 
-      if (productData.imageFile) {
-        const uploadFormData = new FormData();
-        uploadFormData.append("image", productData.imageFile);
-        const uploadRes = await axios.post("/api/upload", uploadFormData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+      // Check if we have multiple files to upload
+      if (productData.imageFiles && productData.imageFiles.length > 0) {
+        const uploadPromises = productData.imageFiles.map((file) => {
+          const uploadFormData = new FormData();
+          uploadFormData.append("image", file);
+
+          return axios.post("/api/upload", uploadFormData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
         });
-        finalProductData.image = [uploadRes.data.image];
 
-        delete finalProductData.imageFile;
+        const responses = await Promise.all(uploadPromises);
+
+        uploadedImageUrls = responses.map((res) => res.data.image);
+
+        delete finalProductData.imageFiles;
       }
+
+      finalProductData.images = uploadedImageUrls;
 
       await newProduct(finalProductData).unwrap();
 
@@ -238,7 +246,7 @@ const ProductsScreen = () => {
       setCreatNewProductModal({ open: false, product: null });
     } catch (err) {
       console.error(err);
-      toast.error(err?.data?.message || err.message || "Error adding new item");
+      toast.error(err?.data?.message || "Error adding new item");
     }
   };
 
@@ -407,6 +415,7 @@ const ProductsScreen = () => {
                       }}
                       onUpdate={() => {
                         setUpdateModal({ open: true, product: product });
+                        console.log(product);
                         setActiveActionIndex(null);
                       }}
                     />

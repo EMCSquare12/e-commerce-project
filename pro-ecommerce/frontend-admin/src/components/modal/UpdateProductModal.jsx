@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { X, UploadCloud, Image as ImageIcon } from "lucide-react";
+import { X, UploadCloud, Plus, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import axios from "axios";
+
 const UpdateProductModal = ({
   isOpen,
   onClose,
@@ -9,21 +10,17 @@ const UpdateProductModal = ({
   onUpdate,
   isLoading,
 }) => {
-  // 1. Local state for form fields
   const [formData, setFormData] = useState({
     name: "",
     price: 0,
     category: "",
     countInStock: 0,
     sku: "",
-    image: [],
   });
 
-  // New State for Image Handling
-  const [preview, setPreview] = useState(null);
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [imageList, setImageList] = useState([]);
+  const [imageToRemove, setImageToRemove] = useState([]);
 
-  // 2. Populate form when product data changes
   useEffect(() => {
     if (product) {
       setFormData({
@@ -32,74 +29,90 @@ const UpdateProductModal = ({
         category: product.category || "",
         countInStock: product.countInStock || 0,
         sku: product.sku || "",
-        image: product.image || [],
       });
-
-      if (product.image && product.image.length > 0) {
-        const img = Array.isArray(product.image)
-          ? product.image[0]
-          : product.image;
-        setPreview(img);
-      } else {
-        setPreview(null);
+      let existingImages = [];
+      if (product.image) {
+        existingImages = Array.isArray(product.image)
+          ? product.image
+          : [product.image];
       }
+
+      setImageList(
+        existingImages.map((url) => ({
+          url: url,
+          isNew: false,
+        }))
+      );
     }
   }, [product]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle File Selection
-  const handleImageChange = (e) => {
+  const handleAddImage = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setSelectedFile(file);
-      // Create a local preview URL
-      setPreview(URL.createObjectURL(file));
+      const newImageItem = {
+        url: URL.createObjectURL(file),
+        file: file,
+        isNew: true,
+      };
+      setImageList((prev) => [...prev, newImageItem]);
     }
+    e.target.value = "";
   };
 
+  // 3. Handle Removing an Image
+  const handleRemoveImage = (indexToRemove, imageToRemove) => {
+    setImageList((prev) => prev.filter((_, index) => index !== indexToRemove));
+    setImageToRemove((prev) => [...prev, imageToRemove]);
+    console.log("Image to Remove: ", imageToRemove);
+  };
+
+  // 4. Submit Logic
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    let imageUrl = product.image[0];
+    let finalImageUrls = [];
 
-    if (selectedFile) {
-      const formData = new FormData();
-      formData.append("image", selectedFile);
+    try {
+      const processingImages = imageList.map(async (imgItem) => {
+        if (imgItem.isNew && imgItem.file) {
+          const uploadFormData = new FormData();
+          uploadFormData.append("image", imgItem.file);
 
-      try {
-        const uploadRes = await axios.post("/api/upload", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        imageUrl = uploadRes.data.image;
-      } catch (err) {
-        console.log(err);
-        toast.error("Image upload failed");
-        return;
-      }
+          const uploadRes = await axios.post("/api/upload", uploadFormData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+          return uploadRes.data.image;
+        } else {
+          return imgItem.url;
+        }
+      });
+
+      finalImageUrls = await Promise.all(processingImages);
+    } catch (err) {
+      console.error(err);
+      toast.error("Image upload failed");
+      return;
     }
 
     onUpdate(product._id, {
       name: formData.name,
       price: Number(formData.price),
       countInStock: Number(formData.countInStock),
-      image: [imageUrl],
+      image: finalImageUrls,
+      imageToDelete: imageToRemove,
     });
   };
 
   if (!isOpen) return null;
 
   return (
-    // Backdrop
-    <div className="fixed inset-0 z-50 flex items-center justify-center h-screen p-4 overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm">
-      {/* Modal Container */}
-      <div className="w-full max-w-md bg-white rounded-xl shadow-2xl animate-fade-in flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center h-screen p-4 bg-gray-900 bg-opacity-50 backdrop-blur-sm">
+      <div className="w-full max-w-lg bg-white rounded-xl shadow-2xl animate-fade-in flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-gray-100">
           <h3 className="text-xl font-bold text-gray-800">Update Product</h3>
@@ -111,68 +124,53 @@ const UpdateProductModal = ({
           </button>
         </div>
 
-        {/* Form Body - Scrollable */}
         <div className="p-6 overflow-y-auto">
-          <form id="update-form" onSubmit={handleSubmit} className="space-y-5">
-            {/* --- Image Upload Section (Redesigned) --- */}
+          <form id="update-form" onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block mb-2 text-sm font-medium text-gray-700">
-                Product Image
+              <label className="block mb-3 text-sm font-medium text-gray-700">
+                Product Images
               </label>
 
-              <div className="relative w-full">
-                <label
-                  htmlFor="dropzone-file"
-                  className={`flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
-                    preview
-                      ? "border-blue-300 bg-blue-50"
-                      : "border-gray-300 bg-gray-50 hover:bg-gray-100"
-                  }`}
-                >
-                  {preview ? (
-                    <div className="relative w-full h-full group">
-                      {/* Preview Image */}
-                      <img
-                        src={preview}
-                        alt="Preview"
-                        className="object-contain w-full h-full p-2 transition-opacity rounded-lg opacity-100 group-hover:opacity-40"
-                      />
-                      {/* Hover Overlay */}
-                      <div className="absolute inset-0 flex items-center justify-center transition-opacity opacity-0 group-hover:opacity-100">
-                        <div className="flex items-center gap-2 px-3 py-1 text-sm font-medium text-blue-700 bg-blue-100 rounded-md">
-                          <UploadCloud className="w-4 h-4" /> Change Image
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <div className="p-3 mb-3 bg-white rounded-full shadow-sm">
-                        <UploadCloud className="w-6 h-6 text-gray-400" />
-                      </div>
-                      <p className="mb-1 text-sm text-gray-500">
-                        <span className="font-semibold text-blue-600">
-                          Click to upload
-                        </span>{" "}
-                        or drag and drop
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        SVG, PNG, JPG or WEBP
-                      </p>
-                    </div>
-                  )}
+              <div className="grid grid-cols-3 gap-4 sm:grid-cols-4">
+                {imageList.map((img, index) => (
+                  <div key={index} className="relative group aspect-square">
+                    <img
+                      src={img.url}
+                      alt={`Product ${index}`}
+                      className="object-cover w-full h-full border border-gray-200 rounded-lg shadow-sm"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(index, img)}
+                      className="absolute p-1 text-white transition-colors bg-red-500 rounded-full shadow-md opacity-100 -top-2 -right-2 hover:bg-red-600 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
 
+                <label className="flex flex-col items-center justify-center w-full h-full transition-colors border-2 border-gray-300 border-dashed rounded-lg cursor-pointer aspect-square hover:bg-gray-50 hover:border-blue-400 group">
+                  <div className="flex flex-col items-center justify-center pt-2 pb-3">
+                    <div className="p-2 mb-1 transition-colors bg-gray-100 rounded-full group-hover:bg-blue-50 group-hover:text-blue-600">
+                      <Plus className="w-5 h-5 text-gray-500 group-hover:text-blue-600" />
+                    </div>
+                    <p className="text-xs text-center text-gray-500 group-hover:text-blue-600">
+                      Add New
+                    </p>
+                  </div>
                   <input
-                    id="dropzone-file"
                     type="file"
                     className="hidden"
                     accept="image/*"
-                    onChange={handleImageChange}
+                    onChange={handleAddImage}
                   />
                 </label>
               </div>
+              <p className="mt-2 text-xs text-gray-400">
+                Supported formats: JPG, PNG, WEBP.
+              </p>
             </div>
 
-            {/* Name Field */}
             <div>
               <label className="block mb-1 text-sm font-medium text-gray-700">
                 Product Name
@@ -182,13 +180,12 @@ const UpdateProductModal = ({
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              {/* Price Field */}
               <div>
                 <label className="block mb-1 text-sm font-medium text-gray-700">
                   Price ($)
@@ -203,8 +200,6 @@ const UpdateProductModal = ({
                   min="0"
                 />
               </div>
-
-              {/* Stock Field */}
               <div>
                 <label className="block mb-1 text-sm font-medium text-gray-700">
                   Count In Stock
@@ -221,7 +216,6 @@ const UpdateProductModal = ({
               </div>
             </div>
 
-            {/* Read Only Fields */}
             <div className="grid grid-cols-2 gap-4 p-4 border border-gray-100 rounded-lg bg-gray-50">
               <div>
                 <label className="block mb-1 text-xs font-semibold tracking-wider text-gray-500 uppercase">
@@ -243,12 +237,11 @@ const UpdateProductModal = ({
           </form>
         </div>
 
-        {/* Footer / Actions */}
         <div className="flex gap-3 p-5 border-t border-gray-100 bg-gray-50 rounded-b-xl">
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-800 transition-all focus:outline-none focus:ring-2 focus:ring-gray-200"
+            className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
           >
             Cancel
           </button>
@@ -256,9 +249,9 @@ const UpdateProductModal = ({
             type="submit"
             form="update-form"
             disabled={isLoading}
-            className="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+            className="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
-            {isLoading ? "Saving Changes..." : "Save Changes"}
+            {isLoading ? "Saving..." : "Save Changes"}
           </button>
         </div>
       </div>
