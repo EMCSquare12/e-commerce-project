@@ -85,7 +85,7 @@ const createProduct = asyncHandler(async (req, res) => {
   const {
     name,
     price,
-    image,
+    images,
     brand,
     category,
     countInStock,
@@ -94,8 +94,8 @@ const createProduct = asyncHandler(async (req, res) => {
   } = req.body;
 
   let imageArray;
-  if (image) {
-    imageArray = Array.isArray(image) ? image : [image];
+  if (images) {
+    imageArray = Array.isArray(images) ? images : [images];
   } else {
     imageArray = ['/images/sample.jpg'];
   }

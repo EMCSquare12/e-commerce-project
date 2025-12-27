@@ -132,6 +132,7 @@ const ProductRow = ({ product, isOpen, onToggle, onDelete, onUpdate }) => {
 // --- 3. Main Component ---
 const ProductsScreen = () => {
   // --- State ---
+  const [isUploading, setIsUploading] = useState(false);
   const [filter, setFilter] = useState({ category: "", status: "", page: 1 });
 
   // Modal States
@@ -165,6 +166,7 @@ const ProductsScreen = () => {
   const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
   const [newProduct, { isLoading: isCreating }] = useCreateProductMutation();
 
+  const globalLoading = isUploading || isCreating || isUpdating || isDeleting;
   // --- Handlers ---
   const handleFilterChange = (key, value) => {
     setFilter((prev) => ({ ...prev, [key]: value, page: 1 }));
@@ -177,16 +179,20 @@ const ProductsScreen = () => {
 
   // Modal Handlers
   const handleConfirmDelete = async () => {
+    setIsUploading(true);
     try {
       await deleteProduct(deleteModal.id).unwrap();
       toast.success("Product deleted successfully");
       setDeleteModal({ open: false, id: null, name: "" });
     } catch (err) {
       toast.error(err?.data?.message || "Error deleting product");
+    } finally {
+      setIsUploading(false);
     }
   };
 
   const handleConfirmUpdate = async (productId, formData) => {
+    setIsUploading(true);
     try {
       let updatedData = { ...formData };
 
@@ -212,15 +218,17 @@ const ProductsScreen = () => {
     } catch (err) {
       console.error(err);
       toast.error(err?.data?.message || err.message || "Update failed");
+    } finally {
+      setIsUploading(false);
     }
   };
 
   const handleCreateNewProduct = async (productData) => {
+    setIsUploading(true);
     try {
       let finalProductData = { ...productData };
       let uploadedImageUrls = [];
 
-      // Check if we have multiple files to upload
       if (productData.imageFiles && productData.imageFiles.length > 0) {
         const uploadPromises = productData.imageFiles.map((file) => {
           const uploadFormData = new FormData();
@@ -247,6 +255,8 @@ const ProductsScreen = () => {
     } catch (err) {
       console.error(err);
       toast.error(err?.data?.message || "Error adding new item");
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -257,7 +267,7 @@ const ProductsScreen = () => {
         isOpen={deleteModal.open}
         itemName={deleteModal.name}
         onClose={() => setDeleteModal({ ...deleteModal, open: false })}
-        isLoading={isDeleting}
+        isLoading={globalLoading}
         onConfirm={handleConfirmDelete}
       />
 
@@ -265,7 +275,7 @@ const ProductsScreen = () => {
         isOpen={updateModal.open}
         product={updateModal.product}
         onClose={() => setUpdateModal({ ...updateModal, open: false })}
-        isLoading={isUpdating}
+        isLoading={globalLoading}
         onUpdate={handleConfirmUpdate}
       />
 
@@ -274,7 +284,7 @@ const ProductsScreen = () => {
         onClose={() =>
           setCreatNewProductModal({ ...createNewProductModal, open: false })
         }
-        isLoading={isCreating}
+        isLoading={globalLoading}
         onCreate={handleCreateNewProduct}
       />
 
