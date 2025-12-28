@@ -1,26 +1,25 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { X, UploadCloud, Plus } from "lucide-react";
 import CreatableSelect from "../CreatableSelect";
 import {
   useGetProductBrandsQuery,
   useGetProductCategoriesQuery,
 } from "../../slices/productsApiSlice";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setCreateNewProductModal,
+  setCreateFormData,
+  clearCreateFormData,
+} from "../../slices/productSlice";
 
-const CreateProductModal = ({ isOpen, onClose, onCreate }) => {
-  const { isLoadingGlobal } = useSelector((state) => state.product);
-  const initialData = {
-    name: "",
-    price: 0,
-    countInStock: 0,
-    category: "",
-    brand: "",
-    description: "",
-  };
+const CreateProductModal = ({ onCreate }) => {
+  const { isLoadingGlobal, createNewProductModal, createFormData } =
+    useSelector((state) => state.product);
+  const dispatch = useDispatch();
 
-  const [formData, setFormData] = useState(initialData);
   const [newImages, setNewImages] = useState([]);
 
+  //Api Query
   const { data: categoriesData } = useGetProductCategoriesQuery();
   const { data: brandsdData } = useGetProductBrandsQuery();
 
@@ -32,7 +31,7 @@ const CreateProductModal = ({ isOpen, onClose, onCreate }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    dispatch(setCreateFormData({ [name]: value }));
   };
 
   const handleAddImage = (e) => {
@@ -51,22 +50,34 @@ const CreateProductModal = ({ isOpen, onClose, onCreate }) => {
     setNewImages((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    if (!createNewProductModal.open) {
+      dispatch(clearCreateFormData());
+      setNewImages([]);
+    }
+  }, [createNewProductModal.open, dispatch]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newProductData = {
-      ...formData,
-      price: Number(formData.price),
-      countInStock: Number(formData.countInStock),
+      ...createFormData,
+      price: Number(createFormData.price),
+      countInStock: Number(createFormData.countInStock),
     };
 
     if (newImages.length > 0) {
       newProductData.imageFiles = newImages.map((img) => img.file);
     }
 
-    onCreate(newProductData);
+    const success = await onCreate(newProductData);
+
+    if (success) {
+      dispatch(clearCreateFormData());
+      setNewImages([]);
+    }
   };
 
-  if (!isOpen) return null;
+  if (!createNewProductModal.open) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center h-screen p-4 bg-gray-900 bg-opacity-50 backdrop-blur-sm">
@@ -75,7 +86,14 @@ const CreateProductModal = ({ isOpen, onClose, onCreate }) => {
         <div className="flex items-center justify-between p-5 border-b border-gray-100">
           <h3 className="text-xl font-bold text-gray-800">Add New Product</h3>
           <button
-            onClick={onClose}
+            onClick={() =>
+              dispatch(
+                setCreateNewProductModal({
+                  ...createNewProductModal,
+                  open: false,
+                })
+              )
+            }
             className="p-1 text-gray-400 transition-colors rounded-full hover:bg-gray-100 hover:text-gray-600"
           >
             <X className="w-5 h-5" />
@@ -142,7 +160,7 @@ const CreateProductModal = ({ isOpen, onClose, onCreate }) => {
                   required
                   type="text"
                   name="name"
-                  value={formData.name}
+                  value={createFormData.name}
                   onChange={handleChange}
                   className="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="e.g. Wireless Mouse"
@@ -156,7 +174,7 @@ const CreateProductModal = ({ isOpen, onClose, onCreate }) => {
                   required
                   type="text"
                   name="sku"
-                  value={formData.sku}
+                  value={createFormData.sku}
                   onChange={handleChange}
                   className="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="e.g. WM-001"
@@ -170,7 +188,7 @@ const CreateProductModal = ({ isOpen, onClose, onCreate }) => {
                 <CreatableSelect
                   label="Brand"
                   name="brand"
-                  value={formData.brand}
+                  value={createFormData.brand}
                   onChange={handleChange}
                   options={brandOptions}
                   placeholder="Select or type..."
@@ -180,7 +198,7 @@ const CreateProductModal = ({ isOpen, onClose, onCreate }) => {
                 <CreatableSelect
                   label="Category"
                   name="category"
-                  value={formData.category}
+                  value={createFormData.category}
                   onChange={handleChange}
                   options={categoryOptions}
                   placeholder="Select or type..."
@@ -198,7 +216,7 @@ const CreateProductModal = ({ isOpen, onClose, onCreate }) => {
                   required
                   type="number"
                   name="price"
-                  value={formData.price}
+                  value={createFormData.price}
                   onChange={handleChange}
                   className="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   min="0"
@@ -213,7 +231,7 @@ const CreateProductModal = ({ isOpen, onClose, onCreate }) => {
                   required
                   type="number"
                   name="countInStock"
-                  value={formData.countInStock}
+                  value={createFormData.countInStock}
                   onChange={handleChange}
                   className="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   min="0"
@@ -229,7 +247,7 @@ const CreateProductModal = ({ isOpen, onClose, onCreate }) => {
               <textarea
                 required
                 name="description"
-                value={formData.description}
+                value={createFormData.description}
                 onChange={handleChange}
                 rows="3"
                 className="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -243,7 +261,14 @@ const CreateProductModal = ({ isOpen, onClose, onCreate }) => {
         <div className="flex gap-3 p-5 border-t border-gray-100 bg-gray-50 rounded-b-xl">
           <button
             type="button"
-            onClick={onClose}
+            onClick={() =>
+              dispatch(
+                setCreateNewProductModal({
+                  ...createNewProductModal,
+                  open: false,
+                })
+              )
+            }
             disabled={isLoadingGlobal}
             className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-800 transition-all focus:outline-none focus:ring-2 focus:ring-gray-200"
           >

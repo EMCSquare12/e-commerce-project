@@ -3,34 +3,33 @@ import { X, UploadCloud, Plus, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { setUpdateModal, setLoadingGlobal } from "../../slices/productSlice";
+import {
+  setUpdateModal,
+  setLoadingGlobal,
+  setUpdateFormData,
+} from "../../slices/productSlice";
 
 const UpdateProductModal = ({ onUpdate }) => {
   const {
     isLoadingGlobal,
     updateModal: { open, product },
+    updateFormData,
   } = useSelector((state) => state.product);
   const dispatch = useDispatch();
-  const [formData, setFormData] = useState({
-    name: "",
-    price: 0,
-    category: "",
-    countInStock: 0,
-    sku: "",
-  });
-
   const [imageList, setImageList] = useState([]);
   const [imageToRemove, setImageToRemove] = useState([]);
 
   useEffect(() => {
     if (product) {
-      setFormData({
-        name: product.name || "",
-        price: product.price || 0,
-        category: product.category || "",
-        countInStock: product.countInStock || 0,
-        sku: product.sku || "",
-      });
+      dispatch(
+        setUpdateFormData({
+          name: product.name || "",
+          price: product.price || 0,
+          category: product.category || "",
+          countInStock: product.countInStock || 0,
+          sku: product.sku || "",
+        })
+      );
       let existingImages = [];
       if (product.image) {
         existingImages = Array.isArray(product.image)
@@ -49,7 +48,7 @@ const UpdateProductModal = ({ onUpdate }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    dispatch(setUpdateFormData((prev) => ({ ...prev, [name]: value })));
   };
 
   const handleAddImage = (e) => {
@@ -105,9 +104,9 @@ const UpdateProductModal = ({ onUpdate }) => {
     }
 
     onUpdate(product._id, {
-      name: formData.name,
-      price: Number(formData.price),
-      countInStock: Number(formData.countInStock),
+      name: updateFormData.name,
+      price: Number(updateFormData.price),
+      countInStock: Number(updateFormData.countInStock),
       image: finalImageUrls,
       imageToDelete: imageToRemove,
     });
@@ -183,7 +182,7 @@ const UpdateProductModal = ({ onUpdate }) => {
               <input
                 type="text"
                 name="name"
-                value={formData.name}
+                value={updateFormData.name}
                 onChange={handleChange}
                 className="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
@@ -198,7 +197,7 @@ const UpdateProductModal = ({ onUpdate }) => {
                 <input
                   type="number"
                   name="price"
-                  value={formData.price}
+                  value={updateFormData.price}
                   onChange={handleChange}
                   className="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
@@ -212,7 +211,7 @@ const UpdateProductModal = ({ onUpdate }) => {
                 <input
                   type="number"
                   name="countInStock"
-                  value={formData.countInStock}
+                  value={updateFormData.countInStock}
                   onChange={handleChange}
                   className="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
@@ -227,7 +226,7 @@ const UpdateProductModal = ({ onUpdate }) => {
                   Category
                 </label>
                 <div className="text-sm font-medium text-gray-700">
-                  {formData.category || "N/A"}
+                  {updateFormData.category || "N/A"}
                 </div>
               </div>
               <div>
@@ -235,7 +234,7 @@ const UpdateProductModal = ({ onUpdate }) => {
                   SKU
                 </label>
                 <div className="text-sm font-medium text-gray-700">
-                  {formData.sku || "N/A"}
+                  {updateFormData.sku || "N/A"}
                 </div>
               </div>
             </div>

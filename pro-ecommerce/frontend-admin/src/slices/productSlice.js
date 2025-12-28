@@ -1,5 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+const initialCreateFormData = {
+    name: "",
+    price: 0,
+    countInStock: 0,
+    category: "",
+    brand: "",
+    description: "",
+}
+
 const initialState = {
     isLoadingGlobal: false,
     filter: { category: "", status: "", page: 1 },
@@ -16,20 +25,20 @@ const initialState = {
         open: false,
         product: null,
     },
-    formData: {
+    updateFormData: {
         name: "",
         price: 0,
         category: "",
         countInStock: 0,
         sku: "",
-    }
+    },
+    createFormData: initialCreateFormData
 };
 
 const productSlice = createSlice({
     name: 'product',
     initialState,
     reducers: {
-        // display Delete Modal
         setDeleteModal: (state, action) => {
             state.deleteModal = { ...state.deleteModal, ...action.payload }
 
@@ -37,6 +46,13 @@ const productSlice = createSlice({
         setUpdateModal: (state, action) => {
             state.updateModal = { ...state.updateModal, ...action.payload }
 
+        },
+        setCreateNewProductModal: (state, action) => {
+            state.createNewProductModal = { ...state.createNewProductModal, ...action.payload }
+
+        },
+        clearCreateFormData: (state, action) => {
+            state.createFormData = initialCreateFormData;
         },
         filterChange: (state, action) => {
             const { key, value } = action.payload
@@ -46,6 +62,14 @@ const productSlice = createSlice({
             }
 
         },
+        setUpdateFormData: (state, action) => {
+            state.updateFormData = { ...state.updateFormData, ...action.payload }
+
+        },
+        setCreateFormData: (state, action) => {
+            state.createFormData = { ...state.createFormData, ...action.payload }
+
+        },
         setLoadingGlobal: (state, action) => {
             state.isLoadingGlobal = action.payload
         }
@@ -53,6 +77,15 @@ const productSlice = createSlice({
     },
 });
 
-export const { setDeleteModal, setUpdateModal, filterChange, setLoadingGlobal } = productSlice.actions;
+export const {
+    setDeleteModal,
+    setUpdateModal,
+    setCreateNewProductModal,
+    filterChange,
+    setLoadingGlobal,
+    setUpdateFormData,
+    setCreateFormData,
+    clearCreateFormData
+} = productSlice.actions;
 
 export default productSlice.reducer;

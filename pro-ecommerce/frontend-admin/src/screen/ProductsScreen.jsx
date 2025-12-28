@@ -15,7 +15,6 @@ import {
   useGetProductCategoriesQuery,
   useGetProductsQuery,
   useGetProductStatusQuery,
-  useDeleteProductMutation,
   useUpdateProductMutation,
   useCreateProductMutation,
 } from "../slices/productsApiSlice";
@@ -31,6 +30,7 @@ import {
   setDeleteModal,
   setLoadingGlobal,
   setUpdateModal,
+  setCreateNewProductModal,
 } from "../slices/productSlice";
 
 // --- 1. Helper: Status Badge ---
@@ -139,12 +139,9 @@ const ProductRow = ({ product, isOpen, onToggle, onDelete, onUpdate }) => {
 // --- 3. Main Component ---
 const ProductsScreen = () => {
   const dispatch = useDispatch();
-  const { filter } = useSelector((state) => state.product);
-
-  const [createNewProductModal, setCreatNewProductModal] = useState({
-    open: false,
-    product: null,
-  });
+  const { filter, createNewProductModal } = useSelector(
+    (state) => state.product
+  );
 
   const [activeActionIndex, setActiveActionIndex] = useState(null);
 
@@ -233,7 +230,7 @@ const ProductsScreen = () => {
       await newProduct(finalProductData).unwrap();
 
       toast.success("New Product Added!");
-      setCreatNewProductModal({ open: false, product: null });
+      setCreateNewProductModal({ open: false, product: null });
     } catch (err) {
       console.error(err);
       toast.error(err?.data?.message || "Error adding new item");
@@ -249,13 +246,7 @@ const ProductsScreen = () => {
 
       <UpdateProductModal onUpdate={handleConfirmUpdate} />
 
-      <CreateProductModal
-        isOpen={createNewProductModal.open}
-        onClose={() =>
-          setCreatNewProductModal({ ...createNewProductModal, open: false })
-        }
-        onCreate={handleCreateNewProduct}
-      />
+      <CreateProductModal onCreate={handleCreateNewProduct} />
 
       {/* --- Header --- */}
       <div className="flex items-center justify-between">
@@ -317,10 +308,12 @@ const ProductsScreen = () => {
           <div className="flex flex-col gap-3 sm:flex-row">
             <button
               onClick={() =>
-                setCreatNewProductModal({
-                  ...createNewProductModal,
-                  open: true,
-                })
+                dispatch(
+                  setCreateNewProductModal({
+                    ...createNewProductModal,
+                    open: true,
+                  })
+                )
               }
               className="flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-all shadow-sm"
             >
