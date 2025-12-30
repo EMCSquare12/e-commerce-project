@@ -4,6 +4,7 @@ import cartSliceReducer from './slices/cartSlice';
 import authSliceReducer from './slices/authSlice';
 import categorySliceReducer from './slices/filterSlice';
 import toggleSliceReducer from './slices/toggleSlice';
+import notificationsSliceReducer from "./slices/notificationSlice"
 
 
 
@@ -13,7 +14,8 @@ const store = configureStore({
         cart: cartSliceReducer,
         auth: authSliceReducer,
         filter: categorySliceReducer,
-        toggle: toggleSliceReducer
+        toggle: toggleSliceReducer,
+        notifications: notificationsSliceReducer
 
     },
     middleware: (getDefaultMiddleware) =>

@@ -1,41 +1,11 @@
 import React, { useState } from "react";
-import {
-  Download,
-  MoreHorizontal,
-  ChevronDown,
-  Copy,
-  Check,
-  Package,
-} from "lucide-react";
+import { Download, ChevronDown } from "lucide-react";
 import { useGetOrdersQuery } from "../slices/ordersApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import Pagination from "../components/Pagination";
+import OrderRow from "../components/OrderRow";
 
-// --- 1. Helper: Status Badge ---
-const StatusBadge = ({ isDelivered }) => {
-  return (
-    <span
-      className={`px-3 py-1 rounded-full text-xs font-medium border ${
-        isDelivered
-          ? "bg-green-100 text-green-700 border-green-200"
-          : "bg-yellow-100 text-yellow-700 border-yellow-200"
-      }`}
-    >
-      {isDelivered ? "Shipped" : "Pending"}
-    </span>
-  );
-};
-
-// --- 2. Helper: Address Formatter ---
-const formatAddress = (addr) => {
-  if (!addr) return "N/A";
-  return [addr.address, addr.city, addr.country, addr.postalCode]
-    .filter(Boolean)
-    .join(", ");
-};
-
-// --- 3. Custom Hook: Clipboard ---
 const useClipboard = (resetTime = 2000) => {
   const [copiedId, setCopiedId] = useState(null);
 
@@ -51,131 +21,6 @@ const useClipboard = (resetTime = 2000) => {
   return { copiedId, copyToClipboard };
 };
 
-// --- 4. Sub-Component: Order Row ---
-const OrderRow = ({ order, isExpanded, onToggle, copiedId, onCopy }) => {
-  const fullAddress = formatAddress(order.shippingAddress);
-
-  // FIX: Ensure orderId is treated as a string before using substring
-  const rawId = order.orderId || order._id || "";
-  const orderId = String(rawId);
-  const isCopied = copiedId === orderId;
-
-  return (
-    <>
-      <tr className="align-top transition-colors border-b hover:bg-gray-50 border-gray-50 last:border-0">
-        <td className="p-4">
-          <input
-            type="checkbox"
-            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-          />
-        </td>
-        <td className="p-4 text-sm font-medium text-gray-900">
-          {/* FIX: Safe substring check */}
-          {orderId.length > 10 ? `${orderId.substring(0, 10)}...` : orderId}
-        </td>
-        <td className="p-4 font-medium text-gray-700">
-          <div className="flex items-center gap-2">
-            {/* <div className="flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 text-slate-500">
-              <Package className="w-3 h-3" />
-            </div> */}
-            {order.user ? order.user.name : "Guest"}
-          </div>
-        </td>
-        <td className="p-4 text-sm font-medium text-gray-700 whitespace-nowrap">
-          {new Date(order.createdAt).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          })}
-        </td>
-
-        {/* Expand Trigger */}
-        <td
-          className="p-4 text-gray-500 cursor-pointer select-none group"
-          onClick={onToggle}
-        >
-          <div className="flex flex-row items-center gap-1 text-gray-700 transition-colors group-hover:text-blue-600">
-            <span className="flex flex-row text-sm font-medium whitespace-nowrap">
-              {order.orderItems.length} items
-            </span>
-            <ChevronDown
-              className={`w-4 h-4 transition-transform duration-200 ${
-                isExpanded ? "rotate-180" : ""
-              }`}
-            />
-          </div>
-        </td>
-
-        <td className="p-4 font-mono text-sm font-medium text-gray-900 ">
-          ${order.totalPrice}
-        </td>
-
-        {/* Address Copy */}
-        <td
-          className="max-w-[180px] p-4 cursor-pointer group"
-          onClick={() => onCopy(fullAddress, orderId)}
-          title={fullAddress}
-        >
-          <div className="flex items-center justify-between gap-2 px-2 py-1 font-medium transition-all border border-transparent rounded-md hover:bg-white hover:shadow-sm hover:border-gray-200">
-            <span className="text-sm text-gray-700 truncate">
-              {order.shippingAddress?.city || "N/A"}
-            </span>
-            {isCopied ? (
-              <Check className="w-3.5 h-3.5 text-green-500 shrink-0" />
-            ) : (
-              <Copy className="w-3.5 h-3.5 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
-            )}
-          </div>
-        </td>
-
-        <td className="p-4">
-          <StatusBadge isDelivered={order.isDelivered} />
-        </td>
-
-        <td className="p-4 text-right">
-          <button className="p-1.5 text-gray-400 rounded-md hover:text-gray-600 hover:bg-gray-100 transition-colors">
-            <MoreHorizontal className="w-5 h-5" />
-          </button>
-        </td>
-      </tr>
-
-      {/* Expanded Details Row */}
-      {isExpanded && (
-        <tr className="bg-gray-50/50">
-          <td colSpan="9" className="p-4 pt-0">
-            <div className="p-4 bg-white border border-gray-100 rounded-lg shadow-sm ml-14 animate-in fade-in slide-in-from-top-1">
-              <h4 className="mb-3 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                Order Items
-              </h4>
-              <ul className="space-y-3">
-                {order.orderItems.map((item, idx) => (
-                  <li
-                    key={idx}
-                    className="flex justify-between pb-1 text-sm text-gray-700 border-b border-gray-50 last:border-0 last:pb-0"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-gray-900">
-                        {item.name}
-                      </span>
-                      <span className="text-xs text-gray-400">
-                        x{item.qty || item.quantity}
-                      </span>
-                    </div>
-                    <span className="font-mono text-gray-600">
-                      ${item.price}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </td>
-        </tr>
-      )}
-    </>
-  );
-};
-
-// --- 5. Main Component ---
 const OrdersScreen = () => {
   // State
   const [dateRange, setDateRange] = useState({ from: "", to: "" });

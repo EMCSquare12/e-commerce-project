@@ -17,7 +17,8 @@ import RegisterScreen from "./screens/RegisterScreen";
 import ShippingScreen from "./screens/ShippingScreen";
 import PaymentScreen from "./screens/PaymentScreen";
 import PlaceOrderScreen from "./screens/PlaceOrderScreen";
-import StripeWrapper from "./components/StripeWrapper"; // 1. Import the wrapper
+import StripeWrapper from "./components/StripeWrapper";
+import NotificationsScreen from "./screens/NotificationsScreen.jsx";
 import "./index.css";
 
 const router = createBrowserRouter(
@@ -30,6 +31,7 @@ const router = createBrowserRouter(
       <Route path="/register" element={<RegisterScreen />} />
       <Route path="/shipping" element={<ShippingScreen />} />
       <Route path="/payment" element={<PaymentScreen />} />
+      <Route path="notifications" element={<NotificationsScreen />} />
 
       <Route element={<StripeWrapper />}>
         <Route path="/placeorder" element={<PlaceOrderScreen />} />
