@@ -35,24 +35,56 @@ const addOrderItems = asyncHandler(async (req, res) => {
             shippingPrice,
             totalPrice,
         });
+
         const createdOrder = await order.save();
 
-        const userOrderHistory = orderItems.map((item) => ({
-            product: item._id,
-            quantity: item.qty || item.quantity,
-            purchasedAt: Date.now()
-        }));
         await User.findByIdAndUpdate(req.user._id, {
             $inc: { totalSpent: totalPrice },
-            $push: { totalOrder: { $each: userOrderHistory } }
-        })
+        });
+
+        const admins = await User.find({ isAdmin: true });
+
+        if (admins.length > 0) {
+            const notifications = admins.map(admin => ({
+                recipient: admin._id,
+                type: "order",
+                title: "New Order Placed",
+                message: `Order #${createdOrder._id} placed by ${req.user.name}`,
+                link: `/admin/order/${createdOrder._id}`,
+                relatedId: createdOrder._id
+            }));
+
+            await Notification.insertMany(notifications);
+        }
 
         res.status(201).json(createdOrder);
     }
 });
 
+const updateOrderToDelivered = asyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id)
+
+    if (order) {
+        order.isDelivered = true
+        order.deliveredAt = Date.now()
+        const updatedOrder = await order.save()
+
+        await Notifications.create({
+            recipient: order.user,
+            type: "order",
+            title: "Order Deliverd",
+            message: "Your package has arrived! Enjoy your purchase.",
+            link: `/order/${order._id}`,
+            relatedId: order._id
+        })
+        res.json(updatedOrder)
+    } else {
+        res.status(404)
+        throw new Error("Order not found")
+    }
+})
+
 const getOrder = asyncHandler(async (req, res) => {
-    // Populate 'user' so you can show "John Doe" in the table
     const orders = await Order.find({}).populate('user', 'id name email').sort({ createdAt: -1 })
     res.json(orders)
 })
@@ -65,7 +97,6 @@ const buildFilter = (query) => {
         filter.name = { $regex: keyword, $options: 'i' };
     }
 
-    // 2. Status Filter
     if (status) {
         if (status === "Shipped") {
             filter.isDelivered = true;
@@ -74,7 +105,6 @@ const buildFilter = (query) => {
         }
     }
 
-    // 3. Date Range Filter
     if (from || to) {
         filter.createdAt = {}
 
