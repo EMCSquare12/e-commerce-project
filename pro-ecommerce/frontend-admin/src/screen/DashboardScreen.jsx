@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ShoppingCart, Users, CreditCard } from "lucide-react";
 import { useGetTotalRevenueQuery } from "../slices/adminApiSlice";
 import Message from "../components/Message";
@@ -17,7 +17,10 @@ const formatCurrency = (amount) => {
 };
 
 const DashboardScreen = () => {
-  const { data, isLoading, error } = useGetTotalRevenueQuery();
+  const [pageNumber, setPageNumber] = useState(1);
+  const { data, isLoading, error } = useGetTotalRevenueQuery({
+    pageNumber,
+  });
 
   if (isLoading)
     return (
@@ -64,7 +67,13 @@ const DashboardScreen = () => {
       </div>
 
       <RecentOrdersTable orders={data?.dailyOrders} />
-      {data?.pages > 1 && <Pagination />}
+      {data?.pages > 1 && (
+        <Pagination
+          setItemPages={(num) => setPageNumber(num)}
+          page={pageNumber}
+          pages={data?.pages}
+        />
+      )}
     </div>
   );
 };

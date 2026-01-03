@@ -4,13 +4,16 @@ import { useSelector, useDispatch } from "react-redux";
 import { Search, Bell, ShoppingBag, User, AlertCircle } from "lucide-react";
 import ProfileMenu from "./ProfileMenu";
 import { markAsRead } from "../slices/notificationsSlice";
+import { useGetNotificationsQuery } from "../slices/notificationsApiSlice";
 
 const Header = () => {
+  const { data, isLoading, error } = useGetNotificationsQuery();
   const dispatch = useDispatch();
-  const { notifications } = useSelector((state) => state.notifications);
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const unreadCount = data?.filter((n) => !n.read).length;
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
+
+  console.log(data);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -86,18 +89,18 @@ const Header = () => {
 
               {/* Dropdown List */}
               <div className="max-h-[320px] overflow-y-auto">
-                {notifications.length === 0 ? (
+                {data.length === 0 ? (
                   <div className="px-4 py-6 text-center text-gray-500">
                     <p className="text-sm">No notifications yet</p>
                   </div>
                 ) : (
                   // Show top 5 notifications
-                  notifications.slice(0, 5).map((item) => (
+                  data.slice(0, 10).map((item) => (
                     <Link
-                      key={item.id}
+                      key={item._id}
                       to={item.link || "#"}
                       onClick={() => {
-                        dispatch(markAsRead(item.id));
+                        dispatch(markAsRead(item._id));
                         setIsOpen(false);
                       }}
                       className={`flex items-start gap-3 px-4 py-3 border-b border-gray-50 transition-colors hover:bg-gray-50 ${

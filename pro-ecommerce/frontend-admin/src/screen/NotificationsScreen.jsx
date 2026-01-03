@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // Added useNavigate
 import {
   CheckCheck,
   Trash2,
@@ -8,6 +8,8 @@ import {
   User,
   AlertCircle,
   Clock,
+  Bell,
+  ArrowLeft, // Added ArrowLeft
 } from "lucide-react";
 import {
   markAllAsRead,
@@ -17,9 +19,9 @@ import {
 import { useGetNotificationsQuery } from "../slices/notificationsApiSlice";
 
 const NotificationsScreen = () => {
-  const { data } = useGetNotificationsQuery({});
+  const { data, isLoading, error } = useGetNotificationsQuery();
   const dispatch = useDispatch();
-  const { notifications } = useSelector((state) => state.notifications);
+  const navigate = useNavigate(); // Initialize hook
 
   const getIcon = (type) => {
     switch (type) {
@@ -47,35 +49,45 @@ const NotificationsScreen = () => {
     }
   };
 
-  console.log(data)
-
   return (
     <div className="p-6">
+      {/* Header Section */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Notifications</h1>
+        <div className="flex items-center gap-4">
+          {/* Back Button */}
+          <button
+            onClick={() => navigate(-1)}
+            className="p-2 text-gray-600 transition-colors rounded-lg hover:bg-gray-100 hover:text-gray-900"
+            aria-label="Go back"
+          >
+            <ArrowLeft className="w-6 h-6" />
+          </button>
 
-        {notifications.length > 0 && (
+          <h1 className="text-2xl font-bold text-gray-800">Notifications</h1>
+        </div>
+
+        {data?.length > 0 && (
           <div className="flex gap-3">
             <button
               onClick={() => dispatch(markAllAsRead())}
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 transition-all bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
               <CheckCheck className="w-4 h-4" />
-              Mark all read
+              <span className="hidden sm:inline">Mark all read</span>
             </button>
             <button
               onClick={() => dispatch(clearAll())}
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 transition-all bg-white border border-gray-300 rounded-lg hover:bg-red-50 hover:border-red-200"
             >
               <Trash2 className="w-4 h-4" />
-              Clear all
+              <span className="hidden sm:inline">Clear all</span>
             </button>
           </div>
         )}
       </div>
 
       <div className="overflow-hidden bg-white border border-gray-200 shadow-sm rounded-xl">
-        {notifications.length === 0 ? (
+        {data?.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-12 text-center">
             <div className="p-4 mb-4 rounded-full bg-gray-50">
               <Bell className="w-8 h-8 text-gray-400" />
@@ -87,9 +99,9 @@ const NotificationsScreen = () => {
           </div>
         ) : (
           <div className="divide-y divide-gray-100">
-            {notifications.map((item) => (
+            {data?.map((item) => (
               <div
-                key={item.id}
+                key={item._id}
                 className={`flex flex-col sm:flex-row sm:items-center justify-between p-5 transition-colors hover:bg-gray-50 ${
                   !item.read ? "bg-blue-50/40" : ""
                 }`}
@@ -112,12 +124,12 @@ const NotificationsScreen = () => {
                       </span>
                       <span className="flex items-center gap-1 text-xs text-gray-400">
                         <Clock className="w-3 h-3" />
-                        {new Date(item.date).toLocaleString()}
+                        {new Date(item.createdAt).toLocaleString()}
                       </span>
                     </div>
                     <Link
                       to={item.link}
-                      onClick={() => dispatch(markAsRead(item.id))}
+                      onClick={() => dispatch(markAsRead(item._id))}
                       className={`text-base hover:text-blue-600 hover:underline ${
                         !item.read
                           ? "font-bold text-gray-900"
