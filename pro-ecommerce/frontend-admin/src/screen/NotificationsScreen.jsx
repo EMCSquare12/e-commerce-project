@@ -14,8 +14,10 @@ import {
   clearAll,
   markAsRead,
 } from "../slices/notificationsSlice";
+import { useGetNotificationsQuery } from "../slices/notificationsApiSlice";
 
 const NotificationsScreen = () => {
+  const { data } = useGetNotificationsQuery({});
   const dispatch = useDispatch();
   const { notifications } = useSelector((state) => state.notifications);
 

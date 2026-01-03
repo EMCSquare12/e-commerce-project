@@ -1,5 +1,5 @@
 import asyncHandler from 'express-async-handler';
-import Notifications from "../models/notificationsModel"
+import Notifications from "../models/notificationsModel.js"
 
 const getMyNotifications = asyncHandler(async (req, res) => {
     const notifications = await Notifications.find({ recipient: req.user._id }).sort({ createdAt: -1 })
@@ -33,7 +33,7 @@ const markAllRead = asyncHandler(async (req, res) => {
 
 
 const clearNotifications = asyncHandler(async (req, res) => {
-    await Notifications.deleteMany({ recipient: req.use._id })
+    await Notifications.deleteMany({ recipient: req.user._id })
     res.json({ message: "Notifications cleared" })
 })
 

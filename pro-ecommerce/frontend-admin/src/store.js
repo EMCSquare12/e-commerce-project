@@ -3,6 +3,7 @@ import { apiSlice } from './slices/apiSlice';
 import authSliceReducer from './slices/authSlice';
 import productSliceReducer from './slices/productSlice'
 import notificationsSliceReducer from './slices/notificationsSlice'
+import orderSliceReducer from "./slices/orderSlice"
 
 
 const store = configureStore({
@@ -10,6 +11,7 @@ const store = configureStore({
         [apiSlice.reducerPath]: apiSlice.reducer,
         auth: authSliceReducer,
         product: productSliceReducer,
+        order: orderSliceReducer,
         notifications: notificationsSliceReducer,
 
 

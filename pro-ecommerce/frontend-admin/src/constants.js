@@ -4,3 +4,4 @@ export const PRODUCTS_URL = '/api/products';
 export const USERS_URL = '/api/users';
 export const ORDERS_URL = '/api/orders';
 export const ADMIN_STATS_URL = '/api/admin';
+export const NOTIFCATIONS_URL = '/api/notifications';

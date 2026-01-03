@@ -5,6 +5,13 @@ import Loader from "../components/Loader";
 import Message from "../components/Message";
 import Pagination from "../components/Pagination";
 import OrderRow from "../components/OrderRow";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setDateRange,
+  setStatus,
+  setPageNumber,
+  setPage,
+} from "../slices/orderSlice";
 
 const useClipboard = (resetTime = 2000) => {
   const [copiedId, setCopiedId] = useState(null);
@@ -23,9 +30,10 @@ const useClipboard = (resetTime = 2000) => {
 
 const OrdersScreen = () => {
   // State
-  const [dateRange, setDateRange] = useState({ from: "", to: "" });
-  const [status, setStatus] = useState("");
-  const [pageNumber, setPageNumber] = useState(1);
+  const dispatch = useDispatch();
+  const { dateRange, pageNumber, status, page } = useSelector(
+    (state) => state.order
+  );
   const [expandedOrderId, setExpandedOrderId] = useState(null);
 
   // Hooks
@@ -42,13 +50,14 @@ const OrdersScreen = () => {
   // Handlers
   const handleDateChange = (e) => {
     const { name, value } = e.target;
-    setDateRange((prev) => ({ ...prev, [name]: value }));
-    setPageNumber(1); // Reset page on filter change
+    dispatch(setDateRange({ name, value }));
+    dispatch(setPageNumber(1));
+    console.log(dateRange);
   };
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= (data?.pages || 1)) {
-      setPageNumber(newPage);
+      dispatch(setPageNumber(newPage));
     }
   };
 
@@ -77,8 +86,8 @@ const OrdersScreen = () => {
                 <select
                   value={status}
                   onChange={(e) => {
-                    setStatus(e.target.value);
-                    setPageNumber(1);
+                    dispatch(setStatus(e.target.value));
+                    dispatch(setPageNumber(1));
                   }}
                   className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 pr-8 outline-none"
                 >
@@ -201,12 +210,9 @@ const OrdersScreen = () => {
             {data?.pages > 1 && (
               <div className="bg-white border-t border-gray-100">
                 <Pagination
-                  setItemPages={(num) =>
-                    setFilter((prev) => ({ ...prev, page: num }))
-                  }
-                  page={filter.page}
+                  setItemPages={(num) => dispatch(setPage(num))}
+                  page={page}
                   pages={data?.pages}
-                  s
                 />
               </div>
             )}

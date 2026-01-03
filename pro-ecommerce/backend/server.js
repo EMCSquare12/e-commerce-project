@@ -12,7 +12,7 @@ import orderRoutes from './routes/orderRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import imageRoutes from './routes/imageRoutes.js';
-import notificationsRoute from './routes/notificationsRoute.js';
+import notificationsRoutes from './routes/notificationsRoutes.js';
 
 
 
@@ -39,7 +39,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/upload', imageRoutes);
-app.use('/api/notifications', notificationsRoute);
+app.use('/api/notifications', notificationsRoutes);
 
 
 // Error Handling

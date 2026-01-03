@@ -28,7 +28,6 @@ const HomeScreen = () => {
     dispatch(toggleDrawer());
     dispatch(clearFilter());
   };
-  console.log(data);
   return (
     <>
       {/* Hero Section */}
