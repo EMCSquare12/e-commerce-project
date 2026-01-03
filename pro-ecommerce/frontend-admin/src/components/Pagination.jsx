@@ -1,6 +1,4 @@
 const Pagination = ({ page, pages, setItemPages }) => {
-  if (pages <= 1) return null;
-
   const maxButtons = 5; // Maximum page buttons to show at once
   let startPage = Math.max(1, page - Math.floor(maxButtons / 2));
   let endPage = startPage + maxButtons - 1;

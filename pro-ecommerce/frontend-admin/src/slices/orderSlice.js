@@ -25,9 +25,7 @@ const orderSlice = createSlice({
         setPageNumber: (state, action) => {
             state.pageNumber = action.payload
         },
-        setPage: (state, action) => {
-            state.page = action.payload
-        }
+
     }
 })
 

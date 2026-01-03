@@ -6,12 +6,7 @@ import Message from "../components/Message";
 import Pagination from "../components/Pagination";
 import OrderRow from "../components/OrderRow";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setDateRange,
-  setStatus,
-  setPageNumber,
-  setPage,
-} from "../slices/orderSlice";
+import { setDateRange, setStatus, setPageNumber } from "../slices/orderSlice";
 
 const useClipboard = (resetTime = 2000) => {
   const [copiedId, setCopiedId] = useState(null);
@@ -31,9 +26,7 @@ const useClipboard = (resetTime = 2000) => {
 const OrdersScreen = () => {
   // State
   const dispatch = useDispatch();
-  const { dateRange, pageNumber, status, page } = useSelector(
-    (state) => state.order
-  );
+  const { dateRange, pageNumber, status } = useSelector((state) => state.order);
   const [expandedOrderId, setExpandedOrderId] = useState(null);
 
   // Hooks
@@ -44,6 +37,7 @@ const OrdersScreen = () => {
     status,
     pageNumber,
   });
+  console.log(pageNumber);
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -53,12 +47,6 @@ const OrdersScreen = () => {
     dispatch(setDateRange({ name, value }));
     dispatch(setPageNumber(1));
     console.log(dateRange);
-  };
-
-  const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= (data?.pages || 1)) {
-      dispatch(setPageNumber(newPage));
-    }
   };
 
   const toggleRow = (orderId) => {
@@ -210,8 +198,8 @@ const OrdersScreen = () => {
             {data?.pages > 1 && (
               <div className="bg-white border-t border-gray-100">
                 <Pagination
-                  setItemPages={(num) => dispatch(setPage(num))}
-                  page={page}
+                  setItemPages={(num) => dispatch(setPageNumber(num))}
+                  page={pageNumber}
                   pages={data?.pages}
                 />
               </div>
