@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { setDeleteModal, setLoadingGlobal } from "../../slices/productSlice";
 import { useDeleteProductMutation } from "../../slices/productsApiSlice";
 
-const DeleteConfirmationModal = ({ onConfirm }) => {
+const DeleteConfirmationModal = () => {
   const [deleteProduct, { isLoading }] = useDeleteProductMutation();
   const { deleteModal } = useSelector((state) => state.product);
   const dispatch = useDispatch();

@@ -1,6 +1,6 @@
-import React from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Added useNavigate
+import { toast } from "react-toastify";
 import {
   CheckCheck,
   Trash2,
@@ -9,19 +9,28 @@ import {
   AlertCircle,
   Clock,
   Bell,
-  ArrowLeft, // Added ArrowLeft
+  ArrowLeft,
 } from "lucide-react";
+import { markAsRead } from "../slices/notificationsSlice";
 import {
-  markAllAsRead,
-  clearAll,
-  markAsRead,
-} from "../slices/notificationsSlice";
-import { useGetNotificationsQuery } from "../slices/notificationsApiSlice";
+  useClearNotificationsMutation,
+  useGetNotificationsQuery,
+  useMarkAllNotificationsMutation,
+  useMarkNotificationsReadMutation,
+} from "../slices/notificationsApiSlice";
 
 const NotificationsScreen = () => {
+  const [notificationId, setNotificationId] = useState(null);
   const { data, isLoading, error } = useGetNotificationsQuery();
-  const dispatch = useDispatch();
-  const navigate = useNavigate(); // Initialize hook
+  const [clearNotifications, { isLoading: isClearing }] =
+    useClearNotificationsMutation();
+  const [markAllNotifications, { isLoading: isMarkAll }] =
+    useMarkAllNotificationsMutation();
+  const [markNotificationsRead, { isLoading: isRead }] =
+    useMarkNotificationsReadMutation({
+      notificationId,
+    });
+  const navigate = useNavigate();
 
   const getIcon = (type) => {
     switch (type) {
@@ -49,6 +58,34 @@ const NotificationsScreen = () => {
     }
   };
 
+  const handleClearNotifications = async () => {
+    try {
+      const res = await clearNotifications().unwrap();
+      toast.success(res.message);
+    } catch (err) {
+      toast.error(err?.res?.message || "Error to clear notifications");
+    }
+  };
+
+  const handleMarkAllNotifications = async () => {
+    try {
+      const res = await markAllNotifications().unwrap();
+      toast.success(res.message);
+    } catch (err) {
+      toast.error(err?.res?.message || "Notification not found");
+    }
+  };
+
+  const handleMarkNotificationsRead = async (id) => {
+    setNotificationId(id);
+    try {
+      const res = await markNotificationsRead(id).unwrap();
+      toast.success(res.message);
+    } catch (err) {
+      toast.error(err?.res?.message || "Notifications Not Found");
+    }
+  };
+
   return (
     <div className="p-6">
       {/* Header Section */}
@@ -69,23 +106,26 @@ const NotificationsScreen = () => {
         {data?.length > 0 && (
           <div className="flex gap-3">
             <button
-              onClick={() => dispatch(markAllAsRead())}
+              disabled={isMarkAll}
+              onClick={handleMarkAllNotifications}
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 transition-all bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
               <CheckCheck className="w-4 h-4" />
               <span className="hidden sm:inline">Mark all read</span>
             </button>
             <button
-              onClick={() => dispatch(clearAll())}
+              disabled={isClearing}
+              onClick={handleClearNotifications}
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 transition-all bg-white border border-gray-300 rounded-lg hover:bg-red-50 hover:border-red-200"
             >
               <Trash2 className="w-4 h-4" />
-              <span className="hidden sm:inline">Clear all</span>
+              <span className="hidden sm:inline">
+                {isClearing ? "Clearing All..." : "Clear all"}
+              </span>
             </button>
           </div>
         )}
       </div>
-
       <div className="overflow-hidden bg-white border border-gray-200 shadow-sm rounded-xl">
         {data?.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-12 text-center">
@@ -144,7 +184,7 @@ const NotificationsScreen = () => {
                 {/* Action */}
                 {!item.read && (
                   <button
-                    onClick={() => dispatch(markAsRead(item.id))}
+                    onClick={() => handleMarkNotificationsRead(item._id)}
                     className="mt-3 text-xs font-medium text-blue-600 sm:mt-0 sm:ml-4 hover:text-blue-800"
                   >
                     Mark as read

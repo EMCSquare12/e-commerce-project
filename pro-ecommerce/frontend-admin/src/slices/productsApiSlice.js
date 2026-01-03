@@ -25,11 +25,11 @@ export const productsApiSlice = apiSlice.injectEndpoints({
     // --- CREATE: Add a new product ---
     createProduct: builder.mutation({
       query: (data) => ({
-        url: PRODUCTS_URL, // Matches router.route('/admin').post(...)
+        url: PRODUCTS_URL,
         method: "POST",
         body: data
       }),
-      invalidatesTags: ["Product"], // Forces the list to refresh automatically
+      invalidatesTags: ["Product"],
     }),
 
     // --- UPDATE: Edit existing product ---
@@ -39,7 +39,7 @@ export const productsApiSlice = apiSlice.injectEndpoints({
         method: "PUT",
         body: data.formData,
       }),
-      invalidatesTags: ["Product"], // Refresh list after edit
+      invalidatesTags: ["Product"],
     }),
 
     // --- DELETE: Remove product ---
@@ -48,13 +48,13 @@ export const productsApiSlice = apiSlice.injectEndpoints({
         url: `${PRODUCTS_URL}/${productId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Product"], // Refresh list after delete
+      invalidatesTags: ["Product"], 
     }),
 
     // --- UPLOAD: Handle Image Uploads ---
     uploadProductImage: builder.mutation({
       query: (data) => ({
-        url: `/api/upload`, // You might need to create this route in backend
+        url: `/api/upload`,
         method: "POST",
         body: data,
       }),

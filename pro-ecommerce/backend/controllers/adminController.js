@@ -72,9 +72,10 @@ const getDashboardStats = asyncHandler(async (req, res) => {
                 "user.name": "$userDetails.name",
             }
         },
+        { $sort: { createdAt: -1 } },
         { $skip: pageSize * (page - 1) },
         { $limit: pageSize }
-    ]);
+    ])
 
     res.json({
         usersCount,

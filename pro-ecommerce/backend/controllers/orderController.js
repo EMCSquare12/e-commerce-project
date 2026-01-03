@@ -51,7 +51,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
                 type: "order",
                 title: "New Order Placed",
                 message: `Order #${createdOrder.orderId} placed by ${req.user.name}`,
-                link: `/admin/order/${createdOrder.orderId}`,
+                link: `/admin/order/${createdOrder._id}`,
                 relatedId: createdOrder._id
             }));
 

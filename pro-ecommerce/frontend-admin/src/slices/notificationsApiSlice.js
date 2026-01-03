@@ -9,8 +9,35 @@ export const notificationApiSlice = apiSlice.injectEndpoints({
             }),
             providesTags: ["Notifications"],
             keepUnusedDataFor: 5
+        }),
+        clearNotifications: builder.mutation({
+            query: () => ({
+                method: "DELETE",
+                url: `${NOTIFCATIONS_URL}`
+            }),
+            invalidatesTags: ["Notifications"],
+        }),
+        markAllNotifications: builder.mutation({
+            query: () => ({
+                method: "PUT",
+                url: `${NOTIFCATIONS_URL}/read-all`
+            }),
+            invalidatesTags: ["Notifications"],
+        }),
+        markNotificationsRead: builder.mutation({
+            query: (notificationId) => ({
+                params: { notificationId },
+                method: "PUT",
+                url: `${NOTIFCATIONS_URL}/${notificationId}/read`
+            }),
+            invalidatesTags: ["Notifications"]
         })
     })
 });
 
-export const { useGetNotificationsQuery } = notificationApiSlice;
+export const {
+    useGetNotificationsQuery,
+    useClearNotificationsMutation,
+    useMarkAllNotificationsMutation,
+    useMarkNotificationsReadMutation
+} = notificationApiSlice;
