@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
@@ -10,7 +10,11 @@ import {
   AlertCircle,
   CheckCircle,
 } from "lucide-react";
-import { useGetNotificationDetailsQuery } from "../slices/notificationsApiSlice";
+import {
+  useDeleteSelectedNotificationMutation,
+  useGetNotificationDetailsQuery,
+} from "../slices/notificationsApiSlice";
+import { toast } from "react-toastify";
 
 const NotificationDetailsScreen = () => {
   const navigate = useNavigate();
@@ -18,6 +22,10 @@ const NotificationDetailsScreen = () => {
   const { data, isLoading, error } = useGetNotificationDetailsQuery({
     notificationId: id,
   });
+  const [deleSelectedNotification, { isLoading: isDeleted }] =
+    useDeleteSelectedNotificationMutation({
+      notificationId: id,
+    });
   console.log(id);
   console.log(data);
 
@@ -52,6 +60,19 @@ const NotificationDetailsScreen = () => {
   };
 
   const theme = getTheme(data?.type);
+
+  const handleDeleteSelectedNotification = async () => {
+    try {
+      const res = await deleSelectedNotification({
+        notificationId: id,
+      }).unwrap();
+      toast.success(res?.message || "Deleted successfully");
+      navigate("/admin/notifications");
+    } catch (err) {
+      toast.error(err?.data?.message || "Failed to delete notification");
+      console.error("Delete Error:", err);
+    }
+  };
 
   return (
     <div className="max-w-3xl p-6 mx-auto">
@@ -125,7 +146,7 @@ const NotificationDetailsScreen = () => {
                 <div>
                   <p className="text-xs text-gray-500 uppercase">Customer</p>
                   <p className="font-medium text-gray-900">
-                    {data.relatedData.user?.name || "Guest"}
+                    {data.user || "Guest"}
                   </p>
                 </div>
               </div>
@@ -157,8 +178,8 @@ const NotificationDetailsScreen = () => {
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                       {data.relatedData.orderItems?.map((item, index) => {
-                        const itemTax = item.price * 0.15 || 0;
-                        const itemSubtotal = item.price * item.qty + itemTax;
+                        const itemTax = (item.price * 0.15)*item.qty || 0;
+                        const itemSubtotal = item.price * item.qty;
 
                         return (
                           <tr
@@ -213,7 +234,11 @@ const NotificationDetailsScreen = () => {
               View Related {data?.type === "order" ? "Order" : "Resource"}
             </Link> */}
 
-            <button className="flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-red-600 transition-colors bg-white border border-gray-200 rounded-lg hover:bg-red-50 hover:border-red-200">
+            <button
+              disabled={isDeleted}
+              onClick={handleDeleteSelectedNotification}
+              className="flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-red-600 transition-colors bg-white border border-gray-200 rounded-lg hover:bg-red-50 hover:border-red-200"
+            >
               <Trash2 className="w-4 h-4" />
               Delete Notification
             </button>

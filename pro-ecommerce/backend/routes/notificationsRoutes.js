@@ -4,7 +4,8 @@ import {
     clearNotifications,
     markAllRead,
     markNotificationsRead,
-    getNotificationDetails
+    getNotificationDetails,
+    deleteSingleNotifications
 } from "../controllers/notificationsController.js"
 import { protect } from "../middleware/authMiddleware.js"
 
@@ -19,5 +20,6 @@ router.route("/read-all").put(protect, markAllRead)
 router.route("/:id/read").put(protect, markNotificationsRead)
 router.route("/:id")
     .get(protect, getNotificationDetails)
+    .delete(protect, deleteSingleNotifications)
 
 export default router

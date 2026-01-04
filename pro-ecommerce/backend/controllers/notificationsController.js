@@ -85,10 +85,21 @@ const clearNotifications = asyncHandler(async (req, res) => {
     res.json({ message: "Notifications cleared" });
 });
 
+const deleteSingleNotifications = asyncHandler(async (req, res) => {
+    const notificationToDelete = await Notifications.findByIdAndDelete(req.params.id)
+    if (notificationToDelete) {
+        res.json({ message: "Notification Deleted" })
+    } else {
+        res.status(404)
+        throw new Error("Notification not found")
+    }
+})
+
 export {
     getMyNotifications,
     markNotificationsRead,
     markAllRead,
     clearNotifications,
-    getNotificationDetails
+    getNotificationDetails,
+    deleteSingleNotifications
 };

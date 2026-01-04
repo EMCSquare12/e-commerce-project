@@ -11,7 +11,6 @@ import {
   Bell,
   ArrowLeft,
 } from "lucide-react";
-import { markAsRead } from "../slices/notificationsSlice";
 import {
   useClearNotificationsMutation,
   useGetNotificationsQuery,
@@ -79,7 +78,7 @@ const NotificationsScreen = () => {
   const handleMarkNotificationsRead = async (id) => {
     setNotificationId(id);
     try {
-      const res = await markNotificationsRead(id).unwrap();
+      const res = await markNotificationsRead({notificationId: id}).unwrap();
     } catch (err) {
       toast.error(err?.res?.message || "Notifications Not Found");
     }
