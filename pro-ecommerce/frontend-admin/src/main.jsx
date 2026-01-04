@@ -24,15 +24,20 @@ import MarketingScreen from "./screen/MarketingScreen.jsx";
 import SettingsScreen from "./screen/SettingsScreen.jsx";
 import LoginScreen from "./screen/LoginScreen.jsx";
 import NotificationsScreen from "./screen/NotificationsScreen.jsx";
+import NotificationDetailsScreen from "./screen/NotificationDetailsScreen.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route index element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<LoginScreen />} />
-      <Route path="admin/notifications" element={<NotificationsScreen />} />
 
       <Route element={<PrivateRoute />}>
+        <Route path="/admin/notifications" element={<NotificationsScreen />} />
+        <Route
+          path="/admin/notifications/:id"
+          element={<NotificationDetailsScreen />}
+        />
         <Route element={<AdminLayout />}>
           <Route path="/admin" element={<DashboardScreen />} />
           <Route path="/admin/orders" element={<OrdersScreen />} />

@@ -80,7 +80,6 @@ const NotificationsScreen = () => {
     setNotificationId(id);
     try {
       const res = await markNotificationsRead(id).unwrap();
-      toast.success(res.message);
     } catch (err) {
       toast.error(err?.res?.message || "Notifications Not Found");
     }
@@ -93,7 +92,7 @@ const NotificationsScreen = () => {
         <div className="flex items-center gap-4">
           {/* Back Button */}
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/admin")}
             className="p-2 text-gray-600 transition-colors rounded-lg hover:bg-gray-100 hover:text-gray-900"
             aria-label="Go back"
           >
@@ -168,8 +167,8 @@ const NotificationsScreen = () => {
                       </span>
                     </div>
                     <Link
-                      to={item.link}
-                      onClick={() => dispatch(markAsRead(item._id))}
+                      to={`/admin/notifications/${item._id}`}
+                      onClick={() => handleMarkNotificationsRead(item._id)}
                       className={`text-base hover:text-blue-600 hover:underline ${
                         !item.read
                           ? "font-bold text-gray-900"

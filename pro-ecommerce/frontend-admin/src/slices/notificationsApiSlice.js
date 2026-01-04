@@ -31,6 +31,12 @@ export const notificationApiSlice = apiSlice.injectEndpoints({
                 url: `${NOTIFCATIONS_URL}/${notificationId}/read`
             }),
             invalidatesTags: ["Notifications"]
+        }),
+        getNotificationDetails: builder.query({
+            query: ({ notificationId }) => ({
+                url: `${NOTIFCATIONS_URL}/${notificationId}`
+            }),
+            invalidatesTags: ["Notifications"]
         })
     })
 });
@@ -39,5 +45,6 @@ export const {
     useGetNotificationsQuery,
     useClearNotificationsMutation,
     useMarkAllNotificationsMutation,
-    useMarkNotificationsReadMutation
+    useMarkNotificationsReadMutation,
+    useGetNotificationDetailsQuery
 } = notificationApiSlice;

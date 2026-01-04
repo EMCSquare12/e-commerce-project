@@ -5,6 +5,10 @@ const notificationsSchema = mongoose.Schema({
         ref: "User",
         required: true
     },
+    user: {
+        type: String,
+        required: true
+    },
     type: {
         type: String,
         enum: ["order", "user", "product", "system", "alert"],
@@ -18,12 +22,8 @@ const notificationsSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    link: {
-        type: String,
-        default: "/"
-    },
     relatedId: {
-        type: mongoose.Schema.Types.ObjectId
+        type: mongoose.Schema.Types.ObjectId,
     },
     read: {
         type: Boolean,

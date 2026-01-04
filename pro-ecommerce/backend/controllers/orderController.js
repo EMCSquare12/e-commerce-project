@@ -48,10 +48,10 @@ const addOrderItems = asyncHandler(async (req, res) => {
         if (admins.length > 0) {
             const notifications = admins.map(admin => ({
                 recipient: admin._id,
+                user: req.user.name,
                 type: "order",
                 title: "New Order Placed",
                 message: `Order #${createdOrder.orderId} placed by ${req.user.name}`,
-                link: `/admin/order/${createdOrder._id}`,
                 relatedId: createdOrder._id
             }));
 
@@ -75,7 +75,6 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
             type: "order",
             title: "Order Deliverd",
             message: "Your package has arrived! Enjoy your purchase.",
-            link: `/order/${order._id}`,
             relatedId: order._id
         })
         res.json(updatedOrder)

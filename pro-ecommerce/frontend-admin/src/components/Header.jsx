@@ -1,13 +1,19 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Search, Bell, ShoppingBag, User, AlertCircle } from "lucide-react";
 import ProfileMenu from "./ProfileMenu";
 import { markAsRead } from "../slices/notificationsSlice";
-import { useGetNotificationsQuery } from "../slices/notificationsApiSlice";
+import {
+  useGetNotificationsQuery,
+  useMarkNotificationsReadMutation,
+} from "../slices/notificationsApiSlice";
 
 const Header = () => {
+  const [notificationId, setNotificationId] = useState(null);
   const { data, isLoading, error } = useGetNotificationsQuery();
+  const [markNotificationAsRead, { isLoading: isRead }] =
+    useMarkNotificationsReadMutation();
   const dispatch = useDispatch();
   const unreadCount = data?.filter((n) => !n.read).length;
   const [isOpen, setIsOpen] = useState(false);
@@ -39,6 +45,15 @@ const Header = () => {
     }
   };
 
+  const handleMarkNotificationsRead = async (id) => {
+    setNotificationId(id);
+    try {
+      const res = await markNotificationAsRead(id).unwrap();
+      toast.success(res.message);
+    } catch (err) {
+      toast.error(err?.res?.message || "Notifications Not Found");
+    }
+  };
   return (
     <header className="fixed top-0 right-0 z-20 flex items-center justify-between h-16 px-8 bg-white border-b border-gray-200 left-64">
       {/* Search Bar */}
@@ -98,9 +113,9 @@ const Header = () => {
                   data.slice(0, 10).map((item) => (
                     <Link
                       key={item._id}
-                      to={item.link || "#"}
+                      to={`/admin/notifications/${item._id}` || "#"}
                       onClick={() => {
-                        dispatch(markAsRead(item._id));
+                        handleMarkNotificationsRead(item._id);
                         setIsOpen(false);
                       }}
                       className={`flex items-start gap-3 px-4 py-3 border-b border-gray-50 transition-colors hover:bg-gray-50 ${
@@ -121,10 +136,7 @@ const Header = () => {
                           {item.message}
                         </p>
                         <p className="text-xs text-gray-400 mt-0.5">
-                          {new Date(item.date).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
+                          {new Date(item.createdAt).toLocaleString()}
                         </p>
                       </div>
                       {!item.read && (
