@@ -69,11 +69,12 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
         order.isDelivered = true
         order.deliveredAt = Date.now()
         const updatedOrder = await order.save()
-
+        const user = await User.findById(order.user).select("name");
         await Notifications.create({
             recipient: order.user,
             type: "order",
-            title: "Order Deliverd",
+            user: user.name,
+            title: "Order Delivered",
             message: "Your package has arrived! Enjoy your purchase.",
             relatedId: order._id
         })
@@ -138,4 +139,9 @@ const getOrdersAdmin = asyncHandler(async (req, res) => {
 
     res.json({ orders, page, pages: Math.ceil(count / pageSize) })
 })
-export { addOrderItems, getOrder, getOrdersAdmin };
+export {
+    addOrderItems,
+    getOrder,
+    getOrdersAdmin,
+    updateOrderToDelivered
+};

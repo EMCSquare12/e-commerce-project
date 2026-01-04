@@ -2,90 +2,88 @@ import asyncHandler from 'express-async-handler';
 import Order from '../models/orderModel.js';
 import User from '../models/userModel.js';
 
-// @desc    Get Dashboard Stats (Total Sales, Revenue, Daily Data)
-// @route   GET /api/admin/stats
+// @desc    Get Dashboard Data (Stats, Charts, and Recent Orders)
+// @route   GET /api/admin/dashboard
 // @access  Private/Admin
-const getDashboardStats = asyncHandler(async (req, res) => {
+const getDashboard = asyncHandler(async (req, res) => {
     const pageSize = 10;
     const page = Number(req.query.pageNumber) || 1;
 
-    const today = new Date();
-    const startOfDay = new Date(new Date().setHours(0, 0, 0, 0));
+    // --- 1. Date Setup ---
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
 
-    const ordersCount = await Order.countDocuments({
-        createdAt: { $gte: startOfDay }
-    });
-    const usersCount = await User.countDocuments({
-        createdAt: { $gte: startOfDay }
-    });
-
-    const totalRevenueData = await Order.aggregate([
-        { $group: { _id: null, total: { $sum: '$totalPrice' } } },
-    ]);
-    const totalRevenue = totalRevenueData[0]?.total || 0;
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
 
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-    const dailySales = await Order.aggregate([
-        {
-            $match: { createdAt: { $gte: sevenDaysAgo } }
-        },
-        {
-            $group: {
-                _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-                sales: { $sum: '$totalPrice' },
+    // --- 2. Filter Setup for Recent Orders ---
+    const orderFilter = {
+        createdAt: { $gte: startOfDay, $lte: endOfDay }
+    };
+
+    if (req.query.keyword) {
+        orderFilter.name = { $regex: req.query.keyword, $options: 'i' };
+    }
+
+    // --- 3. Execute Queries in Parallel ---
+    // We use Promise.all to fetch everything at once.
+    const [
+        ordersCountToday,
+        usersCountToday,
+        totalRevenueData,
+        dailySales,
+        ordersData
+    ] = await Promise.all([
+        // A. Count orders (Today)
+        Order.countDocuments(orderFilter),
+
+        // B. Count new users (Today)
+        User.countDocuments({ createdAt: { $gte: startOfDay } }),
+
+        // C. Total Revenue (All Time)
+        Order.aggregate([
+            { $group: { _id: null, total: { $sum: '$totalPrice' } } },
+        ]),
+
+        // D. Daily Sales Chart (Last 7 Days)
+        Order.aggregate([
+            { $match: { createdAt: { $gte: sevenDaysAgo } } },
+            {
+                $group: {
+                    _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+                    sales: { $sum: '$totalPrice' },
+                },
             },
-        },
-        { $sort: { _id: 1 } }
+            { $sort: { _id: 1 } }
+        ]),
+
+        // E. Fetch Recent Orders List (Today, Paginated)
+        Order.find(orderFilter)
+            .populate('user', 'name')
+            .limit(pageSize)
+            .skip(pageSize * (page - 1))
+            .sort({ createdAt: -1 })
     ]);
 
-    const dailyOrders = await Order.aggregate([
-        {
-            $match: {
-                createdAt: { $gte: startOfDay }
-            }
-        },
-        {
-            $lookup: {
-                from: "users",
-                localField: "user",
-                foreignField: "_id",
-                as: "userDetails"
-            }
-        },
-        {
-            $unwind: "$userDetails"
-        },
-        {
-            $project: {
-                orderId: 1,
-                status: 1,
-                totalPrice: 1,
-                createdAt: {
-                    $dateToString: {
-                        format: "%m-%d-%Y",
-                        date: "$createdAt"
-                    }
-                },
-                shippingAddress: 1,
-                "user.name": "$userDetails.name",
-            }
-        },
-        { $sort: { createdAt: -1 } },
-        { $skip: pageSize * (page - 1) },
-        { $limit: pageSize }
-    ])
-
+    // --- 4. Format Response ---
     res.json({
-        usersCount,
-        ordersCount,
-        totalRevenue,
-        dailySales,
-        dailyOrders,
-        page,
-        pages: Math.ceil(ordersCount / pageSize)
+        stats: {
+            usersCountToday,
+            ordersCountToday,
+            totalRevenue: totalRevenueData[0]?.total || 0,
+        },
+        charts: {
+            dailySales,
+        },
+        orders: {
+            data: ordersData,
+            page,
+            pages: Math.ceil(ordersCountToday / pageSize), // Use the filtered count for pagination
+        }
     });
 });
 
-export { getDashboardStats };
+export { getDashboard };

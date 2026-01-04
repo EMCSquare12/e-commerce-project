@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ShoppingCart, Users, CreditCard } from "lucide-react";
-import { useGetTotalRevenueQuery } from "../slices/adminApiSlice";
+import { useGetDashboardQuery } from "../slices/adminApiSlice";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
 import Pagination from "../components/Pagination";
@@ -8,7 +8,6 @@ import RecentOrdersTable from "../components/RecentOrdersTable";
 import StatsCard from "../components/StatsCard";
 import SalesChart from "../components/SalesChart";
 
-// --- Helper: Currency Formatter ---
 const formatCurrency = (amount) => {
   return Number(amount || 0).toLocaleString("en-US", {
     style: "currency",
@@ -18,9 +17,14 @@ const formatCurrency = (amount) => {
 
 const DashboardScreen = () => {
   const [pageNumber, setPageNumber] = useState(1);
-  const { data, isLoading, error } = useGetTotalRevenueQuery({
+
+  const { data, isLoading, error } = useGetDashboardQuery({
     pageNumber,
   });
+
+  const orders = data?.orders || [];
+  const pages = data?.pages || 1;
+  const page = data?.page || 1;
 
   if (isLoading)
     return (
@@ -28,9 +32,12 @@ const DashboardScreen = () => {
         <Loader />
       </div>
     );
+
   if (error)
     return (
-      <Message variant="danger">{error?.data?.message || error.error}</Message>
+      <Message variant="danger">
+        {error?.data?.message || error.error || "Something went wrong"}
+      </Message>
     );
 
   return (
@@ -42,12 +49,14 @@ const DashboardScreen = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <SalesChart data={data?.dailySales} />
+        <div className="lg:col-span-2">
+          <SalesChart data={data?.monthlySales} />
+        </div>
 
         <div className="flex flex-col justify-between space-y-4">
           <StatsCard
             title="Total Orders"
-            value={data?.ordersCount || 0}
+            value={data?.ordersCountToday || 0}
             icon={ShoppingCart}
             colorClass="bg-blue-50 text-blue-600"
           />
@@ -59,19 +68,20 @@ const DashboardScreen = () => {
           />
           <StatsCard
             title="New Customers"
-            value={data?.usersCount || 0}
+            value={data?.usersCountToday || 0}
             icon={Users}
             colorClass="bg-purple-50 text-purple-600"
           />
         </div>
       </div>
 
-      <RecentOrdersTable orders={data?.dailyOrders} />
-      {data?.pages > 1 && (
+      <RecentOrdersTable orders={orders} isLoading={isLoading} error={error} />
+
+      {pages > 1 && (
         <Pagination
           setItemPages={(num) => setPageNumber(num)}
-          page={pageNumber}
-          pages={data?.pages}
+          page={page}
+          pages={pages}
         />
       )}
     </div>

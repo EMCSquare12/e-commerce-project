@@ -10,8 +10,18 @@ const ordersApiSlice = apiSlice.injectEndpoints({
             }),
             providesTags: ["Orders"],
             keepUnusedDataFor: 5,
+        }),
+        upateDeliveryStatus: builder.mutation({
+            query: ({ orderId }) => ({
+                url: `${ORDERS_URL}/${orderId}`,
+                method: "PUT"
+            }),
+            invalidatesTags: ["Orders"]
         })
     })
 })
 
-export const { useGetOrdersQuery } = ordersApiSlice
+export const {
+    useGetOrdersQuery,
+    useUpateDeliveryStatusMutation
+} = ordersApiSlice

@@ -78,7 +78,7 @@ const NotificationsScreen = () => {
   const handleMarkNotificationsRead = async (id) => {
     setNotificationId(id);
     try {
-      const res = await markNotificationsRead({notificationId: id}).unwrap();
+      const res = await markNotificationsRead({ notificationId: id }).unwrap();
     } catch (err) {
       toast.error(err?.res?.message || "Notifications Not Found");
     }

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import {
   MoreHorizontal,
   ChevronDown,
@@ -10,6 +11,7 @@ import {
   Truck,
   XCircle,
 } from "lucide-react";
+import { useUpateDeliveryStatusMutation } from "../slices/ordersApiSlice";
 
 const formatAddress = (addr) => {
   if (!addr) return "N/A";
@@ -20,6 +22,10 @@ const formatAddress = (addr) => {
 const OrderRow = ({ order, isExpanded, onToggle, copiedId, onCopy }) => {
   const [showMenu, setShowMenu] = useState(false);
   const fullAddress = formatAddress(order.shippingAddress);
+  const [updateDeliveryStatus, { isLoading: isDelivered }] =
+    useUpateDeliveryStatusMutation({
+      orderId: order._id,
+    });
 
   const rawId = order.orderId || order._id || "";
   const orderId = String(rawId);
@@ -44,10 +50,15 @@ const OrderRow = ({ order, isExpanded, onToggle, copiedId, onCopy }) => {
     setShowMenu(false);
   };
 
-  const handleStatusChange = () => {
-    const newStatus = order.isDelivered ? "Pending" : "Shipped";
-    console.log(`Changing status of ${orderId} to ${newStatus}`);
-    setShowMenu(false);
+  const handleUpdateDeliveryStatus = async () => {
+    console.log(order._id);
+    try {
+      const res = await updateDeliveryStatus({ orderId: order._id }).unwrap();
+      setShowMenu(false);
+      toast.success(res?.message || `Order #${order.orderId} is ready to ship`);
+    } catch (err) {
+      toast.error(err?.data?.message || "Failed to change delivery status");
+    }
   };
 
   return (
@@ -161,7 +172,8 @@ const OrderRow = ({ order, isExpanded, onToggle, copiedId, onCopy }) => {
               <div className="p-1">
                 {/* Change Status Logic */}
                 <button
-                  onClick={handleStatusChange}
+                  disabled={isDelivered}
+                  onClick={handleUpdateDeliveryStatus}
                   className="flex items-center w-full gap-2 px-3 py-2 text-sm text-left text-gray-700 rounded-md hover:bg-gray-50"
                 >
                   {order.isDelivered ? (

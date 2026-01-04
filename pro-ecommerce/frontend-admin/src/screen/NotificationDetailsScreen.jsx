@@ -178,7 +178,7 @@ const NotificationDetailsScreen = () => {
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                       {data.relatedData.orderItems?.map((item, index) => {
-                        const itemTax = (item.price * 0.15)*item.qty || 0;
+                        const itemTax = item.price * 0.15 * item.qty || 0;
                         const itemSubtotal = item.price * item.qty;
 
                         return (
