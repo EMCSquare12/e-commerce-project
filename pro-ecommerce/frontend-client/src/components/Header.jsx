@@ -31,12 +31,11 @@ const Header = () => {
 
   // State for dropdowns
   const [profileOpen, setProfileOpen] = useState(false);
-  const [notifyOpen, setNotifyOpen] = useState(false); // New state for notification dropdown
+  const [notifyOpen, setNotifyOpen] = useState(false);
 
   const profileRef = useRef(null);
-  const notifyRef = useRef(null); // New ref
+  const notifyRef = useRef(null);
 
-  // Calculate unread count
   const unreadCount = data?.filter((n) => !n.read).length;
 
   const logoutHandler = async () => {
@@ -59,7 +58,7 @@ const Header = () => {
       case "alert":
         return <AlertCircle className="w-4 h-4 text-amber-500" />;
       default:
-        return <Bell className="w-4 h-4 text-gray-500" />;
+        return <FaBell className="w-4 h-4 text-gray-500" />;
     }
   };
 
@@ -97,13 +96,13 @@ const Header = () => {
             <div className="relative" ref={notifyRef}>
               <button
                 onClick={() => setNotifyOpen(!notifyOpen)}
-                className="relative p-2 text-gray-400 transition-colors rounded-full hover:text-gray-500 hover:bg-gray-100 focus:outline-none"
+                className="flex items-center gap-1 transition hover:text-amber-500 focus:outline-none"
               >
                 <span className="sr-only">View notifications</span>
-                <Bell className="w-6 h-6" />
+                <FaBell />
 
                 {unreadCount > 0 && (
-                  <span className="absolute flex h-4 w-4 top-1 right-1 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white">
+                  <span className="absolute -top-3 -right-3 bg-red-500 text-slate-900 text-xs font-bold px-1.5 py-0.5 rounded-full">
                     {unreadCount}
                   </span>
                 )}

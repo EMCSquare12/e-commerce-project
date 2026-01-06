@@ -8,8 +8,6 @@ import { saveShippingAddress } from "../slices/cartSlice";
 const ShippingScreen = () => {
   const cart = useSelector((state) => state.cart);
   const { shippingAddress } = cart;
-
-  // Initialize form with data from Redux state if available
   const [address, setAddress] = useState(shippingAddress?.address || "");
   const [city, setCity] = useState(shippingAddress?.city || "");
   const [postalCode, setPostalCode] = useState(
@@ -22,10 +20,8 @@ const ShippingScreen = () => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    // 1. Save data to Redux Store (and LocalStorage via the slice)
     dispatch(saveShippingAddress({ address, city, postalCode, country }));
 
-    // 2. Navigate to PlaceOrder (Skipping generic 'Payment' screen because the Stripe form is on the PlaceOrder screen)
     navigate("/placeorder");
   };
 

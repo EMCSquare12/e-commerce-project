@@ -20,6 +20,8 @@ import PlaceOrderScreen from "./screens/PlaceOrderScreen";
 import StripeWrapper from "./components/StripeWrapper";
 import NotificationsScreen from "./screens/NotificationsScreen.jsx";
 import "./index.css";
+import BlogScreen from "./screens/BlogScreen.jsx";
+import ContactScreen from "./screens/ContactScreen.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -31,8 +33,9 @@ const router = createBrowserRouter(
       <Route path="/register" element={<RegisterScreen />} />
       <Route path="/shipping" element={<ShippingScreen />} />
       <Route path="/payment" element={<PaymentScreen />} />
-      <Route path="notifications" element={<NotificationsScreen />} />
-
+      <Route path="/notifications" element={<NotificationsScreen />} />
+      <Route path="/blog" element={<BlogScreen />} />{" "}
+      <Route path="/contact" element={<ContactScreen />} />
       <Route element={<StripeWrapper />}>
         <Route path="/placeorder" element={<PlaceOrderScreen />} />
       </Route>

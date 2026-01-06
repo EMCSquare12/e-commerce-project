@@ -50,7 +50,7 @@ const CartScreen = () => {
                 {/* Image */}
                 <div className="flex-shrink-0 w-24 h-24">
                   <img
-                    src={item.image}
+                    src={item.image[0]}
                     alt={item.name}
                     className="object-cover w-full h-full rounded-md"
                   />

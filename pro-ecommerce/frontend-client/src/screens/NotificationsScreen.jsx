@@ -91,7 +91,7 @@ const NotificationsScreen = () => {
         <div className="flex items-center gap-4">
           {/* Back Button */}
           <button
-            onClick={() => navigate("/admin")}
+            onClick={() => navigate("/")}
             className="p-2 text-gray-600 transition-colors rounded-lg hover:bg-gray-100 hover:text-gray-900"
             aria-label="Go back"
           >

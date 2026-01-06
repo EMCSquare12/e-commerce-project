@@ -13,7 +13,6 @@ const Header = () => {
   const { data, isLoading, error } = useGetNotificationsQuery();
   const [markNotificationAsRead, { isLoading: isRead }] =
     useMarkNotificationsReadMutation();
-  const dispatch = useDispatch();
   const unreadCount = data?.filter((n) => !n.read).length;
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);

@@ -23,13 +23,13 @@ const SubHeader = () => {
           Products
         </Link> */}
         <Link
-          to="/cart"
+          to="/blog"
           className="relative flex items-center gap-1 transition hover:text-amber-500"
         >
           Blog
         </Link>
         <Link
-          to="/cart"
+          to="/contact"
           className="relative flex items-center gap-1 transition hover:text-amber-500"
         >
           Contact
