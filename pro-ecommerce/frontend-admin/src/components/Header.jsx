@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Search, Bell, ShoppingBag, User, AlertCircle } from "lucide-react";
 import ProfileMenu from "./ProfileMenu";
-import { markAsRead } from "../slices/notificationsSlice";
 import {
   useGetNotificationsQuery,
   useMarkNotificationsReadMutation,
@@ -31,7 +30,6 @@ const Header = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // 5. Helper to get Icon based on notification type
   const getIcon = (type) => {
     switch (type) {
       case "order":
@@ -56,7 +54,6 @@ const Header = () => {
   };
   return (
     <header className="fixed top-0 right-0 z-20 flex items-center justify-between h-16 px-8 bg-white border-b border-gray-200 left-64">
-      {/* Search Bar */}
       <div className="relative w-96">
         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
           <Search className="w-5 h-5 text-gray-400" />
@@ -68,9 +65,7 @@ const Header = () => {
         />
       </div>
 
-      {/* Right Side Icons */}
       <div className="flex items-center space-x-6">
-        {/* --- Notification Bell & Dropdown --- */}
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsOpen(!isOpen)}
@@ -79,7 +74,6 @@ const Header = () => {
             <span className="sr-only">View notifications</span>
             <Bell className="w-6 h-6" />
 
-            {/* Dynamic Red Badge */}
             {unreadCount > 0 && (
               <span className="absolute flex h-4 w-4 top-1 right-1 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white">
                 {unreadCount}
@@ -87,10 +81,8 @@ const Header = () => {
             )}
           </button>
 
-          {/* Dropdown Menu */}
           {isOpen && (
             <div className="absolute right-0 z-50 mt-2 origin-top-right bg-white border border-gray-200 shadow-xl w-80 rounded-xl animate-fade-in ring-1 ring-black ring-opacity-5">
-              {/* Dropdown Header */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50/50 rounded-t-xl">
                 <h3 className="text-sm font-semibold text-gray-800">
                   Notifications
@@ -102,14 +94,12 @@ const Header = () => {
                 )}
               </div>
 
-              {/* Dropdown List */}
               <div className="max-h-[320px] overflow-y-auto">
                 {data.length === 0 ? (
                   <div className="px-4 py-6 text-center text-gray-500">
                     <p className="text-sm">No notifications yet</p>
                   </div>
                 ) : (
-                  // Show top 5 notifications
                   data.slice(0, 10).map((item) => (
                     <Link
                       key={item._id}
@@ -147,7 +137,6 @@ const Header = () => {
                 )}
               </div>
 
-              {/* Dropdown Footer */}
               <Link
                 to="/admin/notifications"
                 onClick={() => setIsOpen(false)}
@@ -159,7 +148,6 @@ const Header = () => {
           )}
         </div>
 
-        {/* User Profile Dropdown */}
         <div className="relative z-50">
           <ProfileMenu />
         </div>

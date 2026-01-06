@@ -90,7 +90,7 @@ const RecentOrdersTable = ({ orders, isLoading, error }) => {
                     />
                   </td>
                   <td className="p-4 font-mono text-sm font-medium text-gray-900">
-                    #{order.orderId ? order.orderId.slice(-6) : "Unknown"}
+                    #{order.orderId || "Unknown"}
                   </td>
                   <td className="p-4">
                     <div className="flex items-center gap-2">

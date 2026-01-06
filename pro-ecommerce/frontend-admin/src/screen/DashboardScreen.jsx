@@ -22,23 +22,28 @@ const DashboardScreen = () => {
     pageNumber,
   });
 
-  const orders = data?.orders || [];
-  const pages = data?.pages || 1;
-  const page = data?.page || 1;
-
-  if (isLoading)
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-96">
         <Loader />
       </div>
     );
+  }
 
-  if (error)
+  if (error) {
     return (
       <Message variant="danger">
         {error?.data?.message || error.error || "Something went wrong"}
       </Message>
     );
+  }
+  const { orders = {}, stats = {}, monthlySales = [] } = data || {};
+
+  const { data: orderList = [], pages = 1, page = 1 } = orders;
+
+  const { ordersCountToday = 0, totalRevenue = 0, usersCountToday = 0 } = stats;
+
+  console.log(data)
 
   return (
     <div className="mx-auto space-y-6 max-w-7xl">
@@ -50,32 +55,32 @@ const DashboardScreen = () => {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <SalesChart data={data?.monthlySales} />
+          <SalesChart data={monthlySales} />
         </div>
 
         <div className="flex flex-col justify-between space-y-4">
           <StatsCard
             title="Total Orders"
-            value={data?.ordersCountToday || 0}
+            value={ordersCountToday}
             icon={ShoppingCart}
             colorClass="bg-blue-50 text-blue-600"
           />
           <StatsCard
             title="Total Revenue"
-            value={formatCurrency(data?.totalRevenue)}
+            value={formatCurrency(totalRevenue)}
             icon={CreditCard}
             colorClass="bg-emerald-50 text-emerald-600"
           />
           <StatsCard
             title="New Customers"
-            value={data?.usersCountToday || 0}
+            value={usersCountToday}
             icon={Users}
             colorClass="bg-purple-50 text-purple-600"
           />
         </div>
       </div>
 
-      <RecentOrdersTable orders={orders} isLoading={isLoading} error={error} />
+      <RecentOrdersTable orders={orderList} />
 
       {pages > 1 && (
         <Pagination

@@ -11,14 +11,20 @@ import {
   FaUserCircle,
   FaBell,
 } from "react-icons/fa";
+import { Search, Bell, ShoppingBag, User, AlertCircle } from "lucide-react";
+
 import SubHeader from "./SubHeader";
+import {
+  useGetNotificationsQuery,
+  useMarkNotificationsReadMutation,
+} from "../slices/notificationsApiSlice";
 
 const Header = () => {
+  const { data, isLoading, error } = useGetNotificationsQuery();
+  const [markNotificationAsRead, { isLoading: isRead }] =
+    useMarkNotificationsReadMutation();
   const { cartItems } = useSelector((state) => state.cart);
   const { userInfo } = useSelector((state) => state.auth);
-  // Get notifications from Redux
-  const { notifications } = useSelector((state) => state.notifications);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [logoutApiCall] = useLogoutMutation();
@@ -31,7 +37,7 @@ const Header = () => {
   const notifyRef = useRef(null); // New ref
 
   // Calculate unread count
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const unreadCount = data?.filter((n) => !n.read).length;
 
   const logoutHandler = async () => {
     try {
@@ -44,7 +50,19 @@ const Header = () => {
     }
   };
 
-  // Click Outside Handler
+  const getIcon = (type) => {
+    switch (type) {
+      case "order":
+        return <ShoppingBag className="w-4 h-4 text-blue-500" />;
+      case "user":
+        return <User className="w-4 h-4 text-green-500" />;
+      case "alert":
+        return <AlertCircle className="w-4 h-4 text-amber-500" />;
+      default:
+        return <Bell className="w-4 h-4 text-gray-500" />;
+    }
+  };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       // Close Profile Dropdown
@@ -75,60 +93,127 @@ const Header = () => {
 
         <nav className="flex items-center gap-6 text-sm font-medium tracking-wider uppercase">
           {/* --- Notification Bell & Dropdown --- */}
-          <div className="relative" ref={notifyRef}>
-            <button
-              onClick={() => setNotifyOpen(!notifyOpen)}
-              className="relative flex items-center gap-1 transition hover:text-amber-500 focus:outline-none"
-            >
-              <FaBell className="text-lg" />
-              {unreadCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-slate-900">
-                  {unreadCount}
-                </span>
-              )}
-            </button>
+          <div className="flex items-center space-x-6">
+            <div className="relative" ref={notifyRef}>
+              <button
+                onClick={() => setNotifyOpen(!notifyOpen)}
+                className="relative p-2 text-gray-400 transition-colors rounded-full hover:text-gray-500 hover:bg-gray-100 focus:outline-none"
+              >
+                <span className="sr-only">View notifications</span>
+                <Bell className="w-6 h-6" />
 
-            {/* Dropdown Menu */}
-            {notifyOpen && (
-              <div className="absolute right-0 z-20 mt-3 overflow-hidden text-gray-800 bg-white border border-gray-100 rounded-lg shadow-xl w-80">
-                <div className="px-4 py-3 font-semibold border-b border-gray-100 bg-gray-50">
-                  Notifications
-                </div>
-                <div className="overflow-y-auto max-h-64">
-                  {notifications.length === 0 ? (
-                    <div className="px-4 py-4 text-center text-gray-500">
-                      No notifications
-                    </div>
-                  ) : (
-                    // Show only first 3 items in dropdown
-                    notifications.slice(0, 3).map((item) => (
-                      <div
-                        key={item.id}
-                        className={`px-4 py-3 border-b border-gray-50 hover:bg-gray-50 ${
-                          !item.read ? "bg-blue-50" : ""
-                        }`}
-                      >
-                        <p className="text-sm font-semibold text-gray-800">
-                          {item.title}
-                        </p>
-                        <p className="text-xs text-gray-500 truncate">
-                          {item.message}
-                        </p>
+                {unreadCount > 0 && (
+                  <span className="absolute flex h-4 w-4 top-1 right-1 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+
+              {notifyOpen && (
+                <div className="absolute right-0 z-50 mt-2 origin-top-right bg-white border border-gray-200 shadow-xl w-80 rounded-xl animate-fade-in ring-1 ring-black ring-opacity-5">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50/50 rounded-t-xl">
+                    <h3 className="text-sm font-semibold text-gray-800">
+                      Notifications
+                    </h3>
+                    {unreadCount > 0 && (
+                      <span className="text-xs font-medium text-blue-600">
+                        {unreadCount} New
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="max-h-[320px] overflow-y-auto">
+                    {data.length === 0 ? (
+                      <div className="px-4 py-6 text-center text-gray-500">
+                        <p className="text-sm">No notifications yet</p>
                       </div>
-                    ))
+                    ) : (
+                      data.slice(0, 10).map((item) => (
+                        <Link
+                          key={item._id}
+                          to={`/admin/notifications/${item._id}` || "#"}
+                          onClick={() => {
+                            handleMarkNotificationsRead(item._id);
+                            setIsOpen(false);
+                          }}
+                          className={`flex items-start gap-3 px-4 py-3 border-b border-gray-50 transition-colors hover:bg-gray-50 ${
+                            !item.read ? "bg-blue-50/60" : ""
+                          }`}
+                        >
+                          <div className="flex-shrink-0 mt-1 p-1.5 bg-white border border-gray-100 rounded-full shadow-sm">
+                            {getIcon(item.type)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p
+                              className={`text-sm truncate ${
+                                !item.read
+                                  ? "font-semibold text-gray-900"
+                                  : "text-gray-600"
+                              }`}
+                            >
+                              {item.message}
+                            </p>
+                            <p className="text-xs text-gray-400 mt-0.5">
+                              {new Date(item.createdAt).toLocaleString()}
+                            </p>
+                          </div>
+                          {!item.read && (
+                            <span className="w-2 h-2 mt-2 bg-blue-500 rounded-full"></span>
+                          )}
+                        </Link>
+                      ))
+                    )}
+                  </div>
+
+                  <Link
+                    to="/notifications"
+                    onClick={() => setIsOpen(false)}
+                    className="block w-full py-2.5 text-xs font-bold text-center text-gray-600 uppercase transition-colors border-t border-gray-100 hover:bg-gray-50 hover:text-blue-600 rounded-b-xl"
+                  >
+                    View All Notifications
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            <div className="relative z-50">
+              {userInfo ? (
+                <div className="relative" ref={profileRef}>
+                  <button
+                    onClick={() => setProfileOpen(!profileOpen)}
+                    className="flex items-center gap-1 transition hover:text-amber-500 focus:outline-none"
+                  >
+                    {userInfo.name} <FaCaretDown />
+                  </button>
+
+                  {profileOpen && (
+                    <div className="absolute right-0 z-20 w-48 py-1 mt-2 bg-white border border-gray-200 rounded-md shadow-lg">
+                      <Link
+                        to="/profile"
+                        className="flex items-center block w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-100"
+                        onClick={() => setProfileOpen(false)}
+                      >
+                        <FaUserCircle /> Profile
+                      </Link>
+                      <button
+                        onClick={logoutHandler}
+                        className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-100"
+                      >
+                        <FaSignOutAlt /> Logout
+                      </button>
+                    </div>
                   )}
                 </div>
+              ) : (
                 <Link
-                  to="/notifications"
-                  onClick={() => setNotifyOpen(false)}
-                  className="block w-full py-2 text-xs font-bold text-center text-blue-600 uppercase bg-gray-50 hover:bg-gray-100 hover:text-blue-800"
+                  to="/login"
+                  className="flex items-center gap-1 transition hover:text-amber-500"
                 >
-                  View All Notifications
+                  <FaUser /> Sign In
                 </Link>
-              </div>
-            )}
+              )}{" "}
+            </div>
           </div>
-          {/* ------------------------------------ */}
 
           <Link
             to="/cart"
@@ -141,43 +226,6 @@ const Header = () => {
               </span>
             )}
           </Link>
-
-          {/* User Info Logic */}
-          {userInfo ? (
-            <div className="relative" ref={profileRef}>
-              <button
-                onClick={() => setProfileOpen(!profileOpen)}
-                className="flex items-center gap-1 transition hover:text-amber-500 focus:outline-none"
-              >
-                {userInfo.name} <FaCaretDown />
-              </button>
-
-              {profileOpen && (
-                <div className="absolute right-0 z-20 w-48 py-1 mt-2 bg-white border border-gray-200 rounded-md shadow-lg">
-                  <Link
-                    to="/profile"
-                    className="flex items-center block w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-100"
-                    onClick={() => setProfileOpen(false)}
-                  >
-                    <FaUserCircle /> Profile
-                  </Link>
-                  <button
-                    onClick={logoutHandler}
-                    className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-100"
-                  >
-                    <FaSignOutAlt /> Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <Link
-              to="/login"
-              className="flex items-center gap-1 transition hover:text-amber-500"
-            >
-              <FaUser /> Sign In
-            </Link>
-          )}
         </nav>
       </div>
     </header>

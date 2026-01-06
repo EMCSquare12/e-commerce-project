@@ -14,7 +14,6 @@ import Message from "../components/Message";
 const SalesChart = () => {
   const { data, isLoading, error } = useGetDashboardQuery({});
 
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-72">
@@ -30,8 +29,6 @@ const SalesChart = () => {
   }
 
   const salesData = data?.charts?.dailySales || [];
-  console.log(data)
-
   return (
     <div className="p-6 bg-white border border-gray-200 shadow-sm lg:col-span-2 rounded-xl">
       <div className="flex items-center justify-between mb-6">
@@ -59,11 +56,19 @@ const SalesChart = () => {
               stroke="#f3f4f6"
             />
             <XAxis
-              dataKey="_id" 
+              dataKey="_id"
               axisLine={false}
               tickLine={false}
               tick={{ fill: "#9ca3af", fontSize: 12 }}
               dy={10}
+              tickFormatter={(str) => {
+                const date = new Date(str);
+                if (isNaN(date.getTime())) return str;
+                return date.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                });
+              }}
             />
             <YAxis
               axisLine={false}
@@ -77,7 +82,24 @@ const SalesChart = () => {
                 border: "none",
                 boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
               }}
-              formatter={(value) => [`$${value}`, "Sales"]}
+              formatter={(value) => [
+                `$${Number(value).toLocaleString("en-US", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}`,
+                "Sales",
+              ]}
+              labelStyle={{ color: "#6b7280", marginBottom: "0.25rem" }}
+              labelFormatter={(label) => {
+                const date = new Date(label);
+                if (isNaN(date.getTime())) return label;
+                return date.toLocaleDateString("en-US", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                });
+              }}
             />
             <Area
               type="monotone"
