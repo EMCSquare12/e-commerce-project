@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import Order from '../models/orderModel.js';
 import User from '../models/userModel.js';
+import Product from "../models/productModel.js"
 import Notifications from '../models/notificationsModel.js';
 
 
@@ -39,6 +40,13 @@ const addOrderItems = asyncHandler(async (req, res) => {
 
         const createdOrder = await order.save();
 
+        const updateStockPromises = createdOrder.orderItems.map((item) => {
+            return Product.findByIdAndUpdate(item.product, {
+                $inc: { countInStock: -item.qty }
+            });
+        });
+
+        await Promise.all(updateStockPromises);
         await User.findByIdAndUpdate(req.user._id, {
             $inc: { totalSpent: totalPrice },
         });

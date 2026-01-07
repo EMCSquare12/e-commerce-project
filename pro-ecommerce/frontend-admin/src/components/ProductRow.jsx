@@ -1,5 +1,6 @@
 import { MoreHorizontal, Package, Edit, Trash2 } from "lucide-react";
 const ProductRow = ({ product, isOpen, onToggle, onDelete, onUpdate }) => {
+
   const StatusBadge = ({ status }) => {
     const styles = {
       "Out of Stock": "bg-red-100 text-red-700 border-red-200",
@@ -20,12 +21,6 @@ const ProductRow = ({ product, isOpen, onToggle, onDelete, onUpdate }) => {
   };
   return (
     <tr className="transition-colors border-b hover:bg-gray-50 border-gray-50 last:border-0 group">
-      <td className="p-4">
-        <input
-          type="checkbox"
-          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-        />
-      </td>
       <td className="p-4">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center flex-shrink-0 w-10 h-10 overflow-hidden bg-gray-100 border border-gray-200 rounded-lg">
@@ -58,7 +53,6 @@ const ProductRow = ({ product, isOpen, onToggle, onDelete, onUpdate }) => {
         <StatusBadge status={product.status} />
       </td>
 
-      {/* Action Column */}
       <td className="relative p-4 text-right">
         <button
           onClick={(e) => {

@@ -1,6 +1,8 @@
 import { Users, MoreHorizontal, Loader2, AlertCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const RecentOrdersTable = ({ orders, isLoading, error }) => {
+  const navigate = useNavigate();
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -38,7 +40,10 @@ const RecentOrdersTable = ({ orders, isLoading, error }) => {
     <div className="pb-4 overflow-hidden bg-white border border-gray-200 shadow-sm rounded-xl">
       <div className="flex items-center justify-between p-6 border-b border-gray-100">
         <h2 className="text-lg font-bold text-gray-800">Recent Orders</h2>
-        <button className="text-sm font-medium text-blue-600 hover:underline">
+        <button
+          onClick={() => navigate("/admin/orders")}
+          className="text-sm font-medium text-blue-600 hover:underline"
+        >
           View All
         </button>
       </div>
@@ -47,12 +52,6 @@ const RecentOrdersTable = ({ orders, isLoading, error }) => {
         <table className="w-full text-left">
           <thead className="border-b border-gray-200 bg-gray-50">
             <tr>
-              <th className="w-10 p-4">
-                <input
-                  type="checkbox"
-                  className="text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                />
-              </th>
               <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
                 Order ID
               </th>
@@ -83,12 +82,6 @@ const RecentOrdersTable = ({ orders, isLoading, error }) => {
                   key={order.orderId || order._id}
                   className="transition-colors hover:bg-gray-50"
                 >
-                  <td className="p-4">
-                    <input
-                      type="checkbox"
-                      className="text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                    />
-                  </td>
                   <td className="p-4 font-mono text-sm font-medium text-gray-900">
                     #{order.orderId || "Unknown"}
                   </td>

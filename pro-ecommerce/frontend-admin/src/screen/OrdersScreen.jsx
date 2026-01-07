@@ -55,19 +55,15 @@ const OrdersScreen = () => {
 
   return (
     <div className="mx-auto space-y-6 max-w-7xl">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight text-gray-900">
           Orders
         </h1>
       </div>
 
-      {/* Main Card */}
       <div className="pb-4 overflow-hidden bg-white border border-gray-200 shadow-sm rounded-xl">
-        {/* Toolbar */}
         <div className="flex flex-col justify-between gap-4 p-4 bg-white border-b border-gray-100 lg:flex-row lg:items-center">
           <div className="flex flex-col w-full gap-4 sm:flex-row lg:w-auto">
-            {/* Status Filter */}
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-700">Status</span>
               <div className="relative">
@@ -87,7 +83,6 @@ const OrdersScreen = () => {
               </div>
             </div>
 
-            {/* Date Range */}
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-700">From</span>
               <input
@@ -119,7 +114,6 @@ const OrdersScreen = () => {
           </button>
         </div>
 
-        {/* Content Area */}
         {isLoading ? (
           <div className="flex items-center justify-center h-64">
             <Loader />
@@ -136,12 +130,7 @@ const OrdersScreen = () => {
               <table className="w-full text-left border-collapse">
                 <thead className="border-b border-gray-200 bg-gray-50">
                   <tr>
-                    <th className="w-10 p-4">
-                      <input
-                        type="checkbox"
-                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                      />
-                    </th>
+                    
                     <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
                       Order ID
                     </th>

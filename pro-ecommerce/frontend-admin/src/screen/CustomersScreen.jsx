@@ -110,12 +110,6 @@ const CustomersScreen = () => {
               <table className="w-full text-left border-collapse">
                 <thead className="border-b border-gray-200 bg-gray-50">
                   <tr>
-                    <th className="w-10 p-4">
-                      <input
-                        type="checkbox"
-                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                      />
-                    </th>
                     <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
                       Customer
                     </th>
@@ -143,12 +137,6 @@ const CustomersScreen = () => {
                         key={customer._id}
                         className="transition-colors hover:bg-gray-50 group"
                       >
-                        <td className="p-4">
-                          <input
-                            type="checkbox"
-                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                          />
-                        </td>
                         <td className="p-4">
                           <div className="flex items-center gap-3">
                             <div className="flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 text-slate-500">

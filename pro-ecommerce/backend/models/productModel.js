@@ -83,10 +83,10 @@ productSchema.pre('save', function (next) {
   if (this.countInStock === 0) {
     this.status = "Out of Stock"
   }
-  else if (this.countInStock > 0 && this.countInStock <= 10) {
+  if (this.countInStock > 0 && this.countInStock <= 10) {
     this.status = "Low Stock"
   }
-  else {
+  if (this.countInStock > 10) {
     this.status = "In Stock"
   }
   next()

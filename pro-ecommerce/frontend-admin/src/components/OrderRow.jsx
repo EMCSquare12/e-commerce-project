@@ -64,12 +64,6 @@ const OrderRow = ({ order, isExpanded, onToggle, copiedId, onCopy }) => {
   return (
     <>
       <tr className="align-top transition-colors border-b hover:bg-gray-50 border-gray-50 last:border-0">
-        <td className="p-4">
-          <input
-            type="checkbox"
-            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-          />
-        </td>
         <td className="p-4 text-sm font-medium text-gray-900">
           {orderId.length > 10 ? `${orderId.substring(0, 10)}...` : orderId}
         </td>

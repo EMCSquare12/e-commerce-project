@@ -130,27 +130,21 @@ const ProductsScreen = () => {
 
   return (
     <div className="mx-auto space-y-6 max-w-7xl">
-      {/* --- Modals --- */}
       <DeleteConfirmationModal />
 
       <UpdateProductModal onUpdate={handleConfirmUpdate} />
 
       <CreateProductModal onCreate={handleCreateNewProduct} />
 
-      {/* --- Header --- */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight text-gray-900">
           Products
         </h1>
       </div>
 
-      {/* --- Main Card --- */}
       <div className="pb-4 overflow-hidden bg-white border border-gray-200 shadow-sm rounded-xl">
-        {/* --- Toolbar --- */}
         <div className="flex flex-col justify-between gap-4 p-4 bg-white border-b border-gray-100 lg:flex-row lg:items-center">
-          {/* Filters */}
           <div className="flex flex-col w-full gap-4 sm:flex-row lg:w-auto">
-            {/* Category Filter */}
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-700">
                 Category
@@ -173,7 +167,6 @@ const ProductsScreen = () => {
               </div>
             </div>
 
-            {/* Stock Filter */}
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-700">Stock</span>
               <div className="relative">
@@ -181,7 +174,7 @@ const ProductsScreen = () => {
                   onChange={(e) => handleFilterChange("status", e.target.value)}
                   className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 pr-8 outline-none cursor-pointer"
                 >
-                  <option value="">All Statuses</option>
+                  <option value="">All</option>
                   {stockStatus?.map((status) => (
                     <option key={status} value={status}>
                       {status}
@@ -193,7 +186,6 @@ const ProductsScreen = () => {
             </div>
           </div>
 
-          {/* Action Buttons */}
           <div className="flex flex-col gap-3 sm:flex-row">
             <button
               onClick={() =>
@@ -229,11 +221,6 @@ const ProductsScreen = () => {
               <table className="w-full text-left border-collapse">
                 <thead className="border-b border-gray-200 bg-gray-50">
                   <tr>
-                    <th className="w-10 p-4">
-                      <button className="flex items-center w-full gap-2 text-sm text-red-600 transition-colors hover:bg-red-50 hover:text-red-700">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </th>
                     <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
                       Product
                     </th>

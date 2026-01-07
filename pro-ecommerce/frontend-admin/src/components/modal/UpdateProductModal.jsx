@@ -48,7 +48,7 @@ const UpdateProductModal = ({ onUpdate }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    dispatch(setUpdateFormData((prev) => ({ ...prev, [name]: value })));
+    dispatch(setUpdateFormData({[name]:value}));
   };
 
   const handleAddImage = (e) => {
@@ -121,7 +121,7 @@ const UpdateProductModal = ({ onUpdate }) => {
         <div className="flex items-center justify-between p-5 border-b border-gray-100">
           <h3 className="text-xl font-bold text-gray-800">Update Product</h3>
           <button
-            onClick={() => dispatchEvent()}
+            onClick={() => dispatch(setUpdateModal({ open: false }))}
             className="p-1 text-gray-400 transition-colors rounded-full hover:bg-gray-100 hover:text-gray-600"
           >
             <X className="w-5 h-5" />
@@ -244,9 +244,7 @@ const UpdateProductModal = ({ onUpdate }) => {
         <div className="flex gap-3 p-5 border-t border-gray-100 bg-gray-50 rounded-b-xl">
           <button
             type="button"
-            onClick={() =>
-              dispatch(setUpdateModal({ ...updateModal, open: false }))
-            }
+            onClick={() => dispatch(setUpdateModal({ open: false }))}
             disabled={isLoadingGlobal}
             className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
           >
