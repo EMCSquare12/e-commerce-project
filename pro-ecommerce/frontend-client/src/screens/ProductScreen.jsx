@@ -33,12 +33,28 @@ const ProductScreen = () => {
     setQty(1);
   }, [product, productId]);
 
+  useEffect(() => {
+    const handleArrowKey = (e) => {
+      if (e.key === "ArrowRight" && navigation?.next) {
+        navigate(`/product/${navigation?.next._id}`);
+      }
+      if (e.key === "ArrowLeft" && navigation?.prev) {
+        navigate(`/product/${navigation?.prev._id}`);
+      }
+    };
+
+    window.addEventListener("keydown", handleArrowKey);
+
+    return () => {
+      window.removeEventListener("keydown", handleArrowKey);
+    };
+  }, [navigation]);
+
   const addToCartHandler = () => {
     dispatch(addToCart({ ...product, qty }));
     navigate("/cart");
   };
 
-  console.log(navigation);
   const arrowBtnStyle =
     "fixed top-1/2 transform -translate-y-1/2 z-10 hidden md:flex items-center justify-center w-16 h-16  transition  text-3xl text-gray-300 hover:text-gray-400 hover:bg-gray-100 hover:shadow-lg";
 
