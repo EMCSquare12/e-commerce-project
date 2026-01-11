@@ -45,7 +45,7 @@ const Header = () => {
   const handleMarkNotificationsRead = async (id) => {
     setNotificationId(id);
     try {
-      const res = await markNotificationAsRead(id).unwrap();
+      const res = await markNotificationAsRead({ notificationId: id }).unwrap();
       toast.success(res.message);
     } catch (err) {
       toast.error(err?.res?.message || "Notifications Not Found");

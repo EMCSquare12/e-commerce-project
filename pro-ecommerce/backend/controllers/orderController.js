@@ -62,7 +62,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
                 user: req.user.name,
                 type: "order",
                 title: "New Order Placed",
-                message: `Order #${createdOrder._id} placed by ${req.user.name}`,
+                message: `Order #${createdOrder.orderId} placed by ${req.user.name}`,
                 relatedId: createdOrder._id
             }));
 
