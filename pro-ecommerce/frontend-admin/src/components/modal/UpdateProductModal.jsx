@@ -48,7 +48,7 @@ const UpdateProductModal = ({ onUpdate }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    dispatch(setUpdateFormData({[name]:value}));
+    dispatch(setUpdateFormData({ [name]: value }));
   };
 
   const handleAddImage = (e) => {

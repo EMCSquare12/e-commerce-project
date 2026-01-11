@@ -41,12 +41,15 @@ const addOrderItems = asyncHandler(async (req, res) => {
         const createdOrder = await order.save();
 
         const updateStockPromises = createdOrder.orderItems.map((item) => {
-            return Product.findByIdAndUpdate(item.product, {
-                $inc: { countInStock: -item.qty }
-            });
+            return Product.findByIdAndUpdate(
+                item.product,
+                { $inc: { countInStock: -item.qty } },
+                { new: true }
+            );
         });
 
-        await Promise.all(updateStockPromises);
+        const updatedProducts = await Promise.all(updateStockPromises);
+
         await User.findByIdAndUpdate(req.user._id, {
             $inc: { totalSpent: totalPrice },
         });
@@ -54,16 +57,39 @@ const addOrderItems = asyncHandler(async (req, res) => {
         const admins = await User.find({ isAdmin: true });
 
         if (admins.length > 0) {
-            const notifications = admins.map(admin => ({
+            const orderNotifications = admins.map(admin => ({
                 recipient: admin._id,
                 user: req.user.name,
                 type: "order",
                 title: "New Order Placed",
-                message: `Order #${createdOrder.orderId} placed by ${req.user.name}`,
+                message: `Order #${createdOrder._id} placed by ${req.user.name}`,
                 relatedId: createdOrder._id
             }));
 
-            await Notifications.insertMany(notifications);
+            await Notifications.insertMany(orderNotifications);
+
+            const lowStockItems = updatedProducts.filter(p => p.countInStock < 10);
+
+            if (lowStockItems.length > 0) {
+                const stockNotifications = [];
+
+                admins.forEach(admin => {
+                    lowStockItems.forEach(product => {
+                        stockNotifications.push({
+                            recipient: admin._id,
+                            user: "System",
+                            type: "alert",
+                            title: product.countInStock === 0 ? "Out of Stock!" : "Low Stock Alert",
+                            message: `Item "${product.name}" is down to ${product.countInStock} units.`,
+                            relatedId: product._id
+                        });
+                    });
+                });
+
+                if (stockNotifications.length > 0) {
+                    await Notifications.insertMany(stockNotifications);
+                }
+            }
         }
 
         res.status(201).json(createdOrder);

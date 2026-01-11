@@ -1,6 +1,5 @@
 import { MoreHorizontal, Package, Edit, Trash2 } from "lucide-react";
 const ProductRow = ({ product, isOpen, onToggle, onDelete, onUpdate }) => {
-
   const StatusBadge = ({ status }) => {
     const styles = {
       "Out of Stock": "bg-red-100 text-red-700 border-red-200",
