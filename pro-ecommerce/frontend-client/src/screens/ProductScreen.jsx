@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { useGetProductDetailsQuery } from "../slices/productsApiSlice";
+import {
+  useGetProductDetailsQuery,
+  useGetProductNavigationQuery,
+} from "../slices/productsApiSlice";
 import { addToCart } from "../slices/cartSlice";
 import Rating from "../components/Rating";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const ProductScreen = () => {
   const { id: productId } = useParams();
@@ -13,7 +17,6 @@ const ProductScreen = () => {
   const navigate = useNavigate();
 
   const [qty, setQty] = useState(1);
-  // New state to track the currently displayed image URL
   const [selectedImage, setSelectedImage] = useState("");
 
   const {
@@ -22,20 +25,59 @@ const ProductScreen = () => {
     error,
   } = useGetProductDetailsQuery(productId);
 
-  // When product data loads, set the first image as the default selected image
+  const { data: navigation } = useGetProductNavigationQuery(productId);
   useEffect(() => {
     if (product?.image?.length > 0) {
       setSelectedImage(product.image[0]);
     }
-  }, [product]);
+    setQty(1);
+  }, [product, productId]);
 
   const addToCartHandler = () => {
     dispatch(addToCart({ ...product, qty }));
     navigate("/cart");
   };
 
+  console.log(navigation);
+  const arrowBtnStyle =
+    "fixed top-1/2 transform -translate-y-1/2 z-10 hidden md:flex items-center justify-center w-16 h-16  transition  text-3xl text-gray-300 hover:text-gray-400 hover:bg-gray-100 hover:shadow-lg";
+
   return (
     <>
+      {navigation?.prev ? (
+        <Link
+          to={`/product/${navigation.prev._id}`}
+          className={`${arrowBtnStyle} left-4`}
+          title="Previous Product"
+        >
+          <FaChevronLeft />
+        </Link>
+      ) : (
+        <button
+          className={`${arrowBtnStyle} left-4 opacity-30 cursor-not-allowed`}
+          disabled
+        >
+          <FaChevronLeft />
+        </button>
+      )}
+
+      {navigation?.next ? (
+        <Link
+          to={`/product/${navigation.next._id}`}
+          className={`${arrowBtnStyle} right-4`}
+          title="Next Product"
+        >
+          <FaChevronRight />
+        </Link>
+      ) : (
+        <button
+          className={`${arrowBtnStyle} right-4 opacity-30 cursor-not-allowed`}
+          disabled
+        >
+          <FaChevronRight />
+        </button>
+      )}
+
       <Link
         className="inline-block px-4 py-2 mb-6 transition rounded bg-slate-200 hover:bg-slate-300 text-slate-800"
         to="/"
@@ -51,19 +93,15 @@ const ProductScreen = () => {
         </Message>
       ) : (
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-          {/* Image Gallery Column */}
+          {/* Image Section */}
           <div className="md:col-span-1 lg:col-span-2">
-            {/* Main Large Image */}
             <div className="relative w-full mb-4 overflow-hidden bg-gray-100 rounded-lg aspect-square">
               <img
-                // Use the selectedImage state here
                 src={selectedImage || product.image[0]}
                 alt={product.name}
                 className="object-cover object-center w-full h-full"
               />
             </div>
-
-            {/* Thumbnails Strip - Only show if there's more than one image */}
             {product.image.length > 1 && (
               <div className="grid grid-cols-4 gap-4">
                 {product.image.map((imgUrl, index) => (
@@ -82,17 +120,13 @@ const ProductScreen = () => {
                       alt={`${product.name} view ${index + 1}`}
                       className="object-cover object-center w-full h-full"
                     />
-                    {/* Overlay for non-selected items to make them slightly dimmer */}
-                    {selectedImage !== imgUrl && (
-                      <div className="absolute inset-0 transition-opacity bg-black/10 hover:bg-transparent"></div>
-                    )}
                   </button>
                 ))}
               </div>
             )}
           </div>
 
-          {/* Details Column - No changes here */}
+          {/* Details Section */}
           <div className="md:col-span-1 lg:col-span-1">
             <h3 className="mb-3 text-3xl font-bold text-slate-800">
               {product.name}
@@ -115,7 +149,7 @@ const ProductScreen = () => {
             </div>
           </div>
 
-          {/* Action Box Column - No changes here */}
+          {/* Cart Section */}
           <div className="md:col-span-2 lg:col-span-1">
             <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
               <div className="flex items-center justify-between pb-4 mb-4 border-b border-gray-100">

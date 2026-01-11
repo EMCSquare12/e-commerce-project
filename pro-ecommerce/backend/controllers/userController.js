@@ -74,7 +74,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 
-const getUserAdmin = asyncHandler(async (req, res) => {
+const getUserDetails = asyncHandler(async (req, res) => {
   const pageSize = 10
   const page = Number(req.query.pageNumber)
   const filter = {}
@@ -90,14 +90,12 @@ const getUserAdmin = asyncHandler(async (req, res) => {
       filter.status = "active";
     } else if (status === "inactive") {
       filter.status = "inactive";
-    } else if (status === "suspended") {
-      filter.status = "suspended"
     }
   }
 
   const count = await User.countDocuments(filter)
   const users = await User.find(filter)
-    .populate('totalOrder.product', 'name price image')
+    .populate('orders.product', 'name price image')
     .limit(pageSize)
     .skip(pageSize * (page - 1))
     .sort({ createdAt: -1 })
@@ -107,4 +105,4 @@ const getUserAdmin = asyncHandler(async (req, res) => {
 
 })
 
-export { authUser, registerUser, logoutUser, getUserAdmin };
+export { authUser, registerUser, logoutUser, getUserDetails };

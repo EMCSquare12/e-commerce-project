@@ -51,7 +51,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
         const updatedProducts = await Promise.all(updateStockPromises);
 
         await User.findByIdAndUpdate(req.user._id, {
-            $inc: { totalSpent: totalPrice },
+            $inc: { totalSpent: totalPrice }, $push: { orders: createdOrder }
         });
 
         const admins = await User.find({ isAdmin: true });

@@ -1,5 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import Product from '../models/productModel.js';
+import mongoose from 'mongoose';
 
 // --- Helper Functions ---
 const buildFilter = (query) => {
@@ -188,6 +189,28 @@ const getStockStatus = asyncHandler(async (req, res) => {
   res.json(stockStatus);
 });
 
+const getProductNavigation = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    res.status(404);
+    throw new Error('Invalid Product ID');
+  }
+
+  const objectId = new mongoose.Types.ObjectId(id);
+
+  const [prev, next] = await Promise.all([
+    Product.findOne({ _id: { $lt: objectId } })
+      .sort({ _id: -1 }),
+
+    Product.findOne({ _id: { $gt: objectId } })
+      .sort({ _id: 1 })
+  ]);
+
+  res.json({ prev, next });
+});
+
+
 export {
   getProducts,
   getProductsAdmin,
@@ -198,4 +221,5 @@ export {
   getCategories,
   getBrands,
   getStockStatus,
+  getProductNavigation
 };

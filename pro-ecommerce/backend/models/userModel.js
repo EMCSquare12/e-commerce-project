@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema({
         default: 0
     },
     // --- Updated Field ---
-    totalOrder: [{
+    orders: [{
         product: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Product', // Links to your Product model

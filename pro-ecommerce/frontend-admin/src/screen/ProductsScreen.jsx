@@ -128,6 +128,22 @@ const ProductsScreen = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Message variant="danger">
+        {error?.data?.message || error.error || "Something went wrong"}
+      </Message>
+    );
+  }
+
   return (
     <div className="mx-auto space-y-6 max-w-7xl">
       <DeleteConfirmationModal />
@@ -209,93 +225,85 @@ const ProductsScreen = () => {
         </div>
 
         {/* --- Table Content --- */}
-        {isLoading ? (
-          <Loader />
-        ) : error ? (
-          <Message variant="danger">
-            {error?.data?.message || error.error || "Error loading products"}
-          </Message>
-        ) : (
-          <>
-            <div className="overflow-x-auto min-h-[400px]">
-              <table className="w-full text-left border-collapse">
-                <thead className="border-b border-gray-200 bg-gray-50">
+        <>
+          <div className="overflow-x-auto min-h-[400px]">
+            <table className="w-full text-left border-collapse">
+              <thead className="border-b border-gray-200 bg-gray-50">
+                <tr>
+                  <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
+                    Product
+                  </th>
+                  <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
+                    SKU
+                  </th>
+                  <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
+                    Category
+                  </th>
+                  <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
+                    Price
+                  </th>
+                  <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
+                    Stock
+                  </th>
+                  <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
+                    Status
+                  </th>
+                  <th className="p-4 text-xs font-semibold tracking-wider text-right text-gray-500 uppercase">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody className="divide-y divide-gray-100">
+                {data.products?.map((product, index) => (
+                  <ProductRow
+                    key={product._id}
+                    product={product}
+                    isOpen={activeActionIndex === index}
+                    onToggle={() => toggleActionMenu(index)}
+                    onDelete={() => {
+                      dispatch(
+                        setDeleteModal({
+                          open: true,
+                          id: product._id,
+                          name: product.name,
+                        })
+                      );
+
+                      setActiveActionIndex(null);
+                    }}
+                    onUpdate={() => {
+                      dispatch(
+                        setUpdateModal({ open: true, product: product })
+                      );
+                      setActiveActionIndex(null);
+                    }}
+                  />
+                ))}
+                {data.products?.length === 0 && (
                   <tr>
-                    <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                      Product
-                    </th>
-                    <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                      SKU
-                    </th>
-                    <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                      Category
-                    </th>
-                    <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                      Price
-                    </th>
-                    <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                      Stock
-                    </th>
-                    <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                      Status
-                    </th>
-                    <th className="p-4 text-xs font-semibold tracking-wider text-right text-gray-500 uppercase">
-                      Actions
-                    </th>
+                    <td colSpan="8" className="p-8 text-center text-gray-500">
+                      No products found matching your filters.
+                    </td>
                   </tr>
-                </thead>
+                )}
+              </tbody>
+            </table>
+          </div>
 
-                <tbody className="divide-y divide-gray-100">
-                  {data.products?.map((product, index) => (
-                    <ProductRow
-                      key={product._id}
-                      product={product}
-                      isOpen={activeActionIndex === index}
-                      onToggle={() => toggleActionMenu(index)}
-                      onDelete={() => {
-                        dispatch(
-                          setDeleteModal({
-                            open: true,
-                            id: product._id,
-                            name: product.name,
-                          })
-                        );
-
-                        setActiveActionIndex(null);
-                      }}
-                      onUpdate={() => {
-                        dispatch(
-                          setUpdateModal({ open: true, product: product })
-                        );
-                        setActiveActionIndex(null);
-                      }}
-                    />
-                  ))}
-                  {data.products?.length === 0 && (
-                    <tr>
-                      <td colSpan="8" className="p-8 text-center text-gray-500">
-                        No products found matching your filters.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+          {/* --- Pagination --- */}
+          {data?.pages > 1 && (
+            <div className="bg-white border-t border-gray-100">
+              <Pagination
+                setItemPages={(num) =>
+                  dispatch(filterChange({ key: "page", value: num }))
+                }
+                page={filter.page}
+                pages={data?.pages}
+              />
             </div>
-
-            {/* --- Pagination --- */}
-            {data?.pages > 1 && (
-              <div className="bg-white border-t border-gray-100">
-                <Pagination
-                  setItemPages={(num) =>
-                    dispatch(filterChange({ key: "page", value: num }))
-                  }
-                  page={filter.page}
-                  pages={data?.pages}
-                />
-              </div>
-            )}
-          </>
-        )}
+          )}
+        </>
       </div>
     </div>
   );

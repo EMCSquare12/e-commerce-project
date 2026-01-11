@@ -19,7 +19,6 @@ const LoginScreen = () => {
   const { userInfo } = useSelector((state) => state.auth);
 
   console.log(userInfo);
-  // Redirect if already logged in
   useEffect(() => {
     if (userInfo) {
       navigate("/admin");
@@ -29,13 +28,10 @@ const LoginScreen = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      // 1. Call API
       const res = await login({ email, password }).unwrap();
-      console.log("API Response:", res); // Does this have data?
-      // 2. Set Token/User in Redux Store
+      console.log("API Response:", res);
       dispatch(setCredentials({ ...res }));
       console.log("Redux Dispatched");
-      // 3. Navigate to Dashboard
       navigate("/admin");
       toast.success("Welcome back!");
     } catch (err) {
@@ -62,7 +58,6 @@ const LoginScreen = () => {
         {/* Form */}
         <form className="mt-8 space-y-6" onSubmit={submitHandler}>
           <div className="space-y-5">
-            {/* Email */}
             <div>
               <label
                 htmlFor="email"

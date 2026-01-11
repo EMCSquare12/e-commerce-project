@@ -9,7 +9,8 @@ import {
     getProductsAdmin,
     getStockStatus,
     updateProduct,
-    createProduct
+    createProduct,
+    getProductNavigation
 
 } from '../controllers/productController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
@@ -22,9 +23,8 @@ router
     .route('/').get(getProducts)
     .post(protect, admin, createProduct)
 
-
 router.get('/admin', getProductsAdmin);
-// Route for /api/products/:id
+router.get('/:id/navigation', getProductNavigation)
 router
     .route('/:id')
     .get(getProductById)

@@ -53,6 +53,21 @@ const OrdersScreen = () => {
     setExpandedOrderId((prev) => (prev === orderId ? null : orderId));
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Message variant="danger">
+        {error?.data?.message || error.error || "Something went wrong"}
+      </Message>
+    );
+  }
   return (
     <div className="mx-auto space-y-6 max-w-7xl">
       <div className="flex items-center justify-between">
@@ -114,87 +129,74 @@ const OrdersScreen = () => {
           </button>
         </div>
 
-        {isLoading ? (
-          <div className="flex items-center justify-center h-64">
-            <Loader />
-          </div>
-        ) : error ? (
-          <div className="p-6">
-            <Message variant="danger">
-              {error?.data?.message || error.error || "Error loading orders"}
-            </Message>
-          </div>
-        ) : (
-          <>
-            <div className="overflow-x-auto min-h-[400px]">
-              <table className="w-full text-left border-collapse">
-                <thead className="border-b border-gray-200 bg-gray-50">
+        <>
+          <div className="overflow-x-auto min-h-[400px]">
+            <table className="w-full text-left border-collapse">
+              <thead className="border-b border-gray-200 bg-gray-50">
+                <tr>
+                  <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
+                    Order ID
+                  </th>
+                  <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
+                    Customer
+                  </th>
+                  <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
+                    Date
+                  </th>
+                  <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
+                    Items
+                  </th>
+                  <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
+                    Total
+                  </th>
+                  <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
+                    Address
+                  </th>
+                  <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
+                    Status
+                  </th>
+                  <th className="p-4 text-xs font-semibold tracking-wider text-right text-gray-500 uppercase">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {data?.orders?.length > 0 ? (
+                  data.orders.map((order) => {
+                    const id = order.orderId || order._id || "";
+                    return (
+                      <OrderRow
+                        key={id}
+                        order={order}
+                        isExpanded={expandedOrderId === id}
+                        onToggle={() => toggleRow(id)}
+                        copiedId={copiedId}
+                        onCopy={copyToClipboard}
+                      />
+                    );
+                  })
+                ) : (
                   <tr>
-                    
-                    <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                      Order ID
-                    </th>
-                    <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                      Customer
-                    </th>
-                    <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                      Date
-                    </th>
-                    <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                      Items
-                    </th>
-                    <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                      Total
-                    </th>
-                    <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                      Address
-                    </th>
-                    <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                      Status
-                    </th>
-                    <th className="p-4 text-xs font-semibold tracking-wider text-right text-gray-500 uppercase">
-                      Actions
-                    </th>
+                    <td colSpan="9" className="p-8 text-center text-gray-500">
+                      No orders found matching your criteria.
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {data?.orders?.length > 0 ? (
-                    data.orders.map((order) => {
-                      const id = order.orderId || order._id || "";
-                      return (
-                        <OrderRow
-                          key={id}
-                          order={order}
-                          isExpanded={expandedOrderId === id}
-                          onToggle={() => toggleRow(id)}
-                          copiedId={copiedId}
-                          onCopy={copyToClipboard}
-                        />
-                      );
-                    })
-                  ) : (
-                    <tr>
-                      <td colSpan="9" className="p-8 text-center text-gray-500">
-                        No orders found matching your criteria.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+                )}
+              </tbody>
+            </table>
+          </div>
 
-            {/* Pagination Footer */}
-            {data?.pages > 1 && (
-              <div className="bg-white border-t border-gray-100">
-                <Pagination
-                  setItemPages={(num) => dispatch(setPageNumber(num))}
-                  page={pageNumber}
-                  pages={data?.pages}
-                />
-              </div>
-            )}
-          </>
-        )}
+          {/* Pagination Footer */}
+          {data?.pages > 1 && (
+            <div className="bg-white border-t border-gray-100">
+              <Pagination
+                setItemPages={(num) => dispatch(setPageNumber(num))}
+                page={pageNumber}
+                pages={data?.pages}
+              />
+            </div>
+          )}
+        </>
       </div>
     </div>
   );
