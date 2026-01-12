@@ -67,7 +67,7 @@ const NotificationDetailsScreen = () => {
         notificationId: id,
       }).unwrap();
       toast.success(res?.message || "Deleted successfully");
-      navigate("/admin/notifications");
+      navigate("/notifications");
     } catch (err) {
       toast.error(err?.data?.message || "Failed to delete notification");
       console.error("Delete Error:", err);
@@ -78,7 +78,7 @@ const NotificationDetailsScreen = () => {
     <div className="max-w-3xl p-6 mx-auto">
       <div className="mb-6">
         <button
-          onClick={() => navigate("/admin/notifications")}
+          onClick={() => navigate("/notifications")}
           className="flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-gray-800"
         >
           <ArrowLeft className="w-4 h-4" />

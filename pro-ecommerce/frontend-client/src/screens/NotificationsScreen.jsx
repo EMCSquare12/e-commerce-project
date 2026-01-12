@@ -78,9 +78,9 @@ const NotificationsScreen = () => {
   const handleMarkNotificationsRead = async (id) => {
     setNotificationId(id);
     try {
-      const res = await markNotificationsRead({ notificationId: id }).unwrap();
+      await markNotificationsRead({ notificationId: id }).unwrap();
     } catch (err) {
-      toast.error(err?.res?.message || "Notifications Not Found");
+      toast.error(err?.message || "Notifications Not Found");
     }
   };
 
@@ -166,7 +166,7 @@ const NotificationsScreen = () => {
                       </span>
                     </div>
                     <Link
-                      to={`/admin/notifications/${item._id}`}
+                      to={`/notifications/${item._id}`}
                       onClick={() => handleMarkNotificationsRead(item._id)}
                       className={`text-base hover:text-blue-600 hover:underline ${
                         !item.read

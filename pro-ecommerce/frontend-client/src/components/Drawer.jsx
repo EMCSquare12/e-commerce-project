@@ -47,7 +47,7 @@ const Drawer = () => {
   return (
     <>
       {/* Drawer Container */}
-      <div className="fixed inset-y-0 left-0 z-50 flex flex-col h-screen transition-transform transform bg-white border-r border-gray-200 w-80 sm:w-80">
+      <div className="fixed inset-y-0 left-0 z-50 flex flex-col h-screen transition-transform transform bg-white w-80 sm:w-80">
         {/* --- Header --- */}
         <div className="flex flex-row items-center justify-between px-6 py-5 border-b border-gray-100">
           <h1 className="text-xl font-bold text-gray-800">Filters</h1>
@@ -68,7 +68,7 @@ const Drawer = () => {
         </div>
 
         {/* --- Scrollable Content Body --- */}
-        <div className="flex flex-col flex-1 overflow-y-auto">
+        <div className="flex flex-col flex-1 overflow-y-auto scrollbar-hide">
           {/* Category Section */}
           <div className="border-b border-gray-100">
             <button

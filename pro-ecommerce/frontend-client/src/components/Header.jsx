@@ -20,9 +20,12 @@ import {
 } from "../slices/notificationsApiSlice";
 
 const Header = () => {
+  const [notificationId, setNotificationId] = useState(null);
   const { data, isLoading, error } = useGetNotificationsQuery();
-  const [markNotificationAsRead, { isLoading: isRead }] =
-    useMarkNotificationsReadMutation();
+  const [markNotificationsRead, { isLoading: isRead }] =
+    useMarkNotificationsReadMutation({
+      notificationId,
+    });
   const { cartItems } = useSelector((state) => state.cart);
   const { userInfo } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -77,6 +80,14 @@ const Header = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleMarkNotificationsRead = async (id) => {
+    setNotificationId(id);
+    try {
+      await markNotificationsRead({ notificationId: id }).unwrap();
+    } catch (err) {
+      toast.error(err?.message || "Notifications Not Found");
+    }
+  };
   return (
     <header className="sticky top-0 z-10 text-white shadow-md bg-slate-900">
       <div className="container flex items-center justify-between px-4 py-4 mx-auto">
@@ -130,7 +141,7 @@ const Header = () => {
                       data.slice(0, 10).map((item) => (
                         <Link
                           key={item._id}
-                          to={`/admin/notifications/${item._id}` || "#"}
+                          to={`/notifications/${item._id}` || "#"}
                           onClick={() => {
                             handleMarkNotificationsRead(item._id);
                             setIsOpen(false);
