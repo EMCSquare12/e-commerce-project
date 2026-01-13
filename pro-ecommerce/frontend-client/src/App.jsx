@@ -10,8 +10,8 @@ const App = () => {
     <div className="flex flex-row w-full min-h-screen ">
       {isOpen && <Drawer />}
       <div
-        className={`flex flex-col w-full font-sans text-slate-900 bg-gray-50 ${
-          isOpen ? "ml-80" : ""
+        className={`flex flex-col w-full font-sans text-slate-900 bg-gray-50 transition-all duration-300 ${
+          isOpen ? "md:ml-80" : ""
         }`}
       >
         <Header />
