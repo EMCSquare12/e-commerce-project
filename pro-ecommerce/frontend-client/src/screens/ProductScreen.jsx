@@ -9,7 +9,7 @@ import { addToCart } from "../slices/cartSlice";
 import Rating from "../components/Rating";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
-import { ChevronLeft, ChevronRight } from "react-icons/fa";
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
 const ProductScreen = () => {
   const { id: productId } = useParams();

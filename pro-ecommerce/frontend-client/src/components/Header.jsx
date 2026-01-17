@@ -3,9 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useLogoutMutation } from "../slices/usersApiSlice";
 import { logout } from "../slices/authSlice";
-import { toggleDrawer } from "../slices/toggleSlice"; // Import toggle action
 import {
-  Menu,
   ShoppingBag,
   UserRound,
   AlertCircle,
@@ -89,47 +87,47 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 text-white shadow-md bg-slate-900">
-      <div className="container flex items-center justify-between px-4 py-4 mx-auto">
-        <div className="flex items-center gap-4">
-          {/* Hamburger Menu - Visible on Mobile */}
-          <button
-            onClick={() => dispatch(toggleDrawer())}
-            className="text-2xl text-white focus:outline-none lg:hidden"
-          >
-            <Menu />
-          </button>
-
-          {/* Logo */}
+    // ADDED: sticky, top-0, z-40 to make it stick on mobile & desktop
+    <header className="sticky top-0 z-50 w-full text-white shadow-md bg-slate-900">
+      <div className="container flex items-center justify-between gap-4 px-4 py-3 mx-auto">
+        {/* 1. LOGO SECTION - Prevent shrinking so it stays visible */}
+        <div className="flex items-center flex-shrink-0">
           <Link
             to="/"
-            className="flex items-center gap-2 text-2xl font-bold tracking-wide"
+            className="flex items-center gap-2 text-xl font-bold tracking-wide md:text-2xl"
           >
             <i className="fa-solid fa-shop text-amber-500"></i>
+            {/* Show 'ProShop' on all screens */}
             <span>ProShop</span>
           </Link>
         </div>
 
-        <SubHeader />
+        {/* 2. SEARCH SECTION (SubHeader) - Flex grow to fill space */}
+        {/* On mobile: It sits next to logo. On desktop: It sits in middle. */}
+        <div className="flex-grow max-w-md mx-auto">
+          <SubHeader />
+        </div>
 
-        {/* Right Section: Icons */}
-        <nav className="flex items-center gap-4 text-sm font-medium tracking-wider uppercase sm:gap-6">
+        {/* 3. DESKTOP ICONS - Hidden on Mobile (md:flex) */}
+        {/* These are hidden on mobile because they are now in your Bottom Navigation */}
+        <nav className="items-center flex-shrink-0 hidden gap-4 text-sm font-medium tracking-wider uppercase md:flex sm:gap-6">
           {/* Notification Bell */}
           <div className="relative" ref={notifyRef}>
             <button
               onClick={() => setNotifyOpen(!notifyOpen)}
               className="flex items-center gap-1 transition hover:text-amber-500 focus:outline-none"
             >
-              <Bell />
+              <Bell className="w-6 h-6" />
               {unreadCount > 0 && (
-                <span className="absolute -top-3 -right-3 bg-red-500 text-slate-900 text-xs font-bold px-1.5 py-0.5 rounded-full">
+                <span className="absolute -top-2 -right-2 bg-red-500 text-slate-900 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
                   {unreadCount}
                 </span>
               )}
             </button>
 
+            {/* Notification Dropdown (Same as before) */}
             {notifyOpen && (
-              <div className="absolute right-0 z-50 mt-2 origin-top-right bg-white border border-gray-200 shadow-xl w-80 rounded-xl animate-fade-in ring-1 ring-black ring-opacity-5">
+              <div className="absolute right-0 z-50 mt-2 origin-top-right bg-white border border-gray-200 shadow-xl w-80 rounded-xl ring-1 ring-black ring-opacity-5">
                 <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50/50 rounded-t-xl">
                   <h3 className="text-sm font-semibold text-gray-800">
                     Notifications
@@ -141,6 +139,7 @@ const Header = () => {
                   )}
                 </div>
                 <div className="max-h-[320px] overflow-y-auto">
+                  {/* ... (Existing Notification Logic) ... */}
                   {data && data.length === 0 ? (
                     <div className="px-4 py-6 text-center text-gray-500">
                       <p className="text-sm">No notifications yet</p>
@@ -154,30 +153,16 @@ const Header = () => {
                           handleMarkNotificationsRead(item._id);
                           setNotifyOpen(false);
                         }}
-                        className={`flex items-start gap-3 px-4 py-3 border-b border-gray-50 transition-colors hover:bg-gray-50 ${
+                        className={`flex items-start gap-3 px-4 py-3 border-b border-gray-50 transition-colors hover:bg-gray-50 text-gray-800 ${
                           !item.read ? "bg-blue-50/60" : ""
                         }`}
                       >
-                        <div className="flex-shrink-0 mt-1 p-1.5 bg-white border border-gray-100 rounded-full shadow-sm">
+                        <div className="flex-shrink-0 mt-1">
                           {getIcon(item.type)}
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p
-                            className={`text-sm truncate ${
-                              !item.read
-                                ? "font-semibold text-gray-900"
-                                : "text-gray-600"
-                            }`}
-                          >
-                            {item.message}
-                          </p>
-                          <p className="text-xs text-gray-400 mt-0.5">
-                            {new Date(item.createdAt).toLocaleString()}
-                          </p>
+                        <div className="flex-1">
+                          <p className="text-xs md:text-sm">{item.message}</p>
                         </div>
-                        {!item.read && (
-                          <span className="w-2 h-2 mt-2 bg-blue-500 rounded-full"></span>
-                        )}
                       </Link>
                     ))
                   )}
@@ -185,21 +170,22 @@ const Header = () => {
                 <Link
                   to="/notifications"
                   onClick={() => setNotifyOpen(false)}
-                  className="block w-full py-2.5 text-xs font-bold text-center text-gray-600 uppercase transition-colors border-t border-gray-100 hover:bg-gray-50 hover:text-blue-600 rounded-b-xl"
+                  className="block w-full py-2 text-xs font-bold text-center text-gray-600 border-t"
                 >
-                  View All Notifications
+                  View All
                 </Link>
               </div>
             )}
           </div>
-          {/* Cart */}
+
+          {/* Cart Icon */}
           <Link
             to="/cart"
             className="relative flex items-center gap-1 transition hover:text-amber-500"
           >
-            <ShoppingCart />
+            <ShoppingCart className="w-6 h-6" />
             {cartItems.length > 0 && (
-              <span className="absolute -top-3 -right-3 bg-amber-500 text-slate-900 text-xs font-bold px-1.5 py-0.5 rounded-full">
+              <span className="absolute -top-2 -right-2 bg-amber-500 text-slate-900 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
                 {cartItems.reduce((a, c) => a + c.qty, 0)}
               </span>
             )}
@@ -213,7 +199,7 @@ const Header = () => {
                   onClick={() => setProfileOpen(!profileOpen)}
                   className="flex items-center gap-1 transition hover:text-amber-500 focus:outline-none"
                 >
-                  {userInfo.name} <ChevronDown />
+                  {userInfo.name} <ChevronDown className="w-4 h-4" />
                 </button>
                 {profileOpen && (
                   <div className="absolute right-0 z-20 w-48 py-1 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md shadow-lg">
@@ -222,13 +208,13 @@ const Header = () => {
                       className="flex items-center block w-full gap-2 px-4 py-2 text-sm text-left hover:bg-gray-100"
                       onClick={() => setProfileOpen(false)}
                     >
-                      <UserRound /> Profile
+                      <UserRound className="w-4 h-4" /> Profile
                     </Link>
                     <button
                       onClick={logoutHandler}
                       className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left hover:bg-gray-100"
                     >
-                      <LogOut /> Logout
+                      <LogOut className="w-4 h-4" /> Logout
                     </button>
                   </div>
                 )}
@@ -236,9 +222,9 @@ const Header = () => {
             ) : (
               <Link
                 to="/login"
-                className="flex items-center gap-1 transition hover:text-amber-500"
+                className="flex items-center gap-1 hover:text-amber-500"
               >
-                <UserRound /> <span className="hidden sm:inline">Sign In</span>
+                <UserRound className="w-5 h-5" /> Sign In
               </Link>
             )}
           </div>

@@ -52,7 +52,6 @@ const HomeScreen = () => {
       !isLoading &&
       !error &&
       data?.products?.length === 0 ? (
-        // Better "Not Found" handling
         <div className="p-4 mb-4 text-center text-gray-500 bg-gray-100 rounded">
           No items found matching "{keyword}"
         </div>
