@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { MapPin, CreditCard, Package } from "lucide-react";
 
 import CheckoutSteps from "../components/CheckoutSteps";
 import Message from "../components/Message";
@@ -43,22 +44,20 @@ const PlaceOrderScreen = () => {
     setErrorMsg(null);
 
     try {
-      // 1. Create Payment Intent on Server (Get Client Secret)
       const res = await createPaymentIntent({
         totalPrice: cart.totalPrice,
       }).unwrap();
 
       const clientSecret = res.clientSecret;
 
-      // 2. Confirm Card Payment with Stripe
       const result = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
           card: elements.getElement(CardElement),
           billing_details: {
-            name: "Test User", // You can pull this from auth state if needed
+            name: "Test User",
             address: {
               city: cart.shippingAddress.city,
-              country: "US", // Simplified for testing
+              country: "US",
               line1: cart.shippingAddress.address,
               postal_code: cart.shippingAddress.postalCode,
             },
@@ -67,13 +66,10 @@ const PlaceOrderScreen = () => {
       });
 
       if (result.error) {
-        // Show error to your customer (e.g., insufficient funds)
         setErrorMsg(result.error.message);
         setProcessing(false);
       } else {
-        // The payment has been processed!
         if (result.paymentIntent.status === "succeeded") {
-          // 3. Save Order to Database
           await createOrder({
             orderItems: cart.cartItems,
             shippingAddress: cart.shippingAddress,
@@ -94,7 +90,7 @@ const PlaceOrderScreen = () => {
 
           dispatch(clearCartItems());
           toast.success("Order Placed Successfully!");
-          navigate("/"); // Redirect to Home (or Order Details page in future)
+          navigate("/");
         }
       }
     } catch (err) {
@@ -104,48 +100,49 @@ const PlaceOrderScreen = () => {
   };
 
   return (
-    <>
+    <div className="pb-24 md:pb-8">
+      {/* Checkout Steps (Shipping -> Place Order) */}
       <CheckoutSteps step1 step2 />
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
+
+      <div className="grid grid-cols-1 gap-6 mt-6 lg:gap-8 lg:grid-cols-12 lg:mt-8">
         {/* Left Column: Order Details */}
-        <div className="md:col-span-8">
-          <div className="p-6 mb-4 bg-white border rounded-lg shadow-sm border-slate-200">
-            <h2 className="mb-4 text-2xl font-bold text-slate-800">Shipping</h2>
-            <p className="text-gray-700">
-              <strong>Address: </strong>
+        <div className="space-y-6 lg:col-span-8">
+          {/* Shipping Info Card */}
+          <div className="p-5 bg-white border border-gray-200 shadow-sm md:p-6 rounded-xl">
+            <h2 className="flex items-center gap-2 mb-3 text-lg font-bold md:text-xl text-slate-800">
+              <MapPin className="w-5 h-5 text-amber-600" /> Shipping
+            </h2>
+            <p className="text-sm leading-relaxed text-gray-700 md:text-base ml-7">
               {cart.shippingAddress.address}, {cart.shippingAddress.city}{" "}
               {cart.shippingAddress.postalCode}, {cart.shippingAddress.country}
             </p>
           </div>
 
-          <div className="p-6 mb-4 bg-white border rounded-lg shadow-sm border-slate-200">
-            <h2 className="mb-4 text-2xl font-bold text-slate-800">
-              Payment Details
+          {/* Payment Info Card */}
+          <div className="p-5 bg-white border border-gray-200 shadow-sm md:p-6 rounded-xl">
+            <h2 className="flex items-center gap-2 mb-3 text-lg font-bold md:text-xl text-slate-800">
+              <CreditCard className="w-5 h-5 text-amber-600" /> Payment Details
             </h2>
-            <div className="p-4 border border-gray-300 rounded bg-gray-50">
-              {/* Stripe Element renders here */}
+            <div className="p-4 border border-gray-200 rounded-lg md:ml-7 bg-gray-50">
               <CardElement
                 options={{
                   style: {
                     base: {
                       fontSize: "16px",
-                      color: "#424770",
-                      "::placeholder": {
-                        color: "#aab7c4",
-                      },
+                      color: "#1e293b",
+                      "::placeholder": { color: "#94a3b8" },
                     },
-                    invalid: {
-                      color: "#9e2146",
-                    },
+                    invalid: { color: "#ef4444" },
                   },
                 }}
               />
             </div>
           </div>
 
-          <div className="p-6 bg-white border rounded-lg shadow-sm border-slate-200">
-            <h2 className="mb-4 text-2xl font-bold text-slate-800">
-              Order Items
+          {/* Order Items Card */}
+          <div className="p-5 bg-white border border-gray-200 shadow-sm md:p-6 rounded-xl">
+            <h2 className="flex items-center gap-2 mb-4 text-lg font-bold md:text-xl text-slate-800">
+              <Package className="w-5 h-5 text-amber-600" /> Order Items
             </h2>
             {cart.cartItems.length === 0 ? (
               <Message>Your cart is empty</Message>
@@ -156,26 +153,26 @@ const PlaceOrderScreen = () => {
                     key={index}
                     className="flex items-center pb-4 border-b border-gray-100 last:border-0 last:pb-0"
                   >
-                    <div className="flex-shrink-0 w-16 h-16">
+                    <div className="flex-shrink-0 w-16 h-16 overflow-hidden bg-gray-100 border border-gray-100 rounded-lg">
                       <img
                         src={item.image}
                         alt={item.name}
-                        className="object-cover w-full h-full rounded"
+                        className="object-cover w-full h-full"
                       />
                     </div>
-                    <div className="flex-grow ml-4">
+                    <div className="flex-grow ml-3 md:ml-4">
                       <Link
                         to={`/product/${item._id}`}
-                        className="font-medium text-slate-800 hover:text-amber-600"
+                        className="text-sm font-semibold md:text-base text-slate-800 hover:text-amber-600 line-clamp-2"
                       >
                         {item.name}
                       </Link>
+                      <p className="mt-1 text-xs text-gray-500 md:text-sm">
+                        {item.qty} x ${item.price}
+                      </p>
                     </div>
-                    <div className="text-gray-600">
-                      {item.qty} x ${item.price} ={" "}
-                      <span className="font-bold text-slate-900">
-                        ${(item.qty * item.price).toFixed(2)}
-                      </span>
+                    <div className="text-sm font-bold md:text-base text-slate-900">
+                      ${(item.qty * item.price).toFixed(2)}
                     </div>
                   </div>
                 ))}
@@ -185,13 +182,13 @@ const PlaceOrderScreen = () => {
         </div>
 
         {/* Right Column: Order Summary */}
-        <div className="md:col-span-4">
-          <div className="sticky p-6 bg-white border rounded-lg shadow-lg border-slate-200 top-24">
-            <h2 className="pb-4 mb-6 text-2xl font-bold border-b text-slate-800">
+        <div className="lg:col-span-4">
+          <div className="sticky p-5 bg-white border border-gray-200 shadow-sm top-24 md:p-6 rounded-xl">
+            <h2 className="pb-3 mb-4 text-lg font-bold border-b border-gray-100 md:pb-4 md:text-xl text-slate-800">
               Order Summary
             </h2>
 
-            <div className="space-y-3 text-gray-700">
+            <div className="space-y-3 text-sm text-gray-600 md:text-base">
               <div className="flex justify-between">
                 <span>Items</span>
                 <span>${cart.itemsPrice}</span>
@@ -204,7 +201,7 @@ const PlaceOrderScreen = () => {
                 <span>Tax</span>
                 <span>${cart.taxPrice}</span>
               </div>
-              <div className="flex justify-between pt-3 mt-3 text-lg font-bold border-t text-slate-900">
+              <div className="flex justify-between pt-3 mt-3 text-lg font-bold border-t border-gray-100 text-slate-900">
                 <span>Total</span>
                 <span>${cart.totalPrice}</span>
               </div>
@@ -215,11 +212,15 @@ const PlaceOrderScreen = () => {
                 <Message variant="danger">{errorMsg}</Message>
               </div>
             )}
-            {loadingOrder && <Loader />}
+            {loadingOrder && (
+              <div className="mt-4">
+                <Loader />
+              </div>
+            )}
 
             <button
               type="button"
-              className="w-full px-4 py-3 mt-6 font-bold text-white transition rounded bg-slate-900 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3.5 mt-6 font-bold text-white uppercase tracking-wider transition-all rounded-lg shadow-md bg-slate-900 hover:bg-slate-800 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 text-sm md:text-base"
               disabled={cart.cartItems.length === 0 || processing || !stripe}
               onClick={handlePaymentAndOrder}
             >
@@ -228,7 +229,7 @@ const PlaceOrderScreen = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
