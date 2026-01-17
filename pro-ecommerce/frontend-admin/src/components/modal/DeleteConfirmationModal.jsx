@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { AlertTriangle, Trash2 } from "lucide-react";
 import { setDeleteModal, setLoadingGlobal } from "../../slices/productSlice";
 import { useDeleteProductMutation } from "../../slices/productsApiSlice";
 
@@ -20,73 +21,70 @@ const DeleteConfirmationModal = () => {
       dispatch(setLoadingGlobal(false));
     }
   };
+
   if (!deleteModal.open) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-gray-900 bg-opacity-50"
-      aria-labelledby="modal-title"
+      className="fixed inset-0 z-[70] flex items-end justify-center sm:items-center p-0 sm:p-4"
       role="dialog"
       aria-modal="true"
     >
-      {/* 2. The Modal Container */}
-      <div className="relative mx-4 text-left transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:w-full sm:max-w-lg">
-        <div className="px-4 pt-5 pb-4 bg-white rounded-t-lg sm:p-6 sm:pb-4">
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 transition-opacity bg-slate-900/50 backdrop-blur-sm"
+        onClick={() =>
+          dispatch(setDeleteModal({ ...deleteModal, open: false }))
+        }
+      />
+
+      {/* Modal Card */}
+      <div className="relative w-full transition-all transform bg-white shadow-2xl sm:max-w-lg rounded-t-2xl sm:rounded-xl animate-in slide-in-from-bottom-10 sm:slide-in-from-bottom-0 fade-in">
+        {/* Content Section */}
+        <div className="p-6 sm:p-8">
           <div className="sm:flex sm:items-start">
-            {/* Warning Icon Container */}
-            <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-red-100 rounded-full sm:mx-0 sm:h-10 sm:w-10">
-              {/* Using a standard SVG for the warning icon */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-6 h-6 text-red-600"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
-                />
-              </svg>
+            {/* Warning Icon */}
+            <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto mb-4 bg-red-100 rounded-full sm:mx-0 sm:h-12 sm:w-12 sm:mb-0">
+              <AlertTriangle className="w-6 h-6 text-red-600" />
             </div>
 
             {/* Text Content */}
-            <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-              <h3
-                className="text-lg font-medium leading-6 text-gray-900"
-                id="modal-title"
-              >
-                Delete {deleteModal.name || "Item"}
+            <div className="text-center sm:ml-5 sm:text-left">
+              <h3 className="text-xl font-bold text-gray-900" id="modal-title">
+                Delete {deleteModal.name || "Item"}?
               </h3>
               <div className="mt-2">
-                <p className="text-sm text-gray-500">
-                  Are you sure you want to delete this? All data will be
-                  permanently removed. This action cannot be undone.
+                <p className="text-sm leading-relaxed text-gray-500">
+                  Are you sure you want to delete this? All data associated with
+                  this item will be
+                  <span className="font-bold text-red-600">
+                    {" "}
+                    permanently removed
+                  </span>
+                  . This action cannot be undone.
                 </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* 3. Action Buttons (Footer) */}
-        <div className="px-4 py-3 rounded-b-lg bg-gray-50 sm:px-6 sm:flex sm:flex-row-reverse">
+        <div className="flex flex-col gap-3 px-6 py-5 bg-gray-50 sm:flex-row-reverse sm:px-8 rounded-b-xl pb-safe">
           <button
             type="button"
             onClick={handleConfirmDelete}
             disabled={isLoading}
-            className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-red-600 border border-transparent rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center justify-center w-full px-4 py-3 text-sm font-bold text-white transition-all bg-red-600 rounded-lg shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:w-auto sm:text-sm active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            {isLoading ? "Deleting..." : "Delete"}
+            {isLoading ? "Deleting..." : <>Delete Permanently</>}
           </button>
+
           <button
             type="button"
             onClick={() =>
               dispatch(setDeleteModal({ ...deleteModal, open: false }))
             }
             disabled={isLoading}
-            className="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+            className="flex items-center justify-center w-full px-4 py-3 text-sm font-bold text-gray-700 transition-all bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm active:scale-95"
           >
             Cancel
           </button>

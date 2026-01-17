@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { X, UploadCloud, Plus } from "lucide-react";
+import { X, UploadCloud, Plus, Image as ImageIcon } from "lucide-react";
 import CreatableSelect from "../CreatableSelect";
 import {
   useGetProductBrandsQuery,
@@ -80,36 +80,33 @@ const CreateProductModal = ({ onCreate }) => {
   if (!createNewProductModal.open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center h-screen p-4 bg-gray-900 bg-opacity-50 backdrop-blur-sm">
-      <div className="w-full max-w-lg bg-white rounded-xl shadow-2xl animate-fade-in flex flex-col max-h-[90vh]">
-        {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-gray-100">
-          <h3 className="text-xl font-bold text-gray-800">Add New Product</h3>
+    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center sm:p-4 bg-slate-900/50 backdrop-blur-sm">
+      <div className="w-full sm:max-w-lg bg-white sm:rounded-xl rounded-t-xl shadow-2xl animate-in slide-in-from-bottom-10 sm:slide-in-from-bottom-0 fade-in flex flex-col max-h-[90vh] sm:max-h-[85vh]">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+          <h3 className="text-lg font-bold text-gray-800">Add New Product</h3>
           <button
             onClick={() =>
               dispatch(
                 setCreateNewProductModal({
                   ...createNewProductModal,
                   open: false,
-                })
+                }),
               )
             }
-            className="p-1 text-gray-400 transition-colors rounded-full hover:bg-gray-100 hover:text-gray-600"
+            className="p-2 text-gray-400 transition-colors rounded-full hover:bg-gray-100 hover:text-gray-600"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Form Body - Scrollable */}
-        <div className="p-6 overflow-y-auto">
-          <form id="create-form" onSubmit={handleSubmit} className="space-y-6">
-            {/* --- Image Grid Section --- */}
+        <div className="flex-1 p-5 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200">
+          <form id="create-form" onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block mb-3 text-sm font-medium text-gray-700">
+              <label className="block mb-2 text-sm font-bold text-gray-700">
                 Product Images
               </label>
 
-              <div className="grid grid-cols-3 gap-4 sm:grid-cols-4">
+              <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
                 {newImages.map((img, index) => (
                   <div key={index} className="relative group aspect-square">
                     <img
@@ -120,25 +117,25 @@ const CreateProductModal = ({ onCreate }) => {
                     <button
                       type="button"
                       onClick={() => handleRemoveImage(index)}
-                      className="absolute p-1 text-white transition-colors bg-red-500 rounded-full shadow-md opacity-100 -top-2 -right-2 hover:bg-red-600 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100"
+                      className="absolute p-1 text-white bg-red-500 rounded-full shadow-sm -top-2 -right-2 hover:bg-red-600"
                     >
                       <X className="w-3 h-3" />
                     </button>
                   </div>
                 ))}
 
-                <label className="flex flex-col items-center justify-center w-full h-full transition-colors border-2 border-gray-300 border-dashed rounded-lg cursor-pointer aspect-square hover:bg-gray-50 hover:border-blue-400 group">
-                  <div className="flex flex-col items-center justify-center pt-2 pb-3">
-                    <div className="p-2 mb-1 transition-colors bg-gray-100 rounded-full group-hover:bg-blue-50 group-hover:text-blue-600">
+                <label className="flex flex-col items-center justify-center w-full h-full transition-colors border-2 border-gray-300 border-dashed rounded-lg cursor-pointer aspect-square hover:bg-blue-50 hover:border-blue-400 group bg-gray-50">
+                  <div className="flex flex-col items-center justify-center">
+                    <div className="p-1.5 mb-1 transition-colors bg-white rounded-full shadow-sm group-hover:text-blue-600">
                       {newImages.length === 0 ? (
-                        <UploadCloud className="w-5 h-5 text-gray-500 group-hover:text-blue-600" />
+                        <UploadCloud className="w-5 h-5 text-gray-400 group-hover:text-blue-600" />
                       ) : (
-                        <Plus className="w-5 h-5 text-gray-500 group-hover:text-blue-600" />
+                        <Plus className="w-5 h-5 text-gray-400 group-hover:text-blue-600" />
                       )}
                     </div>
-                    <p className="text-xs text-center text-gray-500 group-hover:text-blue-600">
-                      {newImages.length === 0 ? "Upload" : "Add More"}
-                    </p>
+                    <span className="text-[10px] font-medium text-gray-500 group-hover:text-blue-600">
+                      {newImages.length === 0 ? "Upload" : "Add"}
+                    </span>
                   </div>
                   <input
                     type="file"
@@ -150,10 +147,9 @@ const CreateProductModal = ({ onCreate }) => {
               </div>
             </div>
 
-            {/* Row 1: Name & SKU */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className="block mb-1 text-sm font-medium text-gray-700">
+                <label className="block mb-1.5 text-sm font-bold text-gray-700">
                   Product Name
                 </label>
                 <input
@@ -162,12 +158,12 @@ const CreateProductModal = ({ onCreate }) => {
                   name="name"
                   value={createFormData.name}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   placeholder="e.g. Wireless Mouse"
                 />
               </div>
               <div>
-                <label className="block mb-1 text-sm font-medium text-gray-700">
+                <label className="block mb-1.5 text-sm font-bold text-gray-700">
                   SKU
                 </label>
                 <input
@@ -176,14 +172,13 @@ const CreateProductModal = ({ onCreate }) => {
                   name="sku"
                   value={createFormData.sku}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   placeholder="e.g. WM-001"
                 />
               </div>
             </div>
 
-            {/* --- Row 2: Brand & Category (UPDATED) --- */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <CreatableSelect
                   label="Brand"
@@ -206,10 +201,9 @@ const CreateProductModal = ({ onCreate }) => {
               </div>
             </div>
 
-            {/* Row 3: Price & Stock */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block mb-1 text-sm font-medium text-gray-700">
+                <label className="block mb-1.5 text-sm font-bold text-gray-700">
                   Price ($)
                 </label>
                 <input
@@ -218,13 +212,13 @@ const CreateProductModal = ({ onCreate }) => {
                   name="price"
                   value={createFormData.price}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   min="0"
                   step="0.01"
                 />
               </div>
               <div>
-                <label className="block mb-1 text-sm font-medium text-gray-700">
+                <label className="block mb-1.5 text-sm font-bold text-gray-700">
                   Stock
                 </label>
                 <input
@@ -233,15 +227,14 @@ const CreateProductModal = ({ onCreate }) => {
                   name="countInStock"
                   value={createFormData.countInStock}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   min="0"
                 />
               </div>
             </div>
 
-            {/* Row 4: Description */}
             <div>
-              <label className="block mb-1 text-sm font-medium text-gray-700">
+              <label className="block mb-1.5 text-sm font-bold text-gray-700">
                 Description
               </label>
               <textarea
@@ -250,7 +243,7 @@ const CreateProductModal = ({ onCreate }) => {
                 value={createFormData.description}
                 onChange={handleChange}
                 rows="3"
-                className="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
                 placeholder="Product details..."
               ></textarea>
             </div>
@@ -258,7 +251,7 @@ const CreateProductModal = ({ onCreate }) => {
         </div>
 
         {/* Footer / Actions */}
-        <div className="flex gap-3 p-5 border-t border-gray-100 bg-gray-50 rounded-b-xl">
+        <div className="flex gap-3 p-4 border-t border-gray-100 bg-gray-50 sm:rounded-b-xl pb-safe">
           <button
             type="button"
             onClick={() =>
@@ -266,11 +259,11 @@ const CreateProductModal = ({ onCreate }) => {
                 setCreateNewProductModal({
                   ...createNewProductModal,
                   open: false,
-                })
+                }),
               )
             }
             disabled={isLoadingGlobal}
-            className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-800 transition-all focus:outline-none focus:ring-2 focus:ring-gray-200"
+            className="flex-1 px-4 py-3 text-sm font-bold text-gray-700 transition-all bg-white border border-gray-300 rounded-lg hover:bg-gray-50 active:scale-95"
           >
             Cancel
           </button>
@@ -278,7 +271,7 @@ const CreateProductModal = ({ onCreate }) => {
             type="submit"
             form="create-form"
             disabled={isLoadingGlobal}
-            className="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+            className="flex-1 px-4 py-3 text-sm font-bold text-white transition-all bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {isLoadingGlobal ? "Creating..." : "Create Product"}
           </button>
