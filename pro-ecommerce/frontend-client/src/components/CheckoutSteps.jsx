@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Truck, ClipboardCheck, ChevronRight } from "lucide-react";
+import { Truck, ClipboardCheck, CircleDollarSign } from "lucide-react";
 
-const CheckoutSteps = ({ step1, step2 }) => {
+const CheckoutSteps = ({ step1, step2, step3 }) => {
   // Helper to render individual steps
   const renderStep = (isEnabled, path, label, Icon) => {
     const content = (
@@ -42,7 +42,6 @@ const CheckoutSteps = ({ step1, step2 }) => {
         <div className="relative z-10 px-2 bg-gray-50 md:bg-transparent">
           {renderStep(step1, "/shipping", "Shipping", Truck)}
         </div>
-
         <div className="flex-grow h-0.5 mx-2 bg-gray-200 relative -top-3 md:-top-4 -z-0">
           <div
             className={`absolute top-0 left-0 h-full transition-all duration-500 bg-amber-500 ${
@@ -52,7 +51,19 @@ const CheckoutSteps = ({ step1, step2 }) => {
         </div>
 
         <div className="relative z-10 px-2 bg-gray-50 md:bg-transparent">
-          {renderStep(step2, "/placeorder", "Place Order", ClipboardCheck)}
+          {renderStep(step2, "/payment", "Payment", CircleDollarSign)}
+        </div>
+
+        <div className="flex-grow h-0.5 mx-2 bg-gray-200 relative -top-3 md:-top-4 -z-0">
+          <div
+            className={`absolute top-0 left-0 h-full transition-all duration-500 bg-amber-500 ${
+              step3 ? "w-full" : "w-0"
+            }`}
+          />
+        </div>
+
+        <div className="relative z-10 px-2 bg-gray-50 md:bg-transparent">
+          {renderStep(step3, "/placeorder", "Place Order", ClipboardCheck)}
         </div>
       </div>
     </nav>

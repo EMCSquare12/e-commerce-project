@@ -110,7 +110,7 @@ const Header = () => {
             >
               <Bell className="w-6 h-6" />
               {unreadCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-slate-900 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                <span className="absolute -top-2 -right-2 bg-amber-500 text-slate-900 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
                   {unreadCount}
                 </span>
               )}

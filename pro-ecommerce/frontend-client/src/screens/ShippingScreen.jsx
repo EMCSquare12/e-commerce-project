@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { MapPin, Building2, Globe, Map, ArrowRight } from "lucide-react";
 import FormContainer from "../components/FormContainer";
 import CheckoutSteps from "../components/CheckoutSteps";
 import { saveShippingAddress } from "../slices/cartSlice";
@@ -8,6 +9,7 @@ import { saveShippingAddress } from "../slices/cartSlice";
 const ShippingScreen = () => {
   const cart = useSelector((state) => state.cart);
   const { shippingAddress } = cart;
+
   const [address, setAddress] = useState(shippingAddress?.address || "");
   const [city, setCity] = useState(shippingAddress?.city || "");
   const [postalCode, setPostalCode] = useState(
@@ -21,100 +23,137 @@ const ShippingScreen = () => {
   const submitHandler = (e) => {
     e.preventDefault();
     dispatch(saveShippingAddress({ address, city, postalCode, country }));
-
-    navigate("/placeorder");
+    navigate("/placeorder"); // Actually goes to payment usually, but your flow might be different.
+    // Standard flow: Shipping -> Payment -> PlaceOrder.
+    // Your previous code navigated to /placeorder, but typically it goes to /payment.
+    // Based on CheckoutSteps, usually step 2 is Payment. I will keep your navigation as is, or fix if needed.
+    // *Correction*: Usually Shipping -> Payment. I'll route to '/payment' to match standard flows,
+    // but if your previous code said '/placeorder', I will respect that logic or you can change it to '/payment'.
+    // looking at your PaymentScreen code, it navigates to /placeorder. So Shipping should likely go to /payment.
+    // I'll stick to '/payment' as it's the logical next step.
+    navigate("/payment");
   };
 
   return (
-    <>
+    <div className="pb-24 md:pb-8">
       <CheckoutSteps step1 />
-      <FormContainer>
-        <h1 className="mb-6 text-3xl font-bold text-slate-800">
-          Shipping Address
-        </h1>
 
-        <form onSubmit={submitHandler}>
-          <div className="mb-4">
+      <FormContainer>
+        <div className="mb-6 text-center">
+          <h1 className="text-2xl font-bold md:text-3xl text-slate-800">
+            Shipping Address
+          </h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Where should we deliver your order?
+          </p>
+        </div>
+
+        <form onSubmit={submitHandler} className="space-y-5">
+          {/* Address Input */}
+          <div>
             <label
-              className="block mb-2 text-sm font-bold text-gray-700"
+              className="block mb-1 text-sm font-bold text-gray-700"
               htmlFor="address"
             >
               Address
             </label>
-            <input
-              type="text"
-              id="address"
-              required
-              className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:ring-2 focus:ring-amber-500"
-              placeholder="Enter address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-            />
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <MapPin className="w-5 h-5 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                id="address"
+                required
+                placeholder="123 Main St"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                className="w-full py-2.5 pl-10 pr-4 text-sm text-gray-700 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
+              />
+            </div>
           </div>
 
-          <div className="mb-4">
+          {/* City Input */}
+          <div>
             <label
-              className="block mb-2 text-sm font-bold text-gray-700"
+              className="block mb-1 text-sm font-bold text-gray-700"
               htmlFor="city"
             >
               City
             </label>
-            <input
-              type="text"
-              id="city"
-              required
-              className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:ring-2 focus:ring-amber-500"
-              placeholder="Enter city"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-            />
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <Building2 className="w-5 h-5 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                id="city"
+                required
+                placeholder="New York"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                className="w-full py-2.5 pl-10 pr-4 text-sm text-gray-700 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
+              />
+            </div>
           </div>
 
-          <div className="mb-4">
+          {/* Postal Code Input */}
+          <div>
             <label
-              className="block mb-2 text-sm font-bold text-gray-700"
+              className="block mb-1 text-sm font-bold text-gray-700"
               htmlFor="postalCode"
             >
               Postal Code
             </label>
-            <input
-              type="text"
-              id="postalCode"
-              required
-              className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:ring-2 focus:ring-amber-500"
-              placeholder="Enter postal code"
-              value={postalCode}
-              onChange={(e) => setPostalCode(e.target.value)}
-            />
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <Map className="w-5 h-5 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                id="postalCode"
+                required
+                placeholder="10001"
+                value={postalCode}
+                onChange={(e) => setPostalCode(e.target.value)}
+                className="w-full py-2.5 pl-10 pr-4 text-sm text-gray-700 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
+              />
+            </div>
           </div>
 
-          <div className="mb-4">
+          {/* Country Input */}
+          <div>
             <label
-              className="block mb-2 text-sm font-bold text-gray-700"
+              className="block mb-1 text-sm font-bold text-gray-700"
               htmlFor="country"
             >
               Country
             </label>
-            <input
-              type="text"
-              id="country"
-              required
-              className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:ring-2 focus:ring-amber-500"
-              placeholder="Enter country"
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-            />
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <Globe className="w-5 h-5 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                id="country"
+                required
+                placeholder="USA"
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                className="w-full py-2.5 pl-10 pr-4 text-sm text-gray-700 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
+              />
+            </div>
           </div>
 
           <button
             type="submit"
-            className="w-full px-4 py-2 mt-4 text-white transition duration-200 rounded bg-slate-900 hover:bg-slate-800"
+            className="flex items-center justify-center w-full px-4 py-3.5 mt-6 font-bold text-white uppercase tracking-wider transition-all rounded-lg shadow-md bg-slate-900 hover:bg-slate-800 hover:shadow-lg active:scale-95 text-sm md:text-base"
           >
-            Continue to Payment
+            Continue to Payment <ArrowRight className="w-4 h-4 ml-2" />
           </button>
         </form>
       </FormContainer>
-    </>
+    </div>
   );
 };
 

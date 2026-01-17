@@ -102,7 +102,7 @@ const PlaceOrderScreen = () => {
   return (
     <div className="pb-24 md:pb-8">
       {/* Checkout Steps (Shipping -> Place Order) */}
-      <CheckoutSteps step1 step2 />
+      <CheckoutSteps step1 step2 step3 />
 
       <div className="grid grid-cols-1 gap-6 mt-6 lg:gap-8 lg:grid-cols-12 lg:mt-8">
         {/* Left Column: Order Details */}
