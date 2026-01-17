@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Download, ChevronDown } from "lucide-react";
+import { Download, ChevronDown, Filter, Calendar } from "lucide-react";
 import { useGetOrdersQuery } from "../slices/ordersApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
@@ -37,7 +37,6 @@ const OrdersScreen = () => {
     status,
     pageNumber,
   });
-  console.log(pageNumber);
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -46,7 +45,6 @@ const OrdersScreen = () => {
     const { name, value } = e.target;
     dispatch(setDateRange({ name, value }));
     dispatch(setPageNumber(1));
-    console.log(dateRange);
   };
 
   const toggleRow = (orderId) => {
@@ -55,7 +53,7 @@ const OrdersScreen = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-96">
+      <div className="flex items-center justify-center min-h-[60vh]">
         <Loader />
       </div>
     );
@@ -63,24 +61,34 @@ const OrdersScreen = () => {
 
   if (error) {
     return (
-      <Message variant="danger">
-        {error?.data?.message || error.error || "Something went wrong"}
-      </Message>
+      <div className="p-4">
+        <Message variant="danger">
+          {error?.data?.message || error.error || "Something went wrong"}
+        </Message>
+      </div>
     );
   }
+
   return (
-    <div className="mx-auto space-y-6 max-w-7xl">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+    <div className="pb-24 mx-auto space-y-6 max-w-7xl md:pb-8">
+      {/* Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-800">
           Orders
         </h1>
+        {/* Mobile Export Button (Optional placement, or keep inside filter bar) */}
       </div>
 
-      <div className="pb-4 overflow-hidden bg-white border border-gray-200 shadow-sm rounded-xl">
-        <div className="flex flex-col justify-between gap-4 p-4 bg-white border-b border-gray-100 lg:flex-row lg:items-center">
+      {/* --- Filter Bar --- */}
+      <div className="p-4 bg-white border border-gray-200 shadow-sm rounded-xl">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          {/* Left Side: Status & Dates */}
           <div className="flex flex-col w-full gap-4 sm:flex-row lg:w-auto">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-700">Status</span>
+            {/* Status Dropdown */}
+            <div className="flex-1 sm:flex-none">
+              <label className="block mb-1.5 text-xs font-bold text-gray-500 uppercase">
+                Status
+              </label>
               <div className="relative">
                 <select
                   value={status}
@@ -88,116 +96,149 @@ const OrdersScreen = () => {
                     dispatch(setStatus(e.target.value));
                     dispatch(setPageNumber(1));
                   }}
-                  className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 pr-8 outline-none"
+                  className="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent block p-2.5 pr-8 outline-none transition-all"
                 >
                   <option value="">All Orders</option>
                   <option value="Pending">Pending</option>
                   <option value="Shipped">Shipped</option>
                 </select>
-                <ChevronDown className="absolute w-4 h-4 text-gray-500 pointer-events-none right-2 top-3" />
+                <ChevronDown className="absolute w-4 h-4 text-gray-500 pointer-events-none right-3 top-3" />
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-700">From</span>
-              <input
-                type="date"
-                name="from"
-                max={today}
-                value={dateRange.from}
-                onChange={handleDateChange}
-                className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 outline-none"
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-700">To</span>
-              <input
-                type="date"
-                name="to"
-                min={dateRange.from}
-                max={today}
-                value={dateRange.to}
-                onChange={handleDateChange}
-                className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 outline-none"
-              />
+            {/* Date Range Inputs */}
+            <div className="flex flex-1 gap-2 sm:flex-none">
+              <div className="w-full">
+                <label className="block mb-1.5 text-xs font-bold text-gray-500 uppercase">
+                  From
+                </label>
+                <input
+                  type="date"
+                  name="from"
+                  max={today}
+                  value={dateRange.from}
+                  onChange={handleDateChange}
+                  className="w-full bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent block p-2.5 outline-none"
+                />
+              </div>
+              <div className="w-full">
+                <label className="block mb-1.5 text-xs font-bold text-gray-500 uppercase">
+                  To
+                </label>
+                <input
+                  type="date"
+                  name="to"
+                  min={dateRange.from}
+                  max={today}
+                  value={dateRange.to}
+                  onChange={handleDateChange}
+                  className="w-full bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent block p-2.5 outline-none"
+                />
+              </div>
             </div>
           </div>
 
-          <button className="flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 hover:text-gray-900 transition-colors">
-            <Download className="w-4 h-4" />
-            Export CSV
-          </button>
+          {/* Right Side: Export Button */}
+          <div className="pt-2 border-t border-gray-100 lg:pt-0 lg:border-t-0">
+            <button className="flex items-center justify-center w-full gap-2 px-4 py-2.5 bg-slate-900 text-white text-sm font-bold rounded-lg hover:bg-slate-800 transition-colors active:scale-95 lg:w-auto mt-2 lg:mt-6">
+              <Download className="w-4 h-4" />
+              Export CSV
+            </button>
+          </div>
         </div>
-
-        <>
-          <div className="overflow-x-auto min-h-[400px]">
-            <table className="w-full text-left border-collapse">
-              <thead className="border-b border-gray-200 bg-gray-50">
-                <tr>
-                  <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                    Order ID
-                  </th>
-                  <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                    Customer
-                  </th>
-                  <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                    Date
-                  </th>
-                  <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                    Items
-                  </th>
-                  <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                    Total
-                  </th>
-                  <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                    Address
-                  </th>
-                  <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                    Status
-                  </th>
-                  <th className="p-4 text-xs font-semibold tracking-wider text-right text-gray-500 uppercase">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {data?.orders?.length > 0 ? (
-                  data.orders.map((order) => {
-                    const id = order.orderId || order._id || "";
-                    return (
-                      <OrderRow
-                        key={id}
-                        order={order}
-                        isExpanded={expandedOrderId === id}
-                        onToggle={() => toggleRow(id)}
-                        copiedId={copiedId}
-                        onCopy={copyToClipboard}
-                      />
-                    );
-                  })
-                ) : (
-                  <tr>
-                    <td colSpan="9" className="p-8 text-center text-gray-500">
-                      No orders found matching your criteria.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination Footer */}
-          {data?.pages > 1 && (
-            <div className="bg-white border-t border-gray-100">
-              <Pagination
-                setItemPages={(num) => dispatch(setPageNumber(num))}
-                page={pageNumber}
-                pages={data?.pages}
-              />
-            </div>
-          )}
-        </>
       </div>
+
+      {/* --- Orders List --- */}
+      <>
+        {data?.orders?.length > 0 ? (
+          <>
+            {/* View 1: Mobile Stack (Using OrderRow which has mobile card built-in) */}
+            <div className="flex flex-col gap-4 md:hidden">
+              {data.orders.map((order) => {
+                const id = order.orderId || order._id || "";
+                return (
+                  <OrderRow
+                    key={id}
+                    order={order}
+                    isExpanded={expandedOrderId === id}
+                    onToggle={() => toggleRow(id)}
+                    copiedId={copiedId}
+                    onCopy={copyToClipboard}
+                  />
+                );
+              })}
+            </div>
+
+            {/* View 2: Desktop Table */}
+            <div className="hidden overflow-hidden bg-white border border-gray-200 shadow-sm rounded-xl md:block">
+              <div className="overflow-x-auto min-h-[400px]">
+                <table className="w-full text-left border-collapse">
+                  <thead className="border-b border-gray-200 bg-gray-50">
+                    <tr>
+                      <th className="p-4 text-xs font-bold tracking-wider text-gray-500 uppercase">
+                        Order ID
+                      </th>
+                      <th className="p-4 text-xs font-bold tracking-wider text-gray-500 uppercase">
+                        Customer
+                      </th>
+                      <th className="p-4 text-xs font-bold tracking-wider text-gray-500 uppercase">
+                        Date
+                      </th>
+                      <th className="p-4 text-xs font-bold tracking-wider text-gray-500 uppercase">
+                        Items
+                      </th>
+                      <th className="p-4 text-xs font-bold tracking-wider text-gray-500 uppercase">
+                        Total
+                      </th>
+                      <th className="p-4 text-xs font-bold tracking-wider text-gray-500 uppercase">
+                        Address
+                      </th>
+                      <th className="p-4 text-xs font-bold tracking-wider text-gray-500 uppercase">
+                        Status
+                      </th>
+                      <th className="p-4 text-xs font-bold tracking-wider text-right text-gray-500 uppercase">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {data.orders.map((order) => {
+                      const id = order.orderId || order._id || "";
+                      return (
+                        <OrderRow
+                          key={id}
+                          order={order}
+                          isExpanded={expandedOrderId === id}
+                          onToggle={() => toggleRow(id)}
+                          copiedId={copiedId}
+                          onCopy={copyToClipboard}
+                        />
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="p-12 text-center bg-white border border-gray-300 border-dashed rounded-xl">
+            <p className="font-medium text-gray-500">
+              No orders found matching your criteria.
+            </p>
+          </div>
+        )}
+
+        {/* Pagination Footer */}
+        {data?.pages > 1 && (
+          <div className="mt-4">
+            <Pagination
+              setItemPages={(num) => dispatch(setPageNumber(num))}
+              page={pageNumber}
+              pages={data?.pages}
+            />
+          </div>
+        )}
+      </>
     </div>
   );
 };

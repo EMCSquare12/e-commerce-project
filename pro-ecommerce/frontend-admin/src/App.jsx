@@ -6,7 +6,6 @@ const App = () => {
   return (
     <>
       <ToastContainer />
-      {/* This Outlet renders either LoginScreen OR AdminLayout */}
       <Outlet />
     </>
   );

@@ -1,4 +1,5 @@
 import { MoreHorizontal, Package, Edit, Trash2 } from "lucide-react";
+
 const ProductRow = ({ product, isOpen, onToggle, onDelete, onUpdate }) => {
   const StatusBadge = ({ status }) => {
     const styles = {
@@ -12,14 +13,77 @@ const ProductRow = ({ product, isOpen, onToggle, onDelete, onUpdate }) => {
 
     return (
       <span
-        className={`px-3 py-1 rounded-full text-xs font-medium border whitespace-nowrap ${currentStyle}`}
+        className={`px-2.5 py-0.5 rounded-full text-xs font-medium border whitespace-nowrap ${currentStyle}`}
       >
         {status}
       </span>
     );
   };
-  return (
-    <tr className="transition-colors border-b hover:bg-gray-50 border-gray-50 last:border-0 group">
+
+  // --- Mobile Card View ---
+  const MobileCard = () => (
+    <div className="p-4 mb-4 bg-white border border-gray-200 shadow-sm rounded-xl md:hidden">
+      <div className="flex items-start gap-4 mb-3">
+        {/* Image */}
+        <div className="flex-shrink-0 w-16 h-16 overflow-hidden bg-gray-100 border border-gray-200 rounded-lg">
+          {product.image?.[0] ? (
+            <img
+              src={product.image[0]}
+              alt={product.name}
+              className="object-cover w-full h-full"
+            />
+          ) : (
+            <div className="flex items-center justify-center w-full h-full">
+              <Package className="w-6 h-6 text-gray-400" />
+            </div>
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between">
+            <div>
+              <h4 className="mb-1 font-semibold text-gray-900 line-clamp-1">
+                {product.name}
+              </h4>
+              <p className="mb-2 text-xs text-gray-500">
+                SKU: {product.sku || "N/A"} • {product.category}
+              </p>
+            </div>
+            {/* Status Badge */}
+            <StatusBadge status={product.status} />
+          </div>
+
+          <div className="flex items-center justify-between mt-2">
+            <span className="font-bold text-gray-900">${product.price}</span>
+            <span className="text-xs text-gray-500">
+              {product.countInStock} units in stock
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Buttons (Full width on mobile) */}
+      <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-100">
+        <button
+          onClick={onUpdate}
+          className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 transition-all bg-white border border-gray-300 rounded-lg hover:bg-gray-50 active:scale-95"
+        >
+          <Edit className="w-4 h-4 text-blue-600" /> Edit
+        </button>
+        <button
+          onClick={onDelete}
+          className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-red-600 transition-all bg-white border border-gray-300 rounded-lg hover:bg-red-50 hover:border-red-200 active:scale-95"
+        >
+          <Trash2 className="w-4 h-4" /> Delete
+        </button>
+      </div>
+    </div>
+  );
+
+  // --- Desktop Table Row View ---
+  const DesktopRow = () => (
+    <tr className="hidden transition-colors border-b md:table-row hover:bg-gray-50 border-gray-50 last:border-0 group">
       <td className="p-4">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center flex-shrink-0 w-10 h-10 overflow-hidden bg-gray-100 border border-gray-200 rounded-lg">
@@ -68,27 +132,38 @@ const ProductRow = ({ product, isOpen, onToggle, onDelete, onUpdate }) => {
         </button>
 
         {isOpen && (
-          <div className="absolute z-20 overflow-hidden origin-top-right bg-white border border-gray-100 rounded-lg shadow-xl w-36 right-4 top-12 animate-in fade-in zoom-in-95">
-            <div className="py-1">
-              <button
-                onClick={onUpdate}
-                className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors gap-2"
-              >
-                <Edit className="w-4 h-4" />
-                Edit
-              </button>
-              <button
-                onClick={onDelete}
-                className="flex items-center w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors gap-2"
-              >
-                <Trash2 className="w-4 h-4" />
-                Delete
-              </button>
+          <>
+            <div className="fixed inset-0 z-10" onClick={onToggle} />
+            <div className="absolute z-20 overflow-hidden origin-top-right bg-white border border-gray-100 rounded-lg shadow-xl w-36 right-4 top-12 animate-in fade-in zoom-in-95">
+              <div className="py-1">
+                <button
+                  onClick={onUpdate}
+                  className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors gap-2"
+                >
+                  <Edit className="w-4 h-4" />
+                  Edit
+                </button>
+                <button
+                  onClick={onDelete}
+                  className="flex items-center w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors gap-2"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete
+                </button>
+              </div>
             </div>
-          </div>
+          </>
         )}
       </td>
     </tr>
   );
+
+  return (
+    <>
+      <MobileCard />
+      <DesktopRow />
+    </>
+  );
 };
+
 export default ProductRow;

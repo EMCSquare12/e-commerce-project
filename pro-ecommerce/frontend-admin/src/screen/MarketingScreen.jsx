@@ -1,8 +1,16 @@
 import { useState } from "react";
-import { Calendar, MoreHorizontal, ChevronDown } from "lucide-react";
+import {
+  Calendar,
+  MoreHorizontal,
+  ChevronDown,
+  Megaphone,
+  TrendingUp,
+  DollarSign,
+  Filter,
+} from "lucide-react";
 
 const MarketingScreen = () => {
-  // 1. Mock Data matching your "Marketing" image
+  //Mock Data
   const campaigns = [
     {
       id: 1,
@@ -35,7 +43,7 @@ const MarketingScreen = () => {
       endDate: "2023-12-31",
       budget: "$15,000",
       spent: "$1,000",
-      roi: "+0%",
+      roi: "0%",
     },
     {
       id: 4,
@@ -54,204 +62,239 @@ const MarketingScreen = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case "Active":
-        return "bg-green-100 text-green-700"; // Green badge
+        return "bg-emerald-100 text-emerald-700 border-emerald-200";
       case "Paused":
-        return "bg-yellow-100 text-yellow-700"; // Yellow badge
+        return "bg-amber-100 text-amber-700 border-amber-200";
       case "Ended":
-        return "bg-gray-500 text-white"; // Dark Grey/Black badge based on image
+        return "bg-slate-100 text-slate-600 border-slate-200";
       default:
         return "bg-gray-100 text-gray-700";
     }
   };
 
   return (
-    <div className="space-y-6">
-      {/* --- Page Title --- */}
-      <h1 className="text-2xl font-bold text-gray-800">Marketing Campaigns</h1>
-
-      {/* --- Top Controls Bar --- */}
-      <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-        {/* Time Period Toggles */}
-        <div className="flex p-1 bg-gray-100 rounded-lg">
-          <button className="px-4 py-1.5 bg-blue-100 text-blue-700 rounded-md text-sm font-medium shadow-sm">
-            Last 30 Days
-          </button>
-          <button className="px-4 py-1.5 text-gray-600 hover:text-gray-900 text-sm font-medium">
-            Last Quarter
-          </button>
-          <button className="px-4 py-1.5 text-gray-600 hover:text-gray-900 text-sm font-medium">
-            Year to Date
-          </button>
-        </div>
+    <div className="pb-24 space-y-6 md:pb-8">
+      {/* --- Page Title & Controls --- */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-2xl font-bold text-slate-800">
+          Marketing Campaigns
+        </h1>
 
         {/* Date Dropdown */}
-        <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">
-          <Calendar className="w-4 h-4 text-gray-500" />
-          <span>Last 1 Month</span>
+        <button className="flex items-center justify-between w-full gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg sm:w-auto hover:bg-gray-50">
+          <div className="flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-gray-500" />
+            <span>Last 30 Days</span>
+          </div>
           <ChevronDown className="w-4 h-4 text-gray-500" />
         </button>
       </div>
 
       {/* --- Stats Cards --- */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        {/* Card 1: Active Campaigns */}
-        <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
-          <p className="text-sm font-semibold text-gray-500">
-            Active Campaigns
-          </p>
-          <h2 className="mt-2 text-3xl font-bold text-gray-800">2</h2>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        {/* Active Campaigns */}
+        <div className="p-5 bg-white border border-gray-200 shadow-sm rounded-xl">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xs font-bold text-gray-500 uppercase">
+                Active Campaigns
+              </p>
+              <h2 className="mt-1 text-2xl font-bold text-slate-800">2</h2>
+            </div>
+            <div className="p-2 rounded-lg bg-blue-50">
+              <Megaphone className="w-5 h-5 text-blue-600" />
+            </div>
+          </div>
         </div>
 
-        {/* Card 2: Total Spend */}
-        <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
-          <p className="text-sm font-semibold text-gray-500">
-            Total Spend (YTD)
-          </p>
-          <h2 className="mt-2 text-3xl font-bold text-gray-800">$11,000</h2>
+        {/* Total Spend */}
+        <div className="p-5 bg-white border border-gray-200 shadow-sm rounded-xl">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xs font-bold text-gray-500 uppercase">
+                Total Spend (YTD)
+              </p>
+              <h2 className="mt-1 text-2xl font-bold text-slate-800">
+                $11,000
+              </h2>
+            </div>
+            <div className="p-2 rounded-lg bg-rose-50">
+              <DollarSign className="w-5 h-5 text-rose-600" />
+            </div>
+          </div>
         </div>
 
-        {/* Card 3: ROI */}
-        <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
-          <p className="text-sm font-semibold text-gray-500">Average ROI</p>
-          <h2 className="mt-2 text-3xl font-bold text-green-600">+102%</h2>
+        {/* ROI */}
+        <div className="p-5 bg-white border border-gray-200 shadow-sm rounded-xl">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xs font-bold text-gray-500 uppercase">
+                Average ROI
+              </p>
+              <h2 className="flex items-center gap-1 mt-1 text-2xl font-bold text-emerald-600">
+                <TrendingUp className="w-5 h-5" /> +102%
+              </h2>
+            </div>
+            <div className="p-2 rounded-lg bg-emerald-50">
+              <TrendingUp className="w-5 h-5 text-emerald-600" />
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* --- Main Content: Filters & Table --- */}
-      <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
-        {/* --- Filters Section --- */}
-        <div className="flex flex-col justify-between gap-6 mb-8 xl:flex-row">
-          {/* Campaign Status Filter */}
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700">
-              Campaign Status
-            </label>
-            <div className="flex gap-2">
-              <button className="px-4 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
-                All
-              </button>
-              <button className="px-4 py-1.5 text-gray-600 hover:bg-gray-50 rounded-full text-sm font-medium">
-                Active
-              </button>
-              <button className="px-4 py-1.5 text-gray-600 hover:bg-gray-50 rounded-full text-sm font-medium">
-                Paused
-              </button>
-              <button className="px-4 py-1.5 text-gray-600 hover:bg-gray-50 rounded-full text-sm font-medium">
-                Ended
-              </button>
-            </div>
-          </div>
-
-          {/* Channel Filter */}
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700">
-              Channel
-            </label>
-            <div className="flex gap-2">
-              <button className="px-4 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
-                All
-              </button>
-              <button className="px-4 py-1.5 text-gray-600 hover:bg-gray-50 rounded-full text-sm font-medium">
-                Email
-              </button>
-              <button className="px-4 py-1.5 text-gray-600 hover:bg-gray-50 rounded-full text-sm font-medium">
-                Social
-              </button>
-              <button className="px-4 py-1.5 text-gray-600 hover:bg-gray-50 rounded-full text-sm font-medium">
-                PPC
-              </button>
-            </div>
-          </div>
-
-          {/* Date Range Picker */}
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700">
-              Date Range
-            </label>
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <Calendar className="w-4 h-4 text-gray-400" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Start Date"
-                  className="pl-10 pr-3 py-1.5 border border-gray-300 rounded-lg text-sm w-32 focus:ring-blue-500 focus:border-blue-500"
-                />
+      {/* --- Main Content Area --- */}
+      <div className="overflow-hidden bg-white border border-gray-200 shadow-sm rounded-xl">
+        {/* --- Filters Header --- */}
+        <div className="p-5 border-b border-gray-100">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            {/* Status Filter (Scrollable on mobile) */}
+            <div className="space-y-2">
+              <label className="flex items-center gap-1 text-xs font-bold text-gray-500 uppercase">
+                <Filter className="w-3 h-3" /> Status
+              </label>
+              <div className="flex gap-2 pb-2 overflow-x-auto scrollbar-hide">
+                <button className="px-4 py-1.5 bg-slate-900 text-white rounded-full text-sm font-medium whitespace-nowrap">
+                  All
+                </button>
+                <button className="px-4 py-1.5 text-gray-600 bg-gray-50 border border-gray-200 hover:bg-gray-100 rounded-full text-sm font-medium whitespace-nowrap">
+                  Active
+                </button>
+                <button className="px-4 py-1.5 text-gray-600 bg-gray-50 border border-gray-200 hover:bg-gray-100 rounded-full text-sm font-medium whitespace-nowrap">
+                  Paused
+                </button>
+                <button className="px-4 py-1.5 text-gray-600 bg-gray-50 border border-gray-200 hover:bg-gray-100 rounded-full text-sm font-medium whitespace-nowrap">
+                  Ended
+                </button>
               </div>
-              <span className="text-gray-400">-</span>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <Calendar className="w-4 h-4 text-gray-400" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="End Date"
-                  className="pl-10 pr-3 py-1.5 border border-gray-300 rounded-lg text-sm w-32 focus:ring-blue-500 focus:border-blue-500"
-                />
+            </div>
+
+            {/* Channel Filter (Scrollable on mobile) */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-gray-500 uppercase">
+                Channel
+              </label>
+              <div className="flex gap-2 pb-2 overflow-x-auto scrollbar-hide">
+                <button className="px-4 py-1.5 bg-amber-100 text-amber-800 border border-amber-200 rounded-full text-sm font-medium whitespace-nowrap">
+                  All Channels
+                </button>
+                <button className="px-4 py-1.5 text-gray-600 hover:bg-gray-50 rounded-full text-sm font-medium whitespace-nowrap">
+                  Email
+                </button>
+                <button className="px-4 py-1.5 text-gray-600 hover:bg-gray-50 rounded-full text-sm font-medium whitespace-nowrap">
+                  Social
+                </button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* --- Campaigns Table --- */}
-        <div className="overflow-x-auto">
+        {/* --- Mobile Card List View --- */}
+        <div className="p-4 space-y-4 md:hidden bg-gray-50">
+          {campaigns.map((campaign) => (
+            <div
+              key={campaign.id}
+              className="p-4 bg-white border border-gray-200 shadow-sm rounded-xl"
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <h3 className="font-bold text-slate-800">{campaign.name}</h3>
+                  <span className="text-xs text-gray-500">
+                    {campaign.channel}
+                  </span>
+                </div>
+                <span
+                  className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${getStatusColor(campaign.status)}`}
+                >
+                  {campaign.status}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 mb-3 text-sm gap-y-2 gap-x-4">
+                <div>
+                  <p className="text-xs text-gray-400">Budget</p>
+                  <p className="font-medium text-slate-700">
+                    {campaign.budget}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400">Spent</p>
+                  <p className="font-medium text-slate-700">{campaign.spent}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400">ROI</p>
+                  <p
+                    className={`font-bold ${campaign.roi.includes("+") ? "text-emerald-600" : "text-gray-600"}`}
+                  >
+                    {campaign.roi}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400">Ends</p>
+                  <p className="font-medium text-slate-700">
+                    {campaign.endDate}
+                  </p>
+                </div>
+              </div>
+
+              <button className="w-full py-2 mt-1 text-sm font-medium text-center text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50">
+                View Details
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* --- Desktop Table View --- */}
+        <div className="hidden overflow-x-auto md:block">
           <table className="w-full text-left">
-            <thead className="text-sm font-semibold text-gray-600 bg-gray-50">
+            <thead className="text-xs font-bold text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
               <tr>
-                <th className="w-10 px-4 py-3">
-                  <input type="checkbox" className="rounded" />
-                </th>
-                <th className="px-4 py-3">Campaign Name</th>
-                <th className="px-4 py-3">Channel</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Start Date</th>
-                <th className="px-4 py-3">End Date</th>
-                <th className="px-4 py-3">Budget</th>
-                <th className="px-4 py-3">Spent</th>
-                <th className="px-4 py-3">ROI</th>
-                <th className="px-4 py-3 text-right">Actions</th>
+                <th className="px-6 py-3">Campaign Name</th>
+                <th className="px-6 py-3">Channel</th>
+                <th className="px-6 py-3">Status</th>
+                <th className="px-6 py-3">Duration</th>
+                <th className="px-6 py-3">Budget / Spent</th>
+                <th className="px-6 py-3">ROI</th>
+                <th className="px-6 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="text-sm divide-y divide-gray-100">
               {campaigns.map((campaign) => (
-                <tr key={campaign.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3">
-                    <input
-                      type="checkbox"
-                      className="border-gray-300 rounded"
-                    />
-                  </td>
-                  <td className="px-4 py-3 font-medium text-gray-900">
+                <tr
+                  key={campaign.id}
+                  className="transition-colors hover:bg-gray-50"
+                >
+                  <td className="px-6 py-4 font-semibold text-slate-800">
                     {campaign.name}
                   </td>
-                  <td className="px-4 py-3 text-gray-600">
+                  <td className="px-6 py-4 text-gray-600">
                     {campaign.channel}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-6 py-4">
                     <span
-                      className={`px-2 py-1 rounded-md text-xs font-semibold ${getStatusColor(
-                        campaign.status
-                      )}`}
+                      className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${getStatusColor(campaign.status)}`}
                     >
                       {campaign.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-gray-500">
-                    {campaign.startDate}
+                  <td className="px-6 py-4 text-xs text-gray-500">
+                    <div>Start: {campaign.startDate}</div>
+                    <div>End: {campaign.endDate}</div>
                   </td>
-                  <td className="px-4 py-3 text-gray-500">
-                    {campaign.endDate}
+                  <td className="px-6 py-4">
+                    <div className="font-medium text-slate-900">
+                      {campaign.budget}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Spent: {campaign.spent}
+                    </div>
                   </td>
-                  <td className="px-4 py-3 font-medium text-gray-900">
-                    {campaign.budget}
-                  </td>
-                  <td className="px-4 py-3 text-gray-600">{campaign.spent}</td>
-                  <td className="px-4 py-3 font-bold text-green-600">
+                  <td
+                    className={`px-6 py-4 font-bold ${campaign.roi.includes("+") ? "text-emerald-600" : "text-gray-600"}`}
+                  >
                     {campaign.roi}
                   </td>
-                  <td className="px-4 py-3 text-right">
-                    <button className="p-1 text-gray-400 hover:text-gray-600">
+                  <td className="px-6 py-4 text-right">
+                    <button className="p-2 text-gray-400 transition-colors rounded-md hover:text-slate-600 hover:bg-gray-100">
                       <MoreHorizontal className="w-5 h-5" />
                     </button>
                   </td>

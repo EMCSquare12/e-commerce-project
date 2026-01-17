@@ -1,3 +1,4 @@
+import React from "react";
 import {
   AreaChart,
   Area,
@@ -13,10 +14,17 @@ import {
   Bar,
   Legend,
 } from "recharts";
-import { Calendar, ChevronDown } from "lucide-react";
+import {
+  Calendar,
+  ChevronDown,
+  DollarSign,
+  ShoppingBag,
+  TrendingUp,
+  CreditCard,
+} from "lucide-react";
 
 const AnalyticsScreen = () => {
-  // 1. Mock Data for Sales Trend (Area Chart)
+  // Mock Data for Sales Trend (Area Chart)
   const trendData = [
     { name: "Jan", value: 30000 },
     { name: "Feb", value: 45000 },
@@ -30,128 +38,155 @@ const AnalyticsScreen = () => {
     { name: "Oct", value: 120000 },
   ];
 
-  // 2. Mock Data for Category Sales (Pie Chart)
   const pieData = [
-    { name: "Sales", value: 40, color: "#3b82f6" }, // Blue
-    { name: "Category", value: 30, color: "#10b981" }, // Green
-    { name: "Wholesale", value: 20, color: "#0ea5e9" }, // Light Blue
-    { name: "Others", value: 10, color: "#9ca3af" }, // Gray
+    { name: "Electronics", value: 40, color: "#f59e0b" }, // Amber-500
+    { name: "Fashion", value: 30, color: "#3b82f6" }, // Blue-500
+    { name: "Home", value: 20, color: "#10b981" }, // Emerald-500
+    { name: "Others", value: 10, color: "#94a3b8" }, // Slate-400
   ];
 
-  // 3. Mock Data for Top Products (Bar Chart)
   const barData = [
-    { name: "A1", value: 180, fill: "#1d4ed8" }, // Dark Blue
-    { name: "B2", value: 130, fill: "#3b82f6" }, // Blue
-    { name: "B3", value: 100, fill: "#10b981" }, // Green
-    { name: "B4", value: 70, fill: "#6ee7b7" }, // Light Green
-    { name: "B5", value: 40, fill: "#a7f3d0" }, // Pale Green
+    { name: "iPhone 15", value: 180, fill: "#0f172a" }, // Slate-900
+    { name: "AirPods", value: 130, fill: "#334155" }, // Slate-700
+    { name: "MacBook", value: 100, fill: "#475569" }, // Slate-600
+    { name: "Galaxy S24", value: 70, fill: "#64748b" }, // Slate-500
+    { name: "PS5", value: 40, fill: "#94a3b8" }, // Slate-400
   ];
 
-  // 4. Mock Data for Recent Activity Table
   const activities = [
     {
       date: "07/10/2023",
-      event: "Vrmt by Category",
+      event: "New Order #1023",
       details: "jam.smith@email.com",
       value: "$1,450.00",
     },
     {
       date: "07/12/2023",
-      event: "Sales by Category",
+      event: "Refund Processed",
       details: "jom.smith@email.com",
-      value: "$25.00",
+      value: "-$25.00",
     },
     {
       date: "07/12/2023",
-      event: "Top Products",
-      details: "jam.smith@email.com",
+      event: "New Order #1024",
+      details: "jane.doe@email.com",
       value: "$50.00",
     },
   ];
 
   return (
-    <div className="space-y-6">
-      {/* --- Header & Controls --- */}
-      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+    <div className="pb-24 space-y-6 md:pb-8">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">
+          <h1 className="text-2xl font-bold text-slate-800">
             Analytics Overview
           </h1>
+          <p className="text-sm text-gray-500">
+            Track your store's performance
+          </p>
         </div>
       </div>
 
-      {/* --- Date Filters Bar --- */}
-      <div className="flex flex-col items-center justify-between p-1 rounded-lg sm:flex-row bg-gray-50">
-        <div className="flex space-x-2">
-          <button className="px-4 py-2 text-sm font-medium text-blue-700 bg-blue-100 rounded-md">
+      <div className="flex flex-col gap-3 p-1 bg-white border border-gray-100 shadow-sm rounded-xl sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex p-1 space-x-1 overflow-x-auto scrollbar-hide">
+          <button className="px-4 py-2 text-sm font-bold rounded-lg text-amber-700 bg-amber-50 whitespace-nowrap">
             Last 30 Days
           </button>
-          <button className="px-4 py-2 text-sm font-medium text-gray-600 transition-colors rounded-md hover:bg-gray-200">
+          <button className="px-4 py-2 text-sm font-medium text-gray-600 transition-colors rounded-lg hover:bg-gray-100 whitespace-nowrap">
             Last Quarter
           </button>
-          <button className="px-4 py-2 text-sm font-medium text-gray-600 transition-colors rounded-md hover:bg-gray-200">
+          <button className="px-4 py-2 text-sm font-medium text-gray-600 transition-colors rounded-lg hover:bg-gray-100 whitespace-nowrap">
             Year to Date
           </button>
         </div>
-        <div className="flex items-center gap-2 px-4 py-2 mt-2 text-gray-600 bg-white border border-gray-200 rounded-md cursor-pointer sm:mt-0 hover:bg-gray-50">
+        <div className="flex items-center gap-2 px-4 py-2 mx-1 text-gray-600 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 sm:mx-0 hover:bg-gray-100">
           <Calendar className="w-4 h-4" />
-          <span className="text-sm">Last 1 Month</span>
+          <span className="text-sm font-medium">Custom Range</span>
           <ChevronDown className="w-4 h-4" />
         </div>
       </div>
 
-      {/* --- Key Stats Cards --- */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        {/* Total Sales */}
-        <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
-          <p className="font-medium text-gray-500">Total Sales</p>
-          <div className="flex items-end gap-2 mt-2">
-            <h2 className="text-3xl font-bold text-gray-800">$124,500</h2>
-            <span className="mb-1 text-sm font-semibold text-green-600">
-              (+15%)
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="p-5 bg-white border border-gray-200 shadow-sm rounded-xl">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xs font-bold text-gray-500 uppercase">
+                Total Revenue
+              </p>
+              <h2 className="mt-1 text-2xl font-bold text-slate-800">
+                $124,500
+              </h2>
+            </div>
+            <div className="p-2 rounded-lg bg-amber-50">
+              <DollarSign className="w-5 h-5 text-amber-600" />
+            </div>
+          </div>
+          <div className="flex items-center mt-4 text-sm">
+            <span className="text-green-600 font-bold flex items-center bg-green-50 px-2 py-0.5 rounded-full">
+              <TrendingUp className="w-3 h-3 mr-1" /> +15%
             </span>
+            <span className="ml-2 text-gray-400">vs last month</span>
           </div>
         </div>
-        {/* Orders */}
-        <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
-          <p className="font-medium text-gray-500">Orders</p>
-          <div className="flex items-end gap-2 mt-2">
-            <h2 className="text-3xl font-bold text-gray-800">1,450</h2>
-            <span className="mb-1 text-sm font-semibold text-green-600">
-              (+10%)
+
+        <div className="p-5 bg-white border border-gray-200 shadow-sm rounded-xl">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xs font-bold text-gray-500 uppercase">
+                Total Orders
+              </p>
+              <h2 className="mt-1 text-2xl font-bold text-slate-800">1,450</h2>
+            </div>
+            <div className="p-2 rounded-lg bg-blue-50">
+              <ShoppingBag className="w-5 h-5 text-blue-600" />
+            </div>
+          </div>
+          <div className="flex items-center mt-4 text-sm">
+            <span className="text-green-600 font-bold flex items-center bg-green-50 px-2 py-0.5 rounded-full">
+              <TrendingUp className="w-3 h-3 mr-1" /> +10%
             </span>
+            <span className="ml-2 text-gray-400">vs last month</span>
           </div>
         </div>
-        {/* Avg Order Value */}
-        <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
-          <p className="font-medium text-gray-500">Average Order Value</p>
-          <div className="flex items-end gap-2 mt-2">
-            <h2 className="text-3xl font-bold text-gray-800">$85.86</h2>
-            <span className="mb-1 text-sm font-semibold text-green-600">
-              (+4%)
+
+        <div className="p-5 bg-white border border-gray-200 shadow-sm rounded-xl">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xs font-bold text-gray-500 uppercase">
+                Avg. Order Value
+              </p>
+              <h2 className="mt-1 text-2xl font-bold text-slate-800">$85.86</h2>
+            </div>
+            <div className="p-2 rounded-lg bg-emerald-50">
+              <CreditCard className="w-5 h-5 text-emerald-600" />
+            </div>
+          </div>
+          <div className="flex items-center mt-4 text-sm">
+            <span className="text-green-600 font-bold flex items-center bg-green-50 px-2 py-0.5 rounded-full">
+              <TrendingUp className="w-3 h-3 mr-1" /> +4%
             </span>
+            <span className="ml-2 text-gray-400">vs last month</span>
           </div>
         </div>
       </div>
 
-      {/* --- Main Chart: Sales & Revenue Trend --- */}
-      <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
+      <div className="p-5 bg-white border border-gray-200 shadow-sm rounded-xl">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-bold text-gray-800">
-            Sales & Revenue Trend
-          </h2>
-          <span className="text-sm text-gray-400">Last year</span>
+          <h2 className="text-lg font-bold text-slate-800">Revenue Trend</h2>
+          <span className="px-2 py-1 text-xs font-medium text-gray-500 bg-gray-100 rounded">
+            Year 2023
+          </span>
         </div>
-        <div className="w-full h-64">
+        <div className="w-full h-64 md:h-80">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={trendData}
-              margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+              margin={{ top: 10, right: 0, left: -20, bottom: 0 }}
             >
               <defs>
                 <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid
@@ -163,43 +198,41 @@ const AnalyticsScreen = () => {
                 dataKey="name"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "#9ca3af", fontSize: 12 }}
+                tick={{ fill: "#9ca3af", fontSize: 11 }}
                 dy={10}
               />
               <YAxis
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "#9ca3af", fontSize: 12 }}
+                tick={{ fill: "#9ca3af", fontSize: 11 }}
+                tickFormatter={(val) => `$${val / 1000}k`}
               />
               <Tooltip
                 contentStyle={{
-                  borderRadius: "8px",
+                  borderRadius: "12px",
                   border: "none",
-                  boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                  boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
                 }}
               />
               <Area
                 type="monotone"
                 dataKey="value"
-                stroke="#3b82f6"
+                stroke="#d97706"
                 strokeWidth={3}
                 fillOpacity={1}
                 fill="url(#colorSales)"
-                dot={{ r: 4, fill: "#3b82f6", strokeWidth: 2, stroke: "#fff" }}
               />
             </AreaChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* --- Bottom Row Grid --- */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* 1. Pie Chart: Sales by Category */}
-        <div className="flex flex-col p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
-          <h3 className="mb-4 text-sm font-bold text-gray-800">
-            Sales by Category (Pie Chart)
+        <div className="flex flex-col p-5 bg-white border border-gray-200 shadow-sm rounded-xl">
+          <h3 className="mb-4 text-sm font-bold tracking-wide uppercase text-slate-800">
+            Sales by Category
           </h3>
-          <div className="relative flex items-center justify-center flex-1 h-48">
+          <div className="relative flex items-center justify-center flex-1 h-56">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -213,6 +246,7 @@ const AnalyticsScreen = () => {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
+                <Tooltip />
                 <Legend
                   layout="vertical"
                   verticalAlign="middle"
@@ -223,41 +257,39 @@ const AnalyticsScreen = () => {
                 />
               </PieChart>
             </ResponsiveContainer>
-            {/* Center text mimic */}
-            <div className="absolute inset-0 flex items-center justify-center pr-20 pointer-events-none">
-              <div className="w-2 h-2 bg-transparent" />
+            <div className="absolute inset-0 flex items-center justify-center pr-24 pointer-events-none">
+              <span className="text-xs font-bold text-gray-400">DIST</span>
             </div>
           </div>
         </div>
 
-        {/* 2. Bar Chart: Top Products */}
-        <div className="flex flex-col p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
-          <h3 className="mb-4 text-sm font-bold text-gray-800">
-            Top Products (Bar Chart)
+        <div className="flex flex-col p-5 bg-white border border-gray-200 shadow-sm rounded-xl">
+          <h3 className="mb-4 text-sm font-bold tracking-wide uppercase text-slate-800">
+            Top Products
           </h3>
-          <div className="flex-1 h-48">
+          <div className="flex-1 h-56">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={barData}
                 margin={{ top: 0, right: 0, left: -25, bottom: 0 }}
+                layout="vertical"
               >
                 <CartesianGrid
                   strokeDasharray="3 3"
-                  vertical={false}
+                  horizontal={false}
                   stroke="#f3f4f6"
                 />
-                <XAxis
-                  dataKey="name"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: "#9ca3af", fontSize: 12 }}
-                />
+                <XAxis type="number" hide />
                 <YAxis
+                  dataKey="name"
+                  type="category"
+                  width={80}
+                  tick={{ fill: "#64748b", fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#9ca3af", fontSize: 12 }}
                 />
-                <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                <Tooltip cursor={{ fill: "#f8fafc" }} />
+                <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={20}>
                   {barData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.fill} />
                   ))}
@@ -267,38 +299,37 @@ const AnalyticsScreen = () => {
           </div>
         </div>
 
-        {/* 3. Recent Activity Table */}
-        <div className="flex flex-col p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
-          <h3 className="mb-4 text-sm font-bold text-gray-800">
+        <div className="flex flex-col p-5 bg-white border border-gray-200 shadow-sm rounded-xl lg:col-span-1">
+          <h3 className="mb-4 text-sm font-bold tracking-wide uppercase text-slate-800">
             Recent Activity
           </h3>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
-              <thead className="text-xs text-gray-500 border-b border-gray-100">
+              <thead className="text-xs text-gray-400 border-b border-gray-100 bg-gray-50/50">
                 <tr>
-                  <th className="pb-2 font-medium">Date</th>
-                  <th className="pb-2 font-medium">Event</th>
-                  <th className="pb-2 font-medium">Details</th>
-                  <th className="pb-2 font-medium text-right">Value</th>
+                  <th className="pb-2 pl-2 font-semibold">Date</th>
+                  <th className="pb-2 font-semibold">Event</th>
+                  <th className="pb-2 pr-2 font-semibold text-right">Value</th>
                 </tr>
               </thead>
               <tbody className="text-xs">
                 {activities.map((item, index) => (
                   <tr
                     key={index}
-                    className="border-b border-gray-50 last:border-0"
+                    className="transition-colors border-b border-gray-50 last:border-0 hover:bg-gray-50"
                   >
-                    <td className="py-3 text-gray-500">{item.date}</td>
-                    <td className="py-3 font-medium text-gray-800">
-                      {item.event}
+                    <td className="py-3 pl-2 text-gray-500 whitespace-nowrap">
+                      {item.date}
+                    </td>
+                    <td className="py-3">
+                      <p className="font-bold text-slate-700">{item.event}</p>
+                      <p className="text-gray-400 truncate max-w-[120px]">
+                        {item.details}
+                      </p>
                     </td>
                     <td
-                      className="py-3 text-gray-500 truncate max-w-[100px]"
-                      title={item.details}
+                      className={`py-3 pr-2 font-bold text-right whitespace-nowrap ${item.value.includes("-") ? "text-red-500" : "text-emerald-600"}`}
                     >
-                      {item.details}
-                    </td>
-                    <td className="py-3 font-medium text-right text-gray-800">
                       {item.value}
                     </td>
                   </tr>

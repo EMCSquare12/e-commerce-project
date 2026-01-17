@@ -4,6 +4,7 @@ import authSliceReducer from './slices/authSlice';
 import productSliceReducer from './slices/productSlice'
 import notificationsSliceReducer from './slices/notificationsSlice'
 import orderSliceReducer from "./slices/orderSlice"
+import toggleSliceReducer from './slices/toggleSlice'
 
 
 const store = configureStore({
@@ -13,6 +14,7 @@ const store = configureStore({
         product: productSliceReducer,
         order: orderSliceReducer,
         notifications: notificationsSliceReducer,
+        toggle: toggleSliceReducer,
 
 
     },

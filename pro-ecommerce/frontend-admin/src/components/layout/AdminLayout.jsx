@@ -11,7 +11,7 @@ const AdminLayout = () => {
           <Header />
         </div>
 
-        <main className="flex-1 p-4 lg:p-8">
+        <main className="flex-1 p-4 mt-14 lg:p-8">
           <Outlet />
         </main>
       </div>

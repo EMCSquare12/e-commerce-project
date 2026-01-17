@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ShoppingCart, Users, CreditCard, ImageOff } from "lucide-react";
+import { ShoppingCart, Users, CreditCard, Clock } from "lucide-react";
 import { useGetDashboardQuery } from "../slices/adminApiSlice";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
@@ -29,6 +29,7 @@ const useClipboard = (resetTime = 2000) => {
   };
   return { copiedId, copyToClipboard };
 };
+
 const DashboardScreen = () => {
   const { copiedId, copyToClipboard } = useClipboard();
   const [pageNumber, setPageNumber] = useState(1);
@@ -40,7 +41,7 @@ const DashboardScreen = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-96">
+      <div className="flex items-center justify-center min-h-[60vh]">
         <Loader />
       </div>
     );
@@ -48,35 +49,43 @@ const DashboardScreen = () => {
 
   if (error) {
     return (
-      <Message variant="danger">
-        {error?.data?.message || error.error || "Something went wrong"}
-      </Message>
+      <div className="p-4">
+        <Message variant="danger">
+          {error?.data?.message || error.error || "Something went wrong"}
+        </Message>
+      </div>
     );
   }
+
   const { orders = {}, stats = {}, monthlySales = [] } = data || {};
   const { data: orderList = [], pages = 1, page = 1 } = orders;
   const { ordersCountToday = 0, totalRevenue = 0, usersCountToday = 0 } = stats;
-
-  console.log(orderList);
 
   const toggleRow = (orderId) => {
     setExpandedOrderId((prev) => (prev === orderId ? null : orderId));
   };
 
   return (
-    <div className="mx-auto space-y-6 max-w-7xl">
+    <div className="pb-24 mx-auto space-y-6 max-w-7xl md:pb-8">
+      {/* Page Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-800">
           Dashboard Overview
         </h1>
+        <span className="px-3 py-1 text-xs font-medium text-gray-500 bg-gray-100 rounded-full md:hidden">
+          {new Date().toLocaleDateString()}
+        </span>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-6">
+        {/* Sales Chart (Takes up 2 columns on large screens) */}
         <div className="lg:col-span-2">
           <SalesChart data={monthlySales} />
         </div>
 
-        <div className="flex flex-col justify-between space-y-4">
+        {/* Stats Cards (Stacked column) */}
+        <div className="grid h-full grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-1 lg:flex lg:flex-col lg:justify-between">
           <StatsCard
             title="Total Orders"
             value={ordersCountToday}
@@ -98,82 +107,100 @@ const DashboardScreen = () => {
         </div>
       </div>
 
-      <>
-        <div className="overflow-x-auto min-h-[400px]">
-          <table className="w-full text-left border-collapse">
-            <thead className="border-b border-gray-200 bg-gray-50">
-              <tr>
-                <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                  Order ID
-                </th>
-                <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                  Customer
-                </th>
-                <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                  Date
-                </th>
-                <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                  Items
-                </th>
-                <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                  Total
-                </th>
-                <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                  Address
-                </th>
-                <th className="p-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                  Status
-                </th>
-                <th className="p-4 text-xs font-semibold tracking-wider text-right text-gray-500 uppercase">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {orderList?.length > 0 ? (
-                orderList.map((order) => {
-                  const id = order.orderId || order._id || "";
-                  return (
-                    <OrderRow
-                      key={id}
-                      order={order}
-                      isExpanded={expandedOrderId === id}
-                      onToggle={() => toggleRow(id)}
-                      copiedId={copiedId}
-                      onCopy={copyToClipboard}
-                    />
-                  );
-                })
-              ) : (
-                <tr>
-                  <td colSpan="9" className="p-8 text-center text-gray-500">
-                    No orders found matching your criteria.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+      {/* Recent Orders Section */}
+      <div>
+        <div className="flex items-center gap-2 mb-4">
+          <Clock className="w-5 h-5 text-amber-500" />
+          <h2 className="text-lg font-bold text-slate-800">Recent Orders</h2>
         </div>
 
+        {orderList?.length === 0 ? (
+          <div className="p-8 text-center bg-white border border-gray-200 border-dashed rounded-xl">
+            <p className="text-gray-500">No recent orders found.</p>
+          </div>
+        ) : (
+          <>
+            {/* View 1: Mobile List (Stack of Cards) */}
+            <div className="flex flex-col gap-4 md:hidden">
+              {orderList.map((order) => {
+                const id = order.orderId || order._id || "";
+                return (
+                  <OrderRow
+                    key={id}
+                    order={order}
+                    isExpanded={expandedOrderId === id}
+                    onToggle={() => toggleRow(id)}
+                    copiedId={copiedId}
+                    onCopy={copyToClipboard}
+                  />
+                );
+              })}
+            </div>
+
+            {/* View 2: Desktop Table */}
+            <div className="hidden overflow-hidden bg-white border border-gray-200 shadow-sm rounded-xl md:block">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead className="border-b border-gray-200 bg-gray-50">
+                    <tr>
+                      <th className="p-4 text-xs font-bold tracking-wider text-gray-500 uppercase">
+                        Order ID
+                      </th>
+                      <th className="p-4 text-xs font-bold tracking-wider text-gray-500 uppercase">
+                        Customer
+                      </th>
+                      <th className="p-4 text-xs font-bold tracking-wider text-gray-500 uppercase">
+                        Date
+                      </th>
+                      <th className="p-4 text-xs font-bold tracking-wider text-gray-500 uppercase">
+                        Items
+                      </th>
+                      <th className="p-4 text-xs font-bold tracking-wider text-gray-500 uppercase">
+                        Total
+                      </th>
+                      <th className="p-4 text-xs font-bold tracking-wider text-gray-500 uppercase">
+                        Address
+                      </th>
+                      <th className="p-4 text-xs font-bold tracking-wider text-gray-500 uppercase">
+                        Status
+                      </th>
+                      <th className="p-4 text-xs font-bold tracking-wider text-right text-gray-500 uppercase">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {orderList.map((order) => {
+                      const id = order.orderId || order._id || "";
+                      return (
+                        <OrderRow
+                          key={id}
+                          order={order}
+                          isExpanded={expandedOrderId === id}
+                          onToggle={() => toggleRow(id)}
+                          copiedId={copiedId}
+                          onCopy={copyToClipboard}
+                        />
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
+        )}
+
         {/* Pagination Footer */}
-        {data?.pages > 1 && (
-          <div className="bg-white border-t border-gray-100">
+        {pages > 1 && (
+          <div className="mt-6">
             <Pagination
-              setItemPages={(num) => dispatch(setPageNumber(num))}
-              page={pageNumber}
-              pages={data?.pages}
+              setItemPages={(num) => setPageNumber(num)}
+              page={page}
+              pages={pages}
             />
           </div>
         )}
-      </>
-
-      {pages > 1 && (
-        <Pagination
-          setItemPages={(num) => setPageNumber(num)}
-          page={page}
-          pages={pages}
-        />
-      )}
+      </div>
     </div>
   );
 };
