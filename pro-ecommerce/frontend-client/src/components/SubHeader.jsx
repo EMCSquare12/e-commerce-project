@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Search, X } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { searchItem } from "../slices/filterSlice";
@@ -8,6 +8,7 @@ const SubHeader = () => {
   const search = useSelector((state) => state.filter.keyword);
   const dispatch = useDispatch();
   const inputRef = useRef(null);
+  const location = useLocation();
 
   useEffect(() => {
     if (isSearchOpen && inputRef.current) {
@@ -21,7 +22,7 @@ const SubHeader = () => {
 
   return (
     <>
-      {isSearchOpen && (
+      {isSearchOpen && location.pathname === "/" && (
         <div className="absolute inset-0 z-50 flex items-center w-full h-full px-4 bg-slate-900 lg:hidden animate-fade-in">
           <Search className="mr-3 text-xl text-gray-400" />
           <input
@@ -59,30 +60,34 @@ const SubHeader = () => {
             </Link>
           </div>
 
-          <div className="relative flex-row items-center justify-center hidden w-fit lg:flex">
-            <input
-              value={search}
-              onChange={(e) => dispatch(searchItem(e.target.value))}
-              type="text"
-              placeholder="Search products..."
-              className="w-64 py-2 pl-4 pr-10 leading-tight text-gray-900 bg-white border border-gray-300 rounded-full appearance-none focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-            />
-            {!search ? (
-              <Search className="absolute text-xl text-gray-500 right-3" />
-            ) : (
-              <X
-                onClick={handleClear}
-                className="absolute text-xl text-gray-500 cursor-pointer right-3 hover:text-gray-700"
+          {location.pathname === "/" && (
+            <div className="relative flex-row items-center justify-center hidden w-fit lg:flex">
+              <input
+                value={search}
+                onChange={(e) => dispatch(searchItem(e.target.value))}
+                type="text"
+                placeholder="Search products..."
+                className="w-64 py-2 pl-4 pr-10 leading-tight text-gray-900 bg-white border border-gray-300 rounded-full appearance-none focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
               />
-            )}
-          </div>
+              {!search ? (
+                <Search className="absolute text-xl text-gray-500 right-3" />
+              ) : (
+                <X
+                  onClick={handleClear}
+                  className="absolute text-xl text-gray-500 cursor-pointer right-3 hover:text-gray-700"
+                />
+              )}
+            </div>
+          )}
 
-          <button
-            onClick={() => setIsSearchOpen(true)}
-            className="text-2xl text-white transition lg:hidden hover:text-amber-500"
-          >
-            <Search />
-          </button>
+          {location.pathname === "/" && (
+            <button
+              onClick={() => setIsSearchOpen(true)}
+              className="text-2xl text-white transition lg:hidden hover:text-amber-500"
+            >
+              <Search />
+            </button>
+          )}
         </nav>
       </div>
     </>
