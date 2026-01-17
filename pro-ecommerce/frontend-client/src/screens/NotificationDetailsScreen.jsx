@@ -5,7 +5,6 @@ import {
   Clock,
   ShoppingBag,
   Trash2,
-  ExternalLink,
   User,
   AlertCircle,
   CheckCircle,

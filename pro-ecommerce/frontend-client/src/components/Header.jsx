@@ -5,15 +5,15 @@ import { useLogoutMutation } from "../slices/usersApiSlice";
 import { logout } from "../slices/authSlice";
 import { toggleDrawer } from "../slices/toggleSlice"; // Import toggle action
 import {
-  FaCaretDown,
-  FaUser,
-  FaShoppingCart,
-  FaSignOutAlt,
-  FaUserCircle,
-  FaBell,
-  FaBars, // Import Hamburger Icon
-} from "react-icons/fa";
-import { ShoppingBag, User, AlertCircle } from "lucide-react";
+  Menu,
+  ShoppingBag,
+  UserRound,
+  AlertCircle,
+  ChevronDown,
+  ShoppingCart,
+  Bell,
+  LogOut,
+} from "lucide-react";
 
 import SubHeader from "./SubHeader";
 import {
@@ -58,11 +58,11 @@ const Header = () => {
       case "order":
         return <ShoppingBag className="w-4 h-4 text-blue-500" />;
       case "user":
-        return <User className="w-4 h-4 text-green-500" />;
+        return <UserRound className="w-4 h-4 text-green-500" />;
       case "alert":
         return <AlertCircle className="w-4 h-4 text-amber-500" />;
       default:
-        return <FaBell className="w-4 h-4 text-gray-500" />;
+        return <Bell className="w-4 h-4 text-gray-500" />;
     }
   };
 
@@ -97,7 +97,7 @@ const Header = () => {
             onClick={() => dispatch(toggleDrawer())}
             className="text-2xl text-white focus:outline-none lg:hidden"
           >
-            <FaBars />
+            <Menu />
           </button>
 
           {/* Logo */}
@@ -120,7 +120,7 @@ const Header = () => {
               onClick={() => setNotifyOpen(!notifyOpen)}
               className="flex items-center gap-1 transition hover:text-amber-500 focus:outline-none"
             >
-              <FaBell />
+              <Bell />
               {unreadCount > 0 && (
                 <span className="absolute -top-3 -right-3 bg-red-500 text-slate-900 text-xs font-bold px-1.5 py-0.5 rounded-full">
                   {unreadCount}
@@ -197,7 +197,7 @@ const Header = () => {
             to="/cart"
             className="relative flex items-center gap-1 transition hover:text-amber-500"
           >
-            <FaShoppingCart /> <span className="hidden sm:inline">Cart</span>
+            <ShoppingCart />
             {cartItems.length > 0 && (
               <span className="absolute -top-3 -right-3 bg-amber-500 text-slate-900 text-xs font-bold px-1.5 py-0.5 rounded-full">
                 {cartItems.reduce((a, c) => a + c.qty, 0)}
@@ -213,7 +213,7 @@ const Header = () => {
                   onClick={() => setProfileOpen(!profileOpen)}
                   className="flex items-center gap-1 transition hover:text-amber-500 focus:outline-none"
                 >
-                  {userInfo.name} <FaCaretDown />
+                  {userInfo.name} <ChevronDown />
                 </button>
                 {profileOpen && (
                   <div className="absolute right-0 z-20 w-48 py-1 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md shadow-lg">
@@ -222,13 +222,13 @@ const Header = () => {
                       className="flex items-center block w-full gap-2 px-4 py-2 text-sm text-left hover:bg-gray-100"
                       onClick={() => setProfileOpen(false)}
                     >
-                      <FaUserCircle /> Profile
+                      <UserRound /> Profile
                     </Link>
                     <button
                       onClick={logoutHandler}
                       className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left hover:bg-gray-100"
                     >
-                      <FaSignOutAlt /> Logout
+                      <LogOut /> Logout
                     </button>
                   </div>
                 )}
@@ -238,7 +238,7 @@ const Header = () => {
                 to="/login"
                 className="flex items-center gap-1 transition hover:text-amber-500"
               >
-                <FaUser /> <span className="hidden sm:inline">Sign In</span>
+                <UserRound /> <span className="hidden sm:inline">Sign In</span>
               </Link>
             )}
           </div>

@@ -9,7 +9,7 @@ import { addToCart } from "../slices/cartSlice";
 import Rating from "../components/Rating";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { ChevronLeft, ChevronRight } from "react-icons/fa";
 
 const ProductScreen = () => {
   const { id: productId } = useParams();
@@ -66,14 +66,14 @@ const ProductScreen = () => {
           className={`${arrowBtnStyle} left-4`}
           title="Previous Product"
         >
-          <FaChevronLeft />
+          <ChevronLeft />
         </Link>
       ) : (
         <button
           className={`${arrowBtnStyle} left-4 opacity-30 cursor-not-allowed`}
           disabled
         >
-          <FaChevronLeft />
+          <ChevronLeft />
         </button>
       )}
 
@@ -83,14 +83,14 @@ const ProductScreen = () => {
           className={`${arrowBtnStyle} right-4`}
           title="Next Product"
         >
-          <FaChevronRight />
+          <ChevronRight />
         </Link>
       ) : (
         <button
           className={`${arrowBtnStyle} right-4 opacity-30 cursor-not-allowed`}
           disabled
         >
-          <FaChevronRight />
+          <ChevronRight />
         </button>
       )}
 

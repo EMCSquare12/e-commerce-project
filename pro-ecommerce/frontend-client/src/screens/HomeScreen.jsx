@@ -6,8 +6,8 @@ import Message from "../components/Message";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Pagination from "../components/Pagination";
-import { PiFunnel } from "react-icons/pi";
-import { openDrawer, toggleDrawer } from "../slices/toggleSlice";
+import { Funnel } from "lucide-react";
+import { toggleDrawer } from "../slices/toggleSlice";
 import { clearFilter } from "../slices/filterSlice";
 
 const HomeScreen = () => {
@@ -64,8 +64,8 @@ const HomeScreen = () => {
               onClick={() => handleToggleFilter()}
               className="flex flex-row items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-50"
             >
-              <PiFunnel className="text-lg" />
-              Filter
+              <Funnel />
+              All Categories
             </button>
             {(category.length > 0 || brand.length > 0) && (
               <button

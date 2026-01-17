@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { IoSearch, IoCloseSharp } from "react-icons/io5";
+import { Search, X } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { searchItem } from "../slices/filterSlice";
-
 const SubHeader = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const search = useSelector((state) => state.filter.keyword);
@@ -24,7 +23,7 @@ const SubHeader = () => {
     <>
       {isSearchOpen && (
         <div className="absolute inset-0 z-50 flex items-center w-full h-full px-4 bg-slate-900 lg:hidden animate-fade-in">
-          <IoSearch className="mr-3 text-xl text-gray-400" />
+          <Search className="mr-3 text-xl text-gray-400" />
           <input
             ref={inputRef}
             value={search}
@@ -37,7 +36,7 @@ const SubHeader = () => {
             onClick={() => setIsSearchOpen(false)}
             className="p-2 ml-2 text-gray-400 rounded-full hover:bg-slate-800 hover:text-white"
           >
-            <IoCloseSharp className="text-xl" />
+            <X className="text-xl" />
           </button>
         </div>
       )}
@@ -69,9 +68,9 @@ const SubHeader = () => {
               className="w-64 py-2 pl-4 pr-10 leading-tight text-gray-900 bg-white border border-gray-300 rounded-full appearance-none focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
             />
             {!search ? (
-              <IoSearch className="absolute text-xl text-gray-500 right-3" />
+              <Search className="absolute text-xl text-gray-500 right-3" />
             ) : (
-              <IoCloseSharp
+              <X
                 onClick={handleClear}
                 className="absolute text-xl text-gray-500 cursor-pointer right-3 hover:text-gray-700"
               />
@@ -82,7 +81,7 @@ const SubHeader = () => {
             onClick={() => setIsSearchOpen(true)}
             className="text-2xl text-white transition lg:hidden hover:text-amber-500"
           >
-            <IoSearch />
+            <Search />
           </button>
         </nav>
       </div>

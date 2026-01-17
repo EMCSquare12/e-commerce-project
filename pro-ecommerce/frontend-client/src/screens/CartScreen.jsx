@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { FaTrash } from "react-icons/fa";
+import { Trash2 } from "lucide-react";
 import Message from "../components/Message";
 import { addToCart, removeFromCart } from "../slices/cartSlice";
 
@@ -95,7 +95,7 @@ const CartScreen = () => {
                     onClick={() => removeFromCartHandler(item._id)}
                     className="p-2 text-red-500 transition rounded-full hover:text-red-700 hover:bg-red-50"
                   >
-                    <FaTrash />
+                    <Trash2 />
                   </button>
                 </div>
               </div>

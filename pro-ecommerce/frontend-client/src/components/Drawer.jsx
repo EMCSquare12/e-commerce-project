@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from "react";
-import { FaChevronUp, FaChevronDown, FaSearch, FaTimes } from "react-icons/fa";
 import {
   useGetProductCategoriesQuery,
   useGetProductBrandsQuery,
 } from "../slices/productsApiSlice";
+import { ChevronUp, ChevronDown, X } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { setCategory, clearFilter, setBrand } from "../slices/filterSlice";
 import { closeDrawer } from "../slices/toggleSlice";
@@ -62,7 +62,7 @@ const Drawer = () => {
               onClick={() => handleCloseDrawer()}
               className="text-gray-400 hover:text-gray-600"
             >
-              <FaTimes />
+              <X />
             </button>
           </div>
         </div>
@@ -77,9 +77,9 @@ const Drawer = () => {
             >
               <span className="font-bold text-gray-700">Category</span>
               {isCategoryOpen ? (
-                <FaChevronUp className="text-xs text-gray-400" />
+                <ChevronUp className="text-xs text-gray-400" />
               ) : (
-                <FaChevronDown className="text-xs text-gray-400" />
+                <ChevronUp className="text-xs text-gray-400" />
               )}
             </button>
 
@@ -131,9 +131,9 @@ const Drawer = () => {
             >
               <span className="font-bold text-gray-700">Brand</span>
               {isBrandOpen ? (
-                <FaChevronUp className="text-xs text-gray-400" />
+                <ChevronUp className="text-xs text-gray-400" />
               ) : (
-                <FaChevronDown className="text-xs text-gray-400" />
+                <ChevronDown className="text-xs text-gray-400" />
               )}
             </button>
 
