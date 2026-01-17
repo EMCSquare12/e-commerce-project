@@ -87,29 +87,20 @@ const Header = () => {
   };
 
   return (
-    // ADDED: sticky, top-0, z-40 to make it stick on mobile & desktop
-    <header className="sticky top-0 z-50 w-full text-white shadow-md bg-slate-900">
+    <header className="sticky top-0 z-40 w-full text-white shadow-md bg-slate-900">
       <div className="container flex items-center justify-between gap-4 px-4 py-3 mx-auto">
-        {/* 1. LOGO SECTION - Prevent shrinking so it stays visible */}
         <div className="flex items-center flex-shrink-0">
           <Link
             to="/"
             className="flex items-center gap-2 text-xl font-bold tracking-wide md:text-2xl"
           >
             <i className="fa-solid fa-shop text-amber-500"></i>
-            {/* Show 'ProShop' on all screens */}
             <span>ProShop</span>
           </Link>
         </div>
-
-        {/* 2. SEARCH SECTION (SubHeader) - Flex grow to fill space */}
-        {/* On mobile: It sits next to logo. On desktop: It sits in middle. */}
         <div className="flex-grow max-w-md mx-auto">
           <SubHeader />
         </div>
-
-        {/* 3. DESKTOP ICONS - Hidden on Mobile (md:flex) */}
-        {/* These are hidden on mobile because they are now in your Bottom Navigation */}
         <nav className="items-center flex-shrink-0 hidden gap-4 text-sm font-medium tracking-wider uppercase md:flex sm:gap-6">
           {/* Notification Bell */}
           <div className="relative" ref={notifyRef}>

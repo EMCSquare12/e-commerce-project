@@ -24,9 +24,8 @@ const BottomNavigation = () => {
   const inactiveClass = "text-gray-500 hover:text-gray-900";
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] md:hidden pb-safe">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white ... md:hidden">
       <div className="flex items-center justify-around h-16">
-        {/* 1. HOME */}
         <Link
           to="/"
           className={`flex flex-col items-center justify-center w-full h-full transition-colors ${isActive("/") ? activeClass : inactiveClass}`}
@@ -35,7 +34,6 @@ const BottomNavigation = () => {
           <span className="text-[10px] mt-1 font-medium">Home</span>
         </Link>
 
-        {/* 2. CATEGORY (Triggers Drawer) */}
         <button
           onClick={() => dispatch(toggleDrawer())}
           className={`flex flex-col items-center justify-center w-full h-full transition-colors ${inactiveClass}`}
@@ -44,7 +42,6 @@ const BottomNavigation = () => {
           <span className="text-[10px] mt-1 font-medium">Category</span>
         </button>
 
-        {/* 3. CART */}
         <Link
           to="/cart"
           className={`relative flex flex-col items-center justify-center w-full h-full transition-colors ${isActive("/cart") ? activeClass : inactiveClass}`}
@@ -60,7 +57,6 @@ const BottomNavigation = () => {
           <span className="text-[10px] mt-1 font-medium">Cart</span>
         </Link>
 
-        {/* 4. NOTIFICATION */}
         <Link
           to="/notifications"
           className={`relative flex flex-col items-center justify-center w-full h-full transition-colors ${isActive("/notifications") ? activeClass : inactiveClass}`}
@@ -76,7 +72,6 @@ const BottomNavigation = () => {
           <span className="text-[10px] mt-1 font-medium">Updates</span>
         </Link>
 
-        {/* 5. PROFILE */}
         <Link
           to={userInfo ? "/profile" : "/login"}
           className={`flex flex-col items-center justify-center w-full h-full transition-colors ${isActive("/profile") || isActive("/login") ? activeClass : inactiveClass}`}

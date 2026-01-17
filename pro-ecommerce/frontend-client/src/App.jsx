@@ -1,9 +1,9 @@
 import { Outlet } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector } from "react-redux"; // Import useSelector
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Drawer from "./components/Drawer";
-import BottomNavigation from "./components/BottomNavigation";
+import BottomNavigation from "./components/BottomNavigation"; // 1. Import BottomNavigation
 
 const App = () => {
   const isOpen = useSelector((state) => state.toggle.isOpen);
@@ -18,7 +18,6 @@ const App = () => {
         }`}
       >
         <Header />
-
         <main className="container flex-grow px-4 py-8 mx-auto mb-16 md:mb-0">
           <Outlet />
         </main>
