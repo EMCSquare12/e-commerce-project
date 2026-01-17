@@ -3,6 +3,7 @@ import { useGetProductsQuery } from "../slices/productsApiSlice";
 import Product from "../components/Product";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
+import HeroSlider from "../components/HeroSlider";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Pagination from "../components/Pagination";
@@ -15,7 +16,7 @@ const HomeScreen = () => {
 
   // Redux: Get Filter State
   const { keyword, pageNumber, category, brand } = useSelector(
-    (state) => state.filter
+    (state) => state.filter,
   );
   const { data, isLoading, error } = useGetProductsQuery({
     keyword,
@@ -30,22 +31,7 @@ const HomeScreen = () => {
   };
   return (
     <>
-      <div className="p-6 mb-6 text-center text-white shadow-lg md:p-10 md:mb-10 bg-slate-800 rounded-xl">
-        <h1 className="mb-2 text-3xl font-bold md:mb-4 md:text-5xl">
-          Welcome to ProShop
-        </h1>
-
-        <p className="mb-4 text-base md:mb-6 md:text-xl text-slate-300">
-          The best place to find the latest electronics
-        </p>
-
-        <Link
-          to="/"
-          className="px-6 py-3 font-bold transition rounded-full bg-amber-500 text-slate-900 hover:bg-amber-400"
-        >
-          Shop Now
-        </Link>
-      </div>
+      <HeroSlider />
 
       <h1 className="mb-6 text-xl font-bold md:text-3xl text-slate-800">
         Latest Products

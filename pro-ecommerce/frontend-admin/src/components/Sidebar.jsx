@@ -17,7 +17,7 @@ import { toggleSidebar } from "../slices/toggleSlice";
 const Sidebar = () => {
   const location = useLocation();
   const dispatch = useDispatch();
-  const {openSidebar} = useSelector((state) => state.toggle);
+  const { openSidebar } = useSelector((state) => state.toggle);
 
   const menuItems = [
     { name: "Dashboard", icon: LayoutDashboard, path: "/admin" },
