@@ -64,7 +64,7 @@ const SubHeader = () => {
               value={search}
               onChange={(e) => dispatch(searchItem(e.target.value))}
               type="text"
-              placeholder="Search..."
+              placeholder="Search products..."
               className="w-64 py-2 pl-4 pr-10 leading-tight text-gray-900 bg-white border border-gray-300 rounded-full appearance-none focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
             />
             {!search ? (

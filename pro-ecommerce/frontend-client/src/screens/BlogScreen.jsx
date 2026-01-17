@@ -6,13 +6,10 @@ import {
   Calendar,
   User,
   ArrowRight,
-  Smartphone,
-  Laptop,
-  Camera,
-  Headphones,
+  ChevronDown,
 } from "lucide-react";
 
-// --- MOCK DATA: Electronics & Gadgets ---
+// --- MOCK DATA ---
 const BLOG_POSTS = [
   {
     _id: "1",
@@ -106,148 +103,154 @@ const BlogScreen = () => {
   });
 
   return (
-    <>
-      <div className="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
-        {/* Page Heading - Matches "Latest Products" */}
-        <h1 className="mb-6 text-3xl font-bold text-slate-800">
-          Latest Articles
-        </h1>
+    <div className="px-4 py-6 pb-24 mx-auto max-w-7xl sm:px-6 lg:px-8 md:pb-8">
+      {/* Page Heading */}
+      <h1 className="mb-6 text-2xl font-bold md:text-3xl text-slate-800">
+        Latest Articles
+      </h1>
 
-        {/* Filter Bar Container - Matches the gray bar in your screenshot */}
-        <div className="flex flex-col items-center justify-between gap-4 p-4 mb-8 border border-gray-100 rounded-lg bg-gray-50 md:flex-row">
-          {/* Filter Button */}
-          <div className="relative w-full md:w-auto">
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center justify-center w-full gap-2 px-4 py-2 text-sm font-medium text-gray-700 transition-colors bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-50 md:w-auto md:justify-start"
-            >
-              <Filter className="w-4 h-4" />
-              {selectedCategory === "All"
-                ? "Filter Category"
-                : selectedCategory}
-            </button>
-
-            {/* Filter Dropdown */}
-            {showFilters && (
-              <div className="absolute left-0 z-10 w-full py-1 duration-200 bg-white border border-gray-200 rounded-md shadow-lg top-12 md:w-48 animate-in fade-in zoom-in-95">
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => {
-                      setSelectedCategory(cat);
-                      setShowFilters(false);
-                    }}
-                    className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
-                      selectedCategory === cat
-                        ? "text-blue-600 font-semibold bg-blue-50"
-                        : "text-gray-700"
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Search Input - Added for functionality inside the bar */}
-          <div className="relative w-full md:w-80">
-            <input
-              type="text"
-              placeholder="Search gadgets, reviews..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full py-2 pl-4 pr-10 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      {/* Filter Bar Container */}
+      <div className="flex flex-col items-center justify-between gap-3 p-3 mb-8 border border-gray-100 rounded-xl bg-gray-50 md:flex-row md:p-4">
+        {/* Filter Button */}
+        <div className="relative z-10 w-full md:w-auto">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="flex items-center justify-between w-full gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 md:w-48"
+          >
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-amber-500" />
+              <span>
+                {selectedCategory === "All"
+                  ? "Filter Category"
+                  : selectedCategory}
+              </span>
+            </div>
+            <ChevronDown
+              className={`w-4 h-4 transition-transform ${showFilters ? "rotate-180" : ""}`}
             />
-            <Search className="absolute right-3 top-2.5 w-4 h-4 text-gray-400" />
-          </div>
+          </button>
+
+          {/* Filter Dropdown */}
+          {showFilters && (
+            <div className="absolute left-0 w-full mt-2 duration-200 bg-white border border-gray-100 rounded-lg shadow-xl top-full md:w-48 animate-in fade-in slide-in-from-top-2">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => {
+                    setSelectedCategory(cat);
+                    setShowFilters(false);
+                  }}
+                  className={`block w-full text-left px-4 py-2.5 text-sm hover:bg-amber-50 transition-colors first:rounded-t-lg last:rounded-b-lg ${
+                    selectedCategory === cat
+                      ? "text-amber-600 font-bold bg-amber-50"
+                      : "text-gray-600"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Blog Post Grid */}
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredPosts.map((post) => (
-            <article
-              key={post._id}
-              className="flex flex-col h-full overflow-hidden transition-shadow duration-300 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md"
+        {/* Search Input */}
+        <div className="relative w-full md:w-80">
+          <input
+            type="text"
+            placeholder="Search reviews..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full py-2.5 pl-4 pr-10 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+          />
+          <Search className="absolute w-4 h-4 text-gray-400 right-3 top-3" />
+        </div>
+      </div>
+
+      {/* Blog Post Grid */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {filteredPosts.map((post) => (
+          <article
+            key={post._id}
+            className="flex flex-col h-full overflow-hidden transition-all duration-300 bg-white border border-gray-100 shadow-sm rounded-xl hover:shadow-lg hover:-translate-y-1"
+          >
+            {/* Image */}
+            <Link
+              to={`/blog/${post._id}`}
+              className="relative block w-full overflow-hidden aspect-video group"
             >
-              {/* Image */}
-              <Link
-                to={`/blog/${post._id}`}
-                className="relative block w-full overflow-hidden aspect-video group"
-              >
-                <img
-                  src={post.image}
-                  alt={post.title}
-                  className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
-                />
-                <div className="absolute top-3 left-3">
-                  <span className="inline-block px-2 py-1 text-xs font-bold tracking-wide text-white uppercase rounded bg-slate-900/80 backdrop-blur-sm">
-                    {post.category}
-                  </span>
-                </div>
+              <img
+                src={post.image}
+                alt={post.title}
+                className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute top-3 left-3">
+                <span className="inline-block px-2.5 py-1 text-[10px] font-bold tracking-wide text-white uppercase rounded-md bg-slate-900/90 backdrop-blur-sm shadow-sm">
+                  {post.category}
+                </span>
+              </div>
+            </Link>
+
+            <div className="flex flex-col flex-grow p-4 md:p-5">
+              {/* Meta Date/Author */}
+              <div className="flex items-center gap-3 mb-2 text-xs font-medium text-gray-400">
+                <span className="flex items-center">
+                  <Calendar className="w-3 h-3 mr-1" />
+                  {post.date}
+                </span>
+                <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+                <span className="flex items-center">
+                  <User className="w-3 h-3 mr-1" />
+                  {post.author}
+                </span>
+              </div>
+
+              {/* Title */}
+              <Link to={`/blog/${post._id}`} className="block mb-2">
+                <h2 className="text-base font-bold leading-tight transition-colors md:text-lg text-slate-800 hover:text-amber-600 line-clamp-2">
+                  {post.title}
+                </h2>
               </Link>
 
-              {/* Content */}
-              <div className="flex flex-col flex-grow p-5">
-                {/* Meta Date/Author */}
-                <div className="flex items-center gap-3 mb-3 text-xs text-gray-500">
-                  <span className="flex items-center">
-                    <Calendar className="w-3 h-3 mr-1" />
-                    {post.date}
-                  </span>
-                  <span className="flex items-center">
-                    <User className="w-3 h-3 mr-1" />
-                    {post.author}
-                  </span>
-                </div>
+              {/* Excerpt */}
+              <p className="flex-grow mb-4 text-sm leading-relaxed text-gray-500 line-clamp-3">
+                {post.excerpt}
+              </p>
 
-                {/* Title */}
-                <Link to={`/blog/${post._id}`} className="block mb-2">
-                  <h2 className="text-lg font-bold text-gray-800 transition-colors hover:text-blue-600 line-clamp-2">
-                    {post.title}
-                  </h2>
-                </Link>
-
-                {/* Excerpt */}
-                <p className="flex-grow mb-4 text-sm text-gray-600 line-clamp-3">
-                  {post.excerpt}
-                </p>
-
-                {/* Read More Link */}
-                <Link
-                  to={`/blog/${post._id}`}
-                  className="inline-flex items-center mt-auto text-sm font-semibold text-blue-600 hover:text-blue-800 group"
-                >
-                  Read Review{" "}
-                  <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        {/* Empty State */}
-        {filteredPosts.length === 0 && (
-          <div className="py-20 text-center border border-gray-300 border-dashed rounded-lg bg-gray-50">
-            <h3 className="text-lg font-medium text-gray-900">
-              No articles found
-            </h3>
-            <p className="mt-1 text-gray-500">
-              Try searching for "iPhone", "Sony", or "Gaming".
-            </p>
-            <button
-              onClick={() => {
-                setSearchTerm("");
-                setSelectedCategory("All");
-              }}
-              className="mt-4 text-sm font-medium text-blue-600 hover:underline"
-            >
-              Clear filters
-            </button>
-          </div>
-        )}
+              {/* Read More Link */}
+              <Link
+                to={`/blog/${post._id}`}
+                className="inline-flex items-center mt-auto text-sm font-bold text-amber-600 hover:text-amber-700 group"
+              >
+                Read Article
+                <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </div>
+          </article>
+        ))}
       </div>
-    </>
+
+      {/* Empty State */}
+      {filteredPosts.length === 0 && (
+        <div className="py-20 text-center border-2 border-gray-100 border-dashed rounded-xl bg-gray-50/50">
+          <div className="flex justify-center mb-4">
+            <Search className="w-12 h-12 text-gray-300" />
+          </div>
+          <h3 className="text-lg font-bold text-gray-900">No articles found</h3>
+          <p className="mt-1 text-gray-500">
+            We couldn't find any posts matching your search.
+          </p>
+          <button
+            onClick={() => {
+              setSearchTerm("");
+              setSelectedCategory("All");
+            }}
+            className="px-4 py-2 mt-4 text-sm font-bold transition-colors rounded-lg text-amber-600 bg-amber-50 hover:bg-amber-100"
+          >
+            Clear All Filters
+          </button>
+        </div>
+      )}
+    </div>
   );
 };
 
