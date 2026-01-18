@@ -1,10 +1,10 @@
 {
   "name": "pro-ecommerce",
   "version": "1.0.0",
-  "main": "backend/server.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node backend/server.js",        
-    "dev": "nodemon backend/server.js",       
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js",
     "data:import": "node backend/seeder.js",
     "data:destroy": "node backend/seeder.js -d"
   },
