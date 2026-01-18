@@ -4,9 +4,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Outlet } from "react-router-dom";
 
 // Public Key (Safe to expose)
-const stripePromise = loadStripe(
-  import.meta.env.VITE_STRIPE_PUBLIC_KEY
-);
+const stripePromise = loadStripe(import.meta.env.STRIPE_PUBLIC_KEY);
 
 const StripeWrapper = () => {
   return (
