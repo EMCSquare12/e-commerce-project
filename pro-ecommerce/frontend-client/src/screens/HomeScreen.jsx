@@ -4,7 +4,6 @@ import Product from "../components/Product";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import HeroSlider from "../components/HeroSlider";
-import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Pagination from "../components/Pagination";
 import { Filter } from "lucide-react";
