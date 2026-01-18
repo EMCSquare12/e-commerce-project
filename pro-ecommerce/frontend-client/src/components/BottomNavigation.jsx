@@ -12,11 +12,15 @@ const BottomNavigation = () => {
   // Get Global State
   const { cartItems } = useSelector((state) => state.cart);
   const { userInfo } = useSelector((state) => state.auth);
+  const { category, brand } = useSelector((state) => state.filter);
 
   // Fetch Notifications for Badge
   const { data: notifications } = useGetNotificationsQuery();
+
+  // Counters for badges
   const unreadCount = notifications?.filter((n) => !n.read).length || 0;
   const cartCount = cartItems.reduce((a, c) => a + c.qty, 0);
+  const categoryCount = category.length + brand.length;
 
   // Helper to check active route for styling
   const isActive = (path) => location.pathname === path;
@@ -38,8 +42,14 @@ const BottomNavigation = () => {
           onClick={() => dispatch(toggleDrawer())}
           className={`flex flex-col items-center justify-center w-full h-full transition-colors ${inactiveClass}`}
         >
-          <Menu className="w-6 h-6" />
-          <span className="text-[10px] mt-1 font-medium">Category</span>
+          <div className="relative">
+            <Menu className="w-6 h-6" />
+            {categoryCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center border-2 border-white">
+                {categoryCount}
+              </span>
+            )}
+          </div>
         </button>
 
         <Link

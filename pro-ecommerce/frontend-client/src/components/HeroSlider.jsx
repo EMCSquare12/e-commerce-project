@@ -8,20 +8,17 @@ const slides = [
   {
     title: "Latest Electronics",
     subtitle: "Find the best gadgets for work & play",
-    image:
-      "https://images.unsplash.com/photo-1517336714731-489689fd1ca8",
+    image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8",
   },
   {
     title: "Premium Audio",
     subtitle: "Experience crystal clear sound",
-    image:
-      "https://images.unsplash.com/photo-1511367461989-f85a21fda167",
+    image: "https://images.unsplash.com/photo-1511367461989-f85a21fda167",
   },
   {
     title: "Smart Devices",
     subtitle: "Make your home smarter today",
-    image:
-      "https://images.unsplash.com/photo-1555617981-dac3880eac6c",
+    image: "https://images.unsplash.com/photo-1555617981-dac3880eac6c",
   },
 ];
 
