@@ -9,12 +9,12 @@ export default defineConfig({
         proxy: {
             // Connects to your backend
             '/api': {
-                target: 'https://e-commerce-project-u1xz.onrender.com',
+                target: 'http://localhost:5000',
                 changeOrigin: true,
             },
             // Allows displaying images served by backend
             '/uploads': {
-                target: 'https://e-commerce-project-u1xz.onrender.com',
+                target: 'http://localhost:5000',
                 changeOrigin: true,
             },
         },
