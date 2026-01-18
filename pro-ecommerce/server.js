@@ -3,16 +3,18 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 dotenv.config();
-import connectDB from './config/db.js';
-import { notFound, errorHandler } from './middleware/errorMiddleware.js';
+import connectDB from './backend/config/db.js';
+import { notFound, errorHandler } from './backend/middleware/errorMiddleware.js';
 
-import productRoutes from './routes/productRoutes.js';
-import userRoutes from './routes/userRoutes.js';
-import orderRoutes from './routes/orderRoutes.js';
-import paymentRoutes from './routes/paymentRoutes.js';
-import adminRoutes from './routes/adminRoutes.js';
-import imageRoutes from './routes/imageRoutes.js';
-import notificationsRoutes from './routes/notificationsRoutes.js';
+import productRoutes from './backend/routes/productRoutes.js';
+import userRoutes from './backend/routes/userRoutes.js';
+import orderRoutes from './backend/routes/orderRoutes.js';
+import paymentRoutes from './backend/routes/paymentRoutes.js';
+import adminRoutes from './backend/routes/adminRoutes.js';
+import imageRoutes from './backend/routes/imageRoutes.js';
+import notificationsRoutes from './backend/routes/notificationsRoutes.js';
+
+
 
 connectDB();
 
