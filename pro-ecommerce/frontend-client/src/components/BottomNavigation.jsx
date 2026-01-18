@@ -50,6 +50,7 @@ const BottomNavigation = () => {
               </span>
             )}
           </div>
+          <span className="text-[10px] mt-1 font-medium">Category</span>
         </button>
 
         <Link

@@ -34,7 +34,10 @@ const SubHeader = () => {
             className="flex-grow text-white placeholder-gray-500 bg-transparent border-none outline-none focus:ring-0"
           />
           <button
-            onClick={() => setIsSearchOpen(false)}
+            onClick={() => {
+              setIsSearchOpen(false);
+              handleClear();
+            }}
             className="p-2 ml-2 text-gray-400 rounded-full hover:bg-slate-800 hover:text-white"
           >
             <X className="text-xl" />
