@@ -7,7 +7,7 @@ import HeroSlider from "../components/HeroSlider";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Pagination from "../components/Pagination";
-import { Funnel } from "lucide-react";
+import { Filter } from "lucide-react";
 import { toggleDrawer } from "../slices/toggleSlice";
 import { clearFilter } from "../slices/filterSlice";
 
@@ -51,7 +51,7 @@ const HomeScreen = () => {
               onClick={() => handleToggleFilter()}
               className="flex-row items-center hidden gap-2 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors bg-white border border-gray-300 rounded shadow-sm md:flex hover:bg-gray-50"
             >
-              <Funnel />
+              <Filter />
               All Categories
             </button>
 
