@@ -7,11 +7,11 @@ export default defineConfig({
     port: 3001,
     proxy: {
       '/api': {
-        target: 'https://e-commerce-project-u1xz.onrender.com',
+        target: 'http://localhost:5000',
         changeOrigin: true,
       },
       '/uploads': {
-        target: 'https://e-commerce-project-u1xz.onrender.com',
+        target: 'http://localhost:5000',
         changeOrigin: true,
       },
     },
