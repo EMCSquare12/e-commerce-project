@@ -1,7 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
-import cors from 'cors'; 
+import cors from 'cors';
 dotenv.config();
 import connectDB from './config/db.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
@@ -22,8 +22,8 @@ app.use(cors({
     origin: [
         "http://localhost:5173",
         "http://localhost:3000",
-        "https://pro-shop-ecommerce.netlify.app/",
-        "https://pro-shop-ecommerce-admin.netlify.app/"
+        "https://pro-shop-ecommerce.netlify.app",
+        "https://pro-shop-ecommerce-admin.netlify.app"
 
     ],
     credentials: true
