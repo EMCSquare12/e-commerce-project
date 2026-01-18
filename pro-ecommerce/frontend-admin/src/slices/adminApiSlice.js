@@ -1,4 +1,3 @@
-import { getDashboard } from "../../../backend/controllers/adminController";
 import { ADMIN_STATS_URL, ORDERS_URL } from "../constants";
 import { apiSlice } from "./apiSlice";
 
