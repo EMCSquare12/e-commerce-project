@@ -17,13 +17,13 @@ import {
 } from "../../slices/productSlice";
 import { BASE_URL } from "../../constants";
 
-
 const UpdateProductModal = ({ onUpdate }) => {
   const {
     isLoadingGlobal,
     updateModal: { open, product },
     updateFormData,
   } = useSelector((state) => state.product);
+  const { userInfo } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const [imageList, setImageList] = useState([]);
   const [imageToRemove, setImageToRemove] = useState([]);
@@ -95,7 +95,10 @@ const UpdateProductModal = ({ onUpdate }) => {
             `${BASE_URL}/api/upload`,
             uploadFormData,
             {
-              headers: { "Content-Type": "multipart/form-data" },
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${userInfo.token}`,
+              },
             },
           );
           return uploadRes.data.image;

@@ -41,6 +41,7 @@ const ProductsScreen = () => {
   const { filter, createNewProductModal } = useSelector(
     (state) => state.product,
   );
+  const { userInfo } = useSelector((state) => state.auth);
 
   // Separate state for mobile menu toggles
   const [activeActionIndex, setActiveActionIndex] = useState(null);
@@ -85,7 +86,10 @@ const ProductsScreen = () => {
           `${BASE_URL}/api/upload`,
           uploadFormData,
           {
-            headers: { "Content-Type": "multipart/form-data" },
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${userInfo.token}`,
+            },
           },
         );
 
