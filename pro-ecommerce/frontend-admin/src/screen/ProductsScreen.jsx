@@ -81,9 +81,13 @@ const ProductsScreen = () => {
         const uploadFormData = new FormData();
         uploadFormData.append("image", formData.imageFile);
 
-        const uploadRes = await axios.post(`${BASE_URL}/api/upload`, uploadFormData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        const uploadRes = await axios.post(
+          `${BASE_URL}/api/upload`,
+          uploadFormData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          },
+        );
 
         updatedData.image = [uploadRes.data.image];
         delete updatedData.imageFile;
