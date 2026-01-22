@@ -34,6 +34,7 @@ import {
   setUpdateModal,
   setCreateNewProductModal,
 } from "../slices/productSlice";
+import { BASE_URL } from "../constants";
 
 const ProductsScreen = () => {
   const dispatch = useDispatch();
@@ -80,7 +81,7 @@ const ProductsScreen = () => {
         const uploadFormData = new FormData();
         uploadFormData.append("image", formData.imageFile);
 
-        const uploadRes = await axios.post("/api/upload", uploadFormData, {
+        const uploadRes = await axios.post(`${BASE_URL}/api/upload`, uploadFormData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
 

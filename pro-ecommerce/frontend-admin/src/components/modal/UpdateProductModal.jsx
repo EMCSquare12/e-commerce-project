@@ -89,9 +89,13 @@ const UpdateProductModal = ({ onUpdate }) => {
           const uploadFormData = new FormData();
           uploadFormData.append("image", imgItem.file);
 
-          const uploadRes = await axios.post("/api/upload", uploadFormData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
+          const uploadRes = await axios.post(
+            `${BASE_URL}/api/upload`,
+            uploadFormData,
+            {
+              headers: { "Content-Type": "multipart/form-data" },
+            },
+          );
           return uploadRes.data.image;
         } else {
           return imgItem.url;
