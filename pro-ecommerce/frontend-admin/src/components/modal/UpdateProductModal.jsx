@@ -15,6 +15,8 @@ import {
   setLoadingGlobal,
   setUpdateFormData,
 } from "../../slices/productSlice";
+import { BASE_URL } from "../../constants";
+
 
 const UpdateProductModal = ({ onUpdate }) => {
   const {
