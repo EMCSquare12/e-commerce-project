@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
@@ -8,6 +8,7 @@ import {
   User,
   AlertCircle,
   CheckCircle,
+  Star, // Imported Star icon
 } from "lucide-react";
 import {
   useDeleteSelectedNotificationMutation,
@@ -16,10 +17,15 @@ import {
 import { toast } from "react-toastify";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
+import ReviewModal from "../components/ReviewModal";
 
 const NotificationDetailsScreen = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+
+  // --- State for Review Modal ---
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [selectedItemForReview, setSelectedItemForReview] = useState(null);
 
   const { data, isLoading, error } = useGetNotificationDetailsQuery({
     notificationId: id,
@@ -67,6 +73,11 @@ const NotificationDetailsScreen = () => {
     }
   };
 
+  const handleOpenReview = (item) => {
+    setSelectedItemForReview(item);
+    setReviewModalOpen(true);
+  };
+
   if (isLoading) return <Loader />;
   if (error)
     return (
@@ -81,6 +92,13 @@ const NotificationDetailsScreen = () => {
 
   return (
     <div className="max-w-3xl px-4 py-6 pb-24 mx-auto md:pb-8">
+      {/* Review Modal Component */}
+      <ReviewModal
+        isOpen={reviewModalOpen}
+        onClose={() => setReviewModalOpen(false)}
+        product={selectedItemForReview}
+      />
+
       {/* Back Button */}
       <div className="mb-4 md:mb-6">
         <button
@@ -183,6 +201,10 @@ const NotificationDetailsScreen = () => {
                         <th className="px-4 py-2 text-xs font-semibold text-right text-gray-600 uppercase whitespace-nowrap">
                           Total
                         </th>
+                        {/* Actions Column */}
+                        <th className="px-4 py-2 text-xs font-semibold text-center text-gray-600 uppercase whitespace-nowrap">
+                          Actions
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
@@ -204,6 +226,14 @@ const NotificationDetailsScreen = () => {
                             </td>
                             <td className="px-4 py-3 text-sm font-semibold text-right text-gray-900 whitespace-nowrap">
                               ${itemSubtotal.toFixed(2)}
+                            </td>
+                            <td className="px-4 py-3 text-center whitespace-nowrap">
+                              <button
+                                onClick={() => handleOpenReview(item)}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors"
+                              >
+                                <Star className="w-3.5 h-3.5" /> Write Review
+                              </button>
                             </td>
                           </tr>
                         );

@@ -12,8 +12,7 @@ const getReviewsByProduct = asyncHandler(async (req, res) => {
 });
 
 const addReview = asyncHandler(async (req, res) => {
-    const { productId } = req.params;
-    const { rating, review } = req.body;
+    const { rating, review, productId } = req.body;
     const userId = req.user._id;
     if (!mongoose.Types.ObjectId.isValid(productId)) {
         return res.status(400).json({ message: "Invalid product ID" });
