@@ -23,14 +23,7 @@ const ShippingScreen = () => {
   const submitHandler = (e) => {
     e.preventDefault();
     dispatch(saveShippingAddress({ address, city, postalCode, country }));
-    navigate("/placeorder"); // Actually goes to payment usually, but your flow might be different.
-    // Standard flow: Shipping -> Payment -> PlaceOrder.
-    // Your previous code navigated to /placeorder, but typically it goes to /payment.
-    // Based on CheckoutSteps, usually step 2 is Payment. I will keep your navigation as is, or fix if needed.
-    // *Correction*: Usually Shipping -> Payment. I'll route to '/payment' to match standard flows,
-    // but if your previous code said '/placeorder', I will respect that logic or you can change it to '/payment'.
-    // looking at your PaymentScreen code, it navigates to /placeorder. So Shipping should likely go to /payment.
-    // I'll stick to '/payment' as it's the logical next step.
+    navigate("/placeorder"); 
     navigate("/payment");
   };
 

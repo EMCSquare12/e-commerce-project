@@ -1,38 +1,41 @@
 import React, { useState } from "react";
 import { X, Star, Send } from "lucide-react";
 import { toast } from "react-toastify";
-import { useSubmitRatingMutation } from "../slices/ratingsApiSlice";
 import Loader from "./Loader";
+import { useSubmitReviewMutation } from "../slices/productsApiSlice";
 
 const ReviewModal = ({ isOpen, onClose, product, userInfo }) => {
   const [rating, setRating] = useState(5);
   const [review, setReview] = useState("");
   const [hoveredStar, setHoveredStar] = useState(0);
+  const [submitReview, { isLoading }] = useSubmitReviewMutation();
 
-  const [createReview, { isLoading }] = useSubmitRatingMutation();
-
-  console.log("ReviewModal - product:", product?.product);
   if (!isOpen || !product) return null;
+  const productId = product.product;
 
+  console.log("User Info in ReviewModal:", userInfo);
+  console.log("Product ID in ReviewModal:", productId);
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!review.trim()) {
-      return toast.error("Please write a comment");
-    }
-
     try {
-      const productId = product.product;
-      await createReview({
-        productId,
-        rating,
-        review,
+      await submitReview({
+        productId: productId,
+        review: {
+          rating,
+          comment: review,
+          name: userInfo,
+        },
       }).unwrap();
       toast.success("Review submitted successfully");
-      setReview("");
       setRating(5);
+      setReview("");
       onClose();
-    } catch (err) {
-      toast.error(err?.data?.message || err.error || "Failed to submit review");
+    } catch (error) {
+      toast.error(
+        error?.data?.message || error.error || "Failed to submit review",
+      );
+    } finally {
+      setHoveredStar(0);
     }
   };
 

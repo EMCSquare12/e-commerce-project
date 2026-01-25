@@ -97,6 +97,7 @@ const NotificationDetailsScreen = () => {
         isOpen={reviewModalOpen}
         onClose={() => setReviewModalOpen(false)}
         product={selectedItemForReview}
+        userInfo={data.user}
       />
 
       {/* Back Button */}
