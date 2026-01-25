@@ -31,6 +31,7 @@ const NotificationDetailsScreen = () => {
     notificationId: id,
   });
 
+
   const [deleSelectedNotification, { isLoading: isDeleted }] =
     useDeleteSelectedNotificationMutation();
 

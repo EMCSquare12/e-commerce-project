@@ -12,14 +12,12 @@ const ReviewModal = ({ isOpen, onClose, product, userInfo }) => {
 
   if (!isOpen || !product) return null;
   const productId = product.product;
-
-  console.log("User Info in ReviewModal:", userInfo);
-  console.log("Product ID in ReviewModal:", productId);
+  console.log("Reviewing product ID:", productId);
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await submitReview({
-        productId: productId,
+        productId,
         review: {
           rating,
           comment: review,

@@ -213,6 +213,7 @@ const getProductNavigation = asyncHandler(async (req, res) => {
 const submitReview = asyncHandler(async (req, res) => {
   const { rating, comment } = req.body;
   const product = await Product.findById(req.params.id);
+  console.log("Submitting review for product ID:", req.params.id);
   if (!product) {
     res.status(404);
     throw new Error('Product not found');
