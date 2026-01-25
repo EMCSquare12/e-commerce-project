@@ -10,8 +10,8 @@ import {
     getStockStatus,
     updateProduct,
     createProduct,
-    getProductNavigation
-
+    getProductNavigation,
+    submitReview
 } from '../controllers/productController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
 
@@ -25,7 +25,8 @@ router
 
 router.get('/admin', getProductsAdmin);
 router.get('/:id/navigation', getProductNavigation)
-router.post('/:id/reviews', protect, createProduct);
+router.post('/:id/reviews', protect, submitReview);
+
 router
     .route('/:id')
     .get(getProductById)
