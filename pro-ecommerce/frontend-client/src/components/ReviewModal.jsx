@@ -13,6 +13,7 @@ const ReviewModal = ({ isOpen, onClose, product, userInfo }) => {
   if (!isOpen || !product) return null;
   const productId = product.product;
   console.log("Reviewing product ID:", productId);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
