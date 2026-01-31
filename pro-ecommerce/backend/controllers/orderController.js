@@ -50,6 +50,14 @@ const addOrderItems = asyncHandler(async (req, res) => {
 
         const updatedProducts = await Promise.all(updateStockPromises);
 
+        req.io.emit('stockUpdated', updatedProducts.map(p => ({
+            _id: p._id,
+            countInStock: p.countInStock,
+            status: p.status
+        })));
+
+        req.io.emit('newOrderPlaced');
+
         await User.findByIdAndUpdate(req.user._id, {
             $inc: { totalSpent: totalPrice }, $push: { orders: createdOrder }
         });

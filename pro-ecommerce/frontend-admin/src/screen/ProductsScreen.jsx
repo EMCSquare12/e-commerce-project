@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { io } from "socket.io-client";
 import axios from "axios";
 import {
   Download,
@@ -47,7 +48,7 @@ const ProductsScreen = () => {
   const [activeActionIndex, setActiveActionIndex] = useState(null);
 
   // --- API Hooks ---
-  const { data, isLoading, error } = useGetProductsQuery({
+  const { data, isLoading, error, refetch } = useGetProductsQuery({
     category: filter.category,
     status: filter.status,
     pageNumber: filter.page,
@@ -59,6 +60,15 @@ const ProductsScreen = () => {
   const [updateProduct] = useUpdateProductMutation();
   const [newProduct] = useCreateProductMutation();
 
+  useEffect(() => {
+    const socket = io(`${BASE_URL}`);
+
+    socket.on("stockUpdated", () => {
+      refetch();
+    });
+
+    return () => socket.disconnect();
+  }, [refetch]);
   // --- Handlers ---
   const handleFilterChange = (key, value) => {
     dispatch(filterChange({ key, value }));

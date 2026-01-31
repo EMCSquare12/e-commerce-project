@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { io } from "socket.io-client";
 import { ShoppingCart, Users, CreditCard, Clock } from "lucide-react";
 import { useGetDashboardQuery } from "../slices/adminApiSlice";
 import Message from "../components/Message";
@@ -7,6 +8,7 @@ import Pagination from "../components/Pagination";
 import StatsCard from "../components/StatsCard";
 import SalesChart from "../components/SalesChart";
 import OrderRow from "../components/OrderRow";
+import { BASE_URL } from "../constants";
 
 const formatCurrency = (amount) => {
   return Number(amount || 0).toLocaleString("en-US", {
@@ -35,9 +37,19 @@ const DashboardScreen = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [expandedOrderId, setExpandedOrderId] = useState(null);
 
-  const { data, isLoading, error } = useGetDashboardQuery({
+  const { data, isLoading, error, refetch } = useGetDashboardQuery({
     pageNumber,
   });
+
+  useEffect(() => {
+    const socket = io(`${BASE_URL}`);
+
+    socket.on("newOrderPlaced", () => {
+      refetch();
+    });
+
+    return () => socket.disconnect();
+  }, [refetch]);
 
   if (isLoading) {
     return (

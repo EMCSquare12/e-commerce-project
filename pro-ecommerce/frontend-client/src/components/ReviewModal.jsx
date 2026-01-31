@@ -11,7 +11,7 @@ const ReviewModal = ({ isOpen, onClose, product, userInfo }) => {
   const [submitReview, { isLoading }] = useSubmitReviewMutation();
 
   if (!isOpen || !product) return null;
-  const productId = product.product;
+  const productId = product.product || product._id;
   console.log("Reviewing product ID:", productId);
 
   const handleSubmit = async (e) => {
