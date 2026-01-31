@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useGetProductsQuery } from "../slices/productsApiSlice";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Product from "../components/Product";
@@ -24,6 +24,14 @@ const HomeScreen = () => {
     category: category.length > 0 ? category : undefined,
     brand: brand.length > 0 ? brand : undefined,
   });
+
+  //reset filter on unmount
+  useEffect(() => {
+    return () => {
+      dispatch(clearFilter());
+    };
+  }, [dispatch]);
+
 
   const fetchMoreData = () => {
     if (data && pageNumber < data.pages) {
