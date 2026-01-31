@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
+import { io } from "socket.io-client";
+import { BASE_URL } from "../constants";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useLogoutMutation } from "../slices/usersApiSlice";
@@ -21,7 +23,7 @@ import {
 
 const Header = () => {
   const [notificationId, setNotificationId] = useState(null);
-  const { data } = useGetNotificationsQuery();
+  const { data, refetch } = useGetNotificationsQuery();
   const [markNotificationsRead] = useMarkNotificationsReadMutation();
 
   const { cartItems } = useSelector((state) => state.cart);
@@ -39,6 +41,15 @@ const Header = () => {
   const notifyRef = useRef(null);
 
   const unreadCount = data?.filter((n) => !n.read).length;
+
+  useEffect(() => {
+    const socket = io(BASE_URL);
+
+    socket.on("orderStatusUpdated", () => {
+      refetch();
+    });
+    return () => socket.disconnect();
+  }, [refetch]);
 
   const logoutHandler = async () => {
     try {

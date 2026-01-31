@@ -107,6 +107,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
 const updateOrderToDelivered = asyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id)
 
+
     if (order) {
         order.isDelivered = true
         order.deliveredAt = Date.now()
@@ -120,6 +121,7 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
             message: "Your package has arrived! Enjoy your purchase.",
             relatedId: order._id
         })
+        req.io.emit('orderStatusUpdated');
         res.json(updatedOrder)
     } else {
         res.status(404)
