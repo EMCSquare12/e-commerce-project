@@ -13,6 +13,23 @@ export const productsApiSlice = apiSlice.injectEndpoints({
           brand
         },
       }),
+      serializeQueryArgs: ({ endpointName, queryArgs }) => {
+        const { pageNumber, ...rest } = queryArgs;
+        return { endpointName, queryArgs: rest };
+      },
+      // Merge incoming products into the existing list
+      merge: (currentCache, newItems) => {
+        if (newItems.page === 1) {
+          return newItems;
+        }
+        currentCache.products.push(...newItems.products);
+        currentCache.page = newItems.page;
+        currentCache.pages = newItems.pages;
+      },
+      // Refetch when the pageNumber changes
+      forceRefetch({ currentArg, previousArg }) {
+        return currentArg !== previousArg;
+      },
       providesTags: ["Product"],
       keepUnusedDataFor: 5,
     }),

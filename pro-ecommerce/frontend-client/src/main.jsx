@@ -44,8 +44,8 @@ const router = createBrowserRouter(
       <Route element={<StripeWrapper />}>
         <Route path="/placeorder" element={<PlaceOrderScreen />} />
       </Route>
-    </Route>
-  )
+    </Route>,
+  ),
 );
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -53,5 +53,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <Provider store={store}>
       <RouterProvider router={router} />
     </Provider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

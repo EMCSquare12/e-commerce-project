@@ -1,5 +1,6 @@
 import React from "react";
 import { useGetProductsQuery } from "../slices/productsApiSlice";
+import InfiniteScroll from "react-infinite-scroll-component";
 import Product from "../components/Product";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
@@ -8,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Pagination from "../components/Pagination";
 import { Filter } from "lucide-react";
 import { toggleDrawer } from "../slices/toggleSlice";
-import { clearFilter } from "../slices/filterSlice";
+import { clearFilter, setItemPages } from "../slices/filterSlice";
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
@@ -23,6 +24,12 @@ const HomeScreen = () => {
     category: category.length > 0 ? category : undefined,
     brand: brand.length > 0 ? brand : undefined,
   });
+
+  const fetchMoreData = () => {
+    if (data && pageNumber < data.pages) {
+      dispatch(setItemPages(pageNumber + 1));
+    }
+  };
 
   const handleToggleFilter = () => {
     dispatch(toggleDrawer());
@@ -71,14 +78,24 @@ const HomeScreen = () => {
               {error?.data?.message || error.error}
             </Message>
           ) : (
-            <>
-              <div className="grid grid-cols-2 gap-3 md:gap-8 md:grid-cols-3 lg:grid-cols-4">
-                {data.products.map((product) => (
+            <InfiniteScroll
+              dataLength={data?.products?.length || 0}
+              next={fetchMoreData}
+              hasMore={pageNumber < (data?.pages || 0)}
+              loader={<Loader />}
+              endMessage={
+                <p className="py-10 font-medium text-center text-gray-500">
+                  You have seen all products!
+                </p>
+              }
+              scrollThreshold={0.9}
+            >
+              <div className="grid grid-cols-2 gap-3 px-1 md:gap-8 md:grid-cols-3 lg:grid-cols-4">
+                {data?.products?.map((product) => (
                   <Product key={product._id} product={product} />
                 ))}
               </div>
-              <Pagination page={pageNumber} pages={data?.pages} />
-            </>
+            </InfiniteScroll>
           )}
         </>
       )}
