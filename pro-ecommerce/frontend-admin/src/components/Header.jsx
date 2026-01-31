@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { io } from "socket.io-client";
+import { BASE_URL } from "../constants";
 import {
   Search,
   Bell,
@@ -21,13 +23,23 @@ const Header = () => {
   const [notificationId, setNotificationId] = useState(null);
 
   // Api Hooks
-  const { data = [], isLoading, error } = useGetNotificationsQuery();
+  const { data = [], isLoading, error, refetch } = useGetNotificationsQuery();
   const [markNotificationAsRead] = useMarkNotificationsReadMutation();
 
   const unreadCount = data?.filter((n) => !n.read).length;
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const socket = io(BASE_URL);
+
+    socket.on("newOrderPlaced", () => {
+      refetch();
+    });
+
+    return () => socket.disconnect();
+  }, [refetch]);
 
   // Handle click outside to close dropdown
   useEffect(() => {

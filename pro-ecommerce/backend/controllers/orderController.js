@@ -56,8 +56,6 @@ const addOrderItems = asyncHandler(async (req, res) => {
             status: p.status
         })));
 
-        req.io.emit('newOrderPlaced');
-
         await User.findByIdAndUpdate(req.user._id, {
             $inc: { totalSpent: totalPrice }, $push: { orders: createdOrder }
         });
@@ -98,6 +96,8 @@ const addOrderItems = asyncHandler(async (req, res) => {
                     await Notifications.insertMany(stockNotifications);
                 }
             }
+            req.io.emit('newOrderPlaced');
+
         }
 
         res.status(201).json(createdOrder);
