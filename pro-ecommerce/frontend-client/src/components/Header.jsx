@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 import SubHeader from "./SubHeader";
+import { clearFilter } from "../slices/filterSlice";
 import {
   useGetNotificationsQuery,
   useMarkNotificationsReadMutation,
@@ -97,12 +98,23 @@ const Header = () => {
     }
   };
 
+  const resetHomeHandler = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+
+    setTimeout(() => {
+      dispatch(clearFilter());
+    }, 500); // 500ms delay
+  };
   return (
     <header className="sticky top-0 z-40 w-full text-white shadow-md bg-slate-900">
       <div className="container flex items-center justify-between gap-4 px-4 py-3 mx-auto">
         <div className="flex items-center flex-shrink-0">
           <Link
             to="/"
+            onClick={resetHomeHandler}
             className="flex items-center gap-2 text-xl font-bold tracking-wide md:text-2xl"
           >
             <i className="fa-solid fa-shop text-amber-500"></i>
@@ -127,7 +139,7 @@ const Header = () => {
               )}
             </button>
 
-            {/* Notification Dropdown (Same as before) */}
+            {/* Notification Dropdown */}
             {notifyOpen && (
               <div className="absolute right-0 z-50 mt-2 origin-top-right bg-white border border-gray-200 shadow-xl w-80 rounded-xl ring-1 ring-black ring-opacity-5">
                 <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50/50 rounded-t-xl">
@@ -141,7 +153,7 @@ const Header = () => {
                   )}
                 </div>
                 <div className="max-h-[320px] overflow-y-auto">
-                  {/* ... (Existing Notification Logic) ... */}
+                  {/* ... Notification Logic ... */}
                   {data && data.length === 0 ? (
                     <div className="px-4 py-6 text-center text-gray-500">
                       <p className="text-sm">No notifications yet</p>

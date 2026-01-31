@@ -6,7 +6,6 @@ import Loader from "../components/Loader";
 import Message from "../components/Message";
 import HeroSlider from "../components/HeroSlider";
 import { useDispatch, useSelector } from "react-redux";
-import Pagination from "../components/Pagination";
 import { Filter } from "lucide-react";
 import { toggleDrawer } from "../slices/toggleSlice";
 import { clearFilter, setItemPages } from "../slices/filterSlice";
@@ -32,7 +31,6 @@ const HomeScreen = () => {
     };
   }, [dispatch]);
 
-
   const fetchMoreData = () => {
     if (data && pageNumber < data.pages) {
       dispatch(setItemPages(pageNumber + 1));
@@ -43,6 +41,8 @@ const HomeScreen = () => {
     dispatch(toggleDrawer());
     dispatch(clearFilter());
   };
+  
+
   return (
     <>
       <HeroSlider />

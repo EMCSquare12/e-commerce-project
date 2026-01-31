@@ -3,6 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 import { Search, X } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { searchItem } from "../slices/filterSlice";
+import { clearFilter } from "../slices/filterSlice";
+
 const SubHeader = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const search = useSelector((state) => state.filter.keyword);
@@ -18,6 +20,17 @@ const SubHeader = () => {
 
   const handleClear = () => {
     dispatch(searchItem(""));
+  };
+
+  const resetHomeHandler = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+
+    setTimeout(() => {
+      dispatch(clearFilter());
+    }, 500); // 500ms delay
   };
 
   return (
@@ -52,7 +65,11 @@ const SubHeader = () => {
       >
         <nav className="flex items-center justify-end gap-6 text-sm font-medium tracking-wider uppercase lg:justify-between">
           <div className="hidden gap-6 lg:flex">
-            <Link to="/" className="transition hover:text-amber-500">
+            <Link
+              to="/"
+              onClick={resetHomeHandler}
+              className="transition hover:text-amber-500"
+            >
               Home
             </Link>
             <Link to="/blog" className="transition hover:text-amber-500">
