@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import useDebounce from "../hooks/useDebounce";
 import { useGetProductsQuery } from "../slices/productsApiSlice";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Product from "../components/Product";
@@ -17,12 +18,29 @@ const HomeScreen = () => {
   const { keyword, pageNumber, category, brand } = useSelector(
     (state) => state.filter,
   );
+  //Debounce the filter values
+  const debouncedFilters = useDebounce({ category, brand, keyword }, 500);
+
   const { data, isLoading, error } = useGetProductsQuery({
-    keyword,
+    keyword: debouncedFilters.keyword,
     pageNumber,
-    category: category.length > 0 ? category : undefined,
-    brand: brand.length > 0 ? brand : undefined,
+    category:
+      debouncedFilters.category.length > 0
+        ? debouncedFilters.category
+        : undefined,
+    brand:
+      debouncedFilters.brand.length > 0 ? debouncedFilters.brand : undefined,
   });
+
+  // Fetch products when debounced keyword changes
+  useEffect(() => {
+    dispatch(setItemPages(1));
+  }, [
+    debouncedFilters.keyword,
+    debouncedFilters.category,
+    debouncedFilters.brand,
+    dispatch,
+  ]);
 
   //reset filter on unmount
   useEffect(() => {
@@ -41,7 +59,6 @@ const HomeScreen = () => {
     dispatch(toggleDrawer());
     dispatch(clearFilter());
   };
-  
 
   return (
     <>
