@@ -49,6 +49,18 @@ const HomeScreen = () => {
     };
   }, [dispatch]);
 
+  //Reset to first page on scroll to top
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY === 0 && pageNumber > 1) {
+        dispatch(setItemPages(1));
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [pageNumber, dispatch]);
+
   const fetchMoreData = () => {
     if (data && pageNumber < data.pages) {
       dispatch(setItemPages(pageNumber + 1));
