@@ -12,6 +12,8 @@ import { useGetUsersQuery } from "../slices/usersApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import Pagination from "../components/Pagination";
+import { useDispatch, useSelector } from "react-redux";
+import { setCustomerStatus, setCustomerPage } from "../slices/customerSlice";
 
 const StatusBadge = ({ status }) => {
   const styles = {
@@ -32,10 +34,14 @@ const StatusBadge = ({ status }) => {
 };
 
 const CustomersScreen = () => {
-  const [status, setStatus] = useState("");
-  const [pageNumber, setPageNumber] = useState(1);
-
-  const { data, isLoading, error } = useGetUsersQuery({ status, pageNumber });
+  const { status, pageNumber, keyword } = useSelector(
+    (state) => state.customer,
+  );
+  const { data, isLoading, error } = useGetUsersQuery({
+    status,
+    pageNumber,
+    keyword,
+  });
 
   if (isLoading) {
     return (
@@ -67,10 +73,7 @@ const CustomersScreen = () => {
         <div className="relative w-full sm:w-48">
           <select
             value={status}
-            onChange={(e) => {
-              setStatus(e.target.value);
-              setPageNumber(1);
-            }}
+            onChange={(e) => dispatch(setCustomerStatus(e.target.value))}
             className="w-full appearance-none bg-white border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 block p-2.5 pr-8 transition-shadow shadow-sm"
           >
             <option value="">All Statuses</option>
@@ -246,7 +249,7 @@ const CustomersScreen = () => {
           <Pagination
             page={pageNumber}
             pages={data.pages}
-            setItemPages={setPageNumber}
+            setItemPages={(num) => dispatch(setCustomerPage(num))}
           />
         )}
       </div>

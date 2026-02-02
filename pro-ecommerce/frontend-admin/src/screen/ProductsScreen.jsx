@@ -52,6 +52,7 @@ const ProductsScreen = () => {
     category: filter.category,
     status: filter.status,
     pageNumber: filter.page,
+    keyword: filter.keyword,
   });
 
   const { data: categories } = useGetProductCategoriesQuery();

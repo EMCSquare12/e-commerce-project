@@ -26,7 +26,9 @@ const useClipboard = (resetTime = 2000) => {
 const OrdersScreen = () => {
   // State
   const dispatch = useDispatch();
-  const { dateRange, pageNumber, status } = useSelector((state) => state.order);
+  const { dateRange, pageNumber, status, keyword } = useSelector(
+    (state) => state.order,
+  );
   const [expandedOrderId, setExpandedOrderId] = useState(null);
 
   // Hooks
@@ -35,6 +37,7 @@ const OrdersScreen = () => {
     from: dateRange.from,
     to: dateRange.to,
     status,
+    keyword,
     pageNumber,
   });
 

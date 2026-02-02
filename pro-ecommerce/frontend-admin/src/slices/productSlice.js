@@ -7,11 +7,12 @@ const initialCreateFormData = {
     category: "",
     brand: "",
     description: "",
+
 }
 
 const initialState = {
     isLoadingGlobal: false,
-    filter: { category: "", status: "", page: 1 },
+    filter: { category: "", status: "", page: 1, keyword: "" },
     deleteModal: {
         open: false,
         id: null,
@@ -60,7 +61,6 @@ const productSlice = createSlice({
             if (key !== 'page') {
                 state.filter.page = 1
             }
-
         },
         setUpdateFormData: (state, action) => {
             state.updateFormData = { ...state.updateFormData, ...action.payload }

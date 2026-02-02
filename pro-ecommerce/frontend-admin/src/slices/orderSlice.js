@@ -6,13 +6,14 @@ const initialState = {
         to: ""
     },
     status: "",
+    keyword: "",
     pageNumber: 1,
     page: 1
 
 }
 
 const orderSlice = createSlice({
-    name: "name",
+    name: "order",
     initialState,
     reducers: {
         setDateRange: (state, action) => {
@@ -22,6 +23,10 @@ const orderSlice = createSlice({
         setStatus: (state, action) => {
             state.status = action.payload
         },
+        setOrderKeyword: (state, action) => {
+            state.keyword = action.payload;
+            state.pageNumber = 1;
+        },
         setPageNumber: (state, action) => {
             state.pageNumber = action.payload
         },
@@ -29,5 +34,5 @@ const orderSlice = createSlice({
     }
 })
 
-export const { setDateRange, setStatus, setPageNumber, setPage } = orderSlice.actions;
+export const { setDateRange, setStatus, setPageNumber, setPage, setOrderKeyword } = orderSlice.actions;
 export default orderSlice.reducer

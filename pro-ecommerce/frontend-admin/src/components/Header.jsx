@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import useDebounce from "../hooks/useDebounce";
+import { Link, useLocation } from "react-router-dom";
 import { io } from "socket.io-client";
 import { BASE_URL } from "../constants";
 import {
@@ -18,9 +20,14 @@ import {
 } from "../slices/notificationsApiSlice";
 import { useDispatch } from "react-redux";
 import { toggleSidebar } from "../slices/toggleSlice";
+import { filterChange } from "../slices/productSlice";
+import { setOrderKeyword } from "../slices/orderSlice";
+import { setCustomerKeyword } from "../slices/customerSlice";
 
 const Header = () => {
   const [notificationId, setNotificationId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   // Api Hooks
   const { data = [], isLoading, error, refetch } = useGetNotificationsQuery();
@@ -30,6 +37,39 @@ const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
   const dispatch = useDispatch();
+  const location = useLocation();
+
+  const productKeyword = useSelector((state) => state.product.filter.keyword);
+  const orderKeyword = useSelector((state) => state.order.keyword);
+  const customerKeyword = useSelector((state) => state.customer.keyword);
+
+  let searchValue = "";
+  let handleSearch = null;
+  let placeholder = "Search...";
+
+  const isProductsRoute = location.pathname.startsWith("/admin/products");
+  const isOrdersRoute = location.pathname.startsWith("/admin/orders");
+  const isCustomersRoute = location.pathname.startsWith("/admin/customers");
+
+  useEffect(() => {
+    if (isProductsRoute) {
+      dispatch(filterChange({ key: "keyword", value: debouncedSearchTerm }));
+    } else if (isOrdersRoute) {
+      dispatch(setOrderKeyword(debouncedSearchTerm));
+    } else if (isCustomersRoute) {
+      dispatch(setCustomerKeyword(debouncedSearchTerm));
+    }
+  }, [
+    debouncedSearchTerm,
+    dispatch,
+    isProductsRoute,
+    isOrdersRoute,
+    isCustomersRoute,
+  ]);
+
+  useEffect(() => {
+    setSearchTerm("");
+  }, [location.pathname]);
 
   useEffect(() => {
     const socket = io(BASE_URL);
@@ -93,7 +133,15 @@ const Header = () => {
           </div>
           <input
             type="text"
-            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder={
+              isProductsRoute
+                ? "Search Products..."
+                : isOrdersRoute
+                  ? "Search Orders..."
+                  : "Search Customers..."
+            }
             className="block w-full py-2 pl-10 pr-3 text-sm text-gray-900 placeholder-gray-400 transition-all border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
