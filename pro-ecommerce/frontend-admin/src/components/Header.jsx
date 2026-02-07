@@ -56,8 +56,6 @@ const Header = () => {
     } else if (isCustomersRoute) {
       dispatch(setCustomerKeyword(debouncedSearchTerm));
     } else if (isCustomerOrdersRoute) {
-      dispatch(setOrderKeyword(debouncedSearchTerm));
-    } else if (isDashboardRoute) {
       dispatch(setCustomerByIdKeyword(debouncedSearchTerm));
     }
   }, [
