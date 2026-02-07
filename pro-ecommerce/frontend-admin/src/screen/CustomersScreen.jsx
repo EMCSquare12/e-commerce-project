@@ -8,6 +8,7 @@ import {
   ShoppingBag,
   DollarSign,
   Eye,
+  Search,
 } from "lucide-react";
 import { useGetUsersQuery } from "../slices/usersApiSlice";
 import Loader from "../components/Loader";
@@ -235,7 +236,14 @@ const CustomersScreen = () => {
               ) : (
                 <tr>
                   <td colSpan="6" className="p-8 text-center text-gray-500">
-                    No customers found matching your criteria.
+                    <div className="p-12 text-center bg-white border border-gray-300 border-dashed rounded-xl">
+                      <div className="flex flex-col items-center justify-center">
+                        <Search className="w-10 h-10 mb-3 text-gray-300" />
+                        <p className="font-medium text-gray-500">
+                          No products matching your criteria
+                        </p>
+                      </div>
+                    </div>
                   </td>
                 </tr>
               )}

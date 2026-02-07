@@ -2,9 +2,16 @@ import { createSlice } from "@reduxjs/toolkit";
 import { updateCart } from "../utils/cartUtils";
 
 // Check if cart exists in local storage, otherwise use default
-const initialState = localStorage.getItem("cart")
-  ? JSON.parse(localStorage.getItem("cart"))
-  : { cartItems: [], shippingAddress: {}, paymentMethod: "PayPal" };
+
+const getInitialCart = () => {
+  try {
+    const item = localStorage.getItem("cart");
+    return item ? JSON.parse(item) : { cartItems: [], shippingAddress: {}, paymentMethod: "PayPal" };
+  } catch (e) {
+    return { cartItems: [], shippingAddress: {}, paymentMethod: "PayPal" };
+  }
+}
+const initialState = getInitialCart();
 
 const cartSlice = createSlice({
   name: "cart",

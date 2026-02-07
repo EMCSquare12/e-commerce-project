@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Download, ChevronDown, Filter, Calendar } from "lucide-react";
+import { Download, ChevronDown, Filter, Calendar, Search } from "lucide-react";
 import { useGetOrdersQuery } from "../slices/ordersApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
@@ -24,7 +24,6 @@ const useClipboard = (resetTime = 2000) => {
 };
 
 const OrdersScreen = () => {
-  // State
   const dispatch = useDispatch();
   const { dateRange, pageNumber, status, keyword } = useSelector(
     (state) => state.order,
@@ -41,6 +40,7 @@ const OrdersScreen = () => {
     pageNumber,
   });
 
+  console.log("Fetched Orders:", data);
   const today = new Date().toISOString().split("T")[0];
 
   // Handlers
@@ -225,9 +225,12 @@ const OrdersScreen = () => {
           </>
         ) : (
           <div className="p-12 text-center bg-white border border-gray-300 border-dashed rounded-xl">
-            <p className="font-medium text-gray-500">
-              No orders found matching your criteria.
-            </p>
+            <div className="flex flex-col items-center justify-center">
+              <Search className="w-10 h-10 mb-3 text-gray-300" />
+              <p className="font-medium text-gray-500">
+                No orders matching your criteria
+              </p>
+            </div>
           </div>
         )}
 

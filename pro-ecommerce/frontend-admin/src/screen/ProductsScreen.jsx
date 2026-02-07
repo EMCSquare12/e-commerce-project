@@ -467,16 +467,8 @@ const ProductsScreen = () => {
           <div className="flex flex-col items-center justify-center">
             <Search className="w-10 h-10 mb-3 text-gray-300" />
             <p className="font-medium text-gray-500">
-              No products found matching your filters.
+              No products matching your criteria
             </p>
-            <button
-              onClick={() =>
-                dispatch(filterChange({ key: "category", value: "" }))
-              }
-              className="mt-2 text-sm font-bold text-amber-600 hover:underline"
-            >
-              Clear Filters
-            </button>
           </div>
         </div>
       )}

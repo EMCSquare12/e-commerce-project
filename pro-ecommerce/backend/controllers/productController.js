@@ -26,11 +26,7 @@ const buildFilter = (query) => {
   return filter;
 };
 
-// ... (rest of the file remains the same)
 
-/**
- * Generic aggregation to count items grouped by a specific field.
- */
 const getGroupedCounts = async (field) => {
   return await Product.aggregate([
     { $group: { _id: `$${field}`, count: { $sum: 1 } } },
@@ -38,40 +34,25 @@ const getGroupedCounts = async (field) => {
   ]);
 };
 
-// --- Controllers ---
-
-// @desc    Fetch all products (Public view)
-// @route   GET /api/products
-// @access  Public
-const getProducts = asyncHandler(async (req, res) => {
-  const pageSize = 8;
+const getProductsCommon = async (req, pageSize) => {
   const page = Number(req.query.pageNumber) || 1;
-
   const filter = buildFilter(req.query);
-
   const count = await Product.countDocuments(filter);
   const products = await Product.find(filter)
     .limit(pageSize)
     .skip(pageSize * (page - 1));
 
-  res.json({ products, page, pages: Math.ceil(count / pageSize) });
+  return { products, page, pages: Math.ceil(count / pageSize) };
+};
+
+const getProducts = asyncHandler(async (req, res) => {
+  const data = await getProductsCommon(req, 8);
+  res.json(data);
 });
 
-// @desc    Fetch products for Admin (custom page size & filters)
-// @route   GET /api/products/admin
-// @access  Private/Admin
 const getProductsAdmin = asyncHandler(async (req, res) => {
-  const pageSize = 10; // Admin might want to see more rows
-  const page = Number(req.query.pageNumber) || 1;
-
-  const filter = buildFilter(req.query);
-
-  const count = await Product.countDocuments(filter);
-  const products = await Product.find(filter)
-    .limit(pageSize)
-    .skip(pageSize * (page - 1));
-
-  res.json({ products, page, pages: Math.ceil(count / pageSize) });
+  const data = await getProductsCommon(req, 10);
+  res.json(data);
 });
 
 // @desc    Fetch single product

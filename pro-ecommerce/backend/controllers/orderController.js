@@ -4,7 +4,6 @@ import User from '../models/userModel.js';
 import Product from "../models/productModel.js"
 import Notifications from '../models/notificationsModel.js';
 
-
 // @desc    Create new order
 // @route   POST /api/orders
 // @access  Private
@@ -40,6 +39,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
 
         const createdOrder = await order.save();
 
+        // Update Stock
         const updateStockPromises = createdOrder.orderItems.map((item) => {
             return Product.findByIdAndUpdate(
                 item.product,
@@ -50,18 +50,27 @@ const addOrderItems = asyncHandler(async (req, res) => {
 
         const updatedProducts = await Promise.all(updateStockPromises);
 
+        if (updatedProducts.includes(null)) {
+            await Order.findByIdAndDelete(createdOrder._id);
+            res.status(400);
+            throw new Error('One or more items are no longer available');
+        }
+
+        // Notify Clients via Socket.io
         req.io.emit('stockUpdated', updatedProducts.map(p => ({
             _id: p._id,
             countInStock: p.countInStock,
             status: p.status
         })));
 
+        // Update User stats
         await User.findByIdAndUpdate(req.user._id, {
-            $inc: { totalSpent: totalPrice }, $push: { orders: createdOrder }
+            $inc: { totalSpent: totalPrice },
+            $push: { orders: createdOrder }
         });
 
+        // Notifications Logic
         const admins = await User.find({ isAdmin: true });
-
         if (admins.length > 0) {
             const orderNotifications = admins.map(admin => ({
                 recipient: admin._id,
@@ -74,11 +83,10 @@ const addOrderItems = asyncHandler(async (req, res) => {
 
             await Notifications.insertMany(orderNotifications);
 
-            const lowStockItems = updatedProducts.filter(p => p.countInStock < 10);
-
+            // Low Stock Alerts
+            const lowStockItems = updatedProducts.filter(p => p && p.countInStock < 10);
             if (lowStockItems.length > 0) {
                 const stockNotifications = [];
-
                 admins.forEach(admin => {
                     lowStockItems.forEach(product => {
                         stockNotifications.push({
@@ -91,63 +99,62 @@ const addOrderItems = asyncHandler(async (req, res) => {
                         });
                     });
                 });
-
                 if (stockNotifications.length > 0) {
                     await Notifications.insertMany(stockNotifications);
                 }
             }
             req.io.emit('newOrderPlaced');
-
         }
 
         res.status(201).json(createdOrder);
     }
 });
 
-const updateStockPromises = createdOrder.orderItems.map((item) => {
-    return Product.findOneAndUpdate(
-        {
-            _id: item.product,
-            countInStock: { $gte: item.qty }
-        },
-        { $inc: { countInStock: -item.qty } },
-        { new: true }
-    );
-});
-
-const updatedProducts = await Promise.all(updateStockPromises);
-
-if (updatedProducts.includes(null)) {
-
-    await Order.findByIdAndDelete(createdOrder._id);
-    res.status(400);
-    throw new Error('One or more items are no longer available in the requested quantity');
-}
-
+// @desc    Get logged in user orders
+// @route   GET /api/orders/myorders
+// @access  Private
 const getOrder = asyncHandler(async (req, res) => {
     const orders = await Order.find({}).populate('user', 'id name email').sort({ createdAt: -1 })
     res.json(orders)
 })
 
+// @desc    Update order to delivered
+// @route   PUT /api/orders/:id/deliver
+// @access  Private/Admin
+const updateOrderToDelivered = asyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id);
+
+    if (order) {
+        order.isDelivered = true;
+        order.deliveredAt = Date.now();
+
+        const updatedOrder = await order.save();
+
+        // Emit event to update frontend in real-time
+        if (req.io) req.io.emit('orderStatusUpdated', updatedOrder);
+
+        res.json(updatedOrder);
+    } else {
+        res.status(404);
+        throw new Error('Order not found');
+    }
+});
+
+// Helper for filtering
 const buildFilter = async (query) => {
     const { keyword, status, from, to, userId } = query;
     const filter = {};
 
     if (keyword) {
         const keywordRegex = { $regex: keyword, $options: 'i' };
-
-        // Array to hold all OR conditions
         const orConditions = [
-            // Search Item Names
             { 'orderItems.name': keywordRegex },
-            // Search Address Fields
             { 'shippingAddress.address': keywordRegex },
             { 'shippingAddress.city': keywordRegex },
             { 'shippingAddress.postalCode': keywordRegex },
             { 'shippingAddress.country': keywordRegex },
         ];
 
-        // Search Order ID (only if keyword is a valid number)
         if (!isNaN(keyword) && keyword.trim() !== '') {
             orConditions.push({ orderId: Number(keyword) });
         }
@@ -155,45 +162,38 @@ const buildFilter = async (query) => {
         if (matchingUsers.length > 0) {
             orConditions.push({ user: { $in: matchingUsers.map(u => u._id) } });
         }
-
         filter.$or = orConditions;
     }
 
-    if (userId) {
-        filter.user = userId
-    }
+    if (userId) filter.user = userId;
 
     if (status) {
-        if (status === "Shipped") {
-            filter.isDelivered = true;
-        } else if (status === "Pending") {
-            filter.isDelivered = false;
-        }
+        if (status === "Shipped") filter.isDelivered = true;
+        else if (status === "Pending") filter.isDelivered = false;
     }
 
     if (from || to) {
-        filter.createdAt = {}
-
+        filter.createdAt = {};
         if (from) {
-            const startDate = new Date(from)
-            startDate.setHours(0, 0, 0, 0)
-            filter.createdAt.$gte = startDate
+            const startDate = new Date(from);
+            startDate.setHours(0, 0, 0, 0);
+            filter.createdAt.$gte = startDate;
         }
         if (to) {
-            const endDate = new Date(to)
-            endDate.setHours(23, 59, 59, 999)
-            filter.createdAt.$lte = endDate
+            const endDate = new Date(to);
+            endDate.setHours(23, 59, 59, 999);
+            filter.createdAt.$lte = endDate;
         }
     }
-
     return filter;
 };
 
+// @desc    Get all orders (Admin)
+// @route   GET /api/orders/admin
+// @access  Private/Admin
 const getOrdersAdmin = asyncHandler(async (req, res) => {
     const pageSize = 10;
     const page = Number(req.query.pageNumber) || 1;
-
-    // Await the async buildFilter function
     const filter = await buildFilter(req.query);
 
     const count = await Order.countDocuments(filter);
@@ -205,6 +205,7 @@ const getOrdersAdmin = asyncHandler(async (req, res) => {
 
     res.json({ orders, page, pages: Math.ceil(count / pageSize) });
 });
+
 export {
     addOrderItems,
     getOrder,

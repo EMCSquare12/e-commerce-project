@@ -1,4 +1,5 @@
 import asyncHandler from 'express-async-handler';
+import Product from '../models/productModel.js';
 import Stripe from 'stripe';
 
 // @desc    Create a Stripe Payment Intent
@@ -13,25 +14,32 @@ const createPaymentIntent = asyncHandler(async (req, res) => {
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-    const { totalPrice } = req.body;
-
-    if (!totalPrice) {
+    const { orderItems } = req.body;
+    if (!orderItems || orderItems.length === 0) {
         res.status(400);
-        throw new Error('Total price is required');
+        throw new Error('No order items');
     }
 
-    // Stripe expects the amount in cents (e.g., $10.00 = 1000 cents)
-    const calculateOrderAmount = (amount) => {
-        return Math.round(amount * 100);
-    };
+
+    const productIds = orderItems.map(item => item._id);
+    const dbProducts = await Product.find({ _id: { $in: productIds } });
+
+    let dbTotalPrice = 0;
+    orderItems.forEach(item => {
+        const matchingProduct = dbProducts.find(p => p._id.toString() === item._id);
+        if (matchingProduct) {
+            dbTotalPrice += matchingProduct.price * item.qty;
+        }
+    });
+
+    const amountInCents = Math.round(dbTotalPrice * 100);
+
 
     // Create the PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
-        amount: calculateOrderAmount(totalPrice),
+        amount: amountInCents,
         currency: 'usd',
-        automatic_payment_methods: {
-            enabled: true,
-        },
+        automatic_payment_methods: { enabled: true },
     });
 
     res.send({

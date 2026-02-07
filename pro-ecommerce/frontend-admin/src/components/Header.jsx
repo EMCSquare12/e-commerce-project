@@ -11,6 +11,7 @@ import {
   User,
   AlertCircle,
   Menu,
+  X, // 1. Import X icon
 } from "lucide-react";
 import { toast } from "react-toastify";
 import ProfileMenu from "./ProfileMenu";
@@ -39,17 +40,12 @@ const Header = () => {
   const dispatch = useDispatch();
   const location = useLocation();
 
-  const productKeyword = useSelector((state) => state.product.filter.keyword);
-  const orderKeyword = useSelector((state) => state.order.keyword);
-  const customerKeyword = useSelector((state) => state.customer.keyword);
-
-  let searchValue = "";
-  let handleSearch = null;
-  let placeholder = "Search...";
-
-  const isProductsRoute = location.pathname.startsWith("/admin/products");
-  const isOrdersRoute = location.pathname.startsWith("/admin/orders");
-  const isCustomersRoute = location.pathname.startsWith("/admin/customers");
+  const isProductsRoute = location.pathname === "/admin/products";
+  const isOrdersRoute = location.pathname === "/admin/orders";
+  const isCustomersRoute = location.pathname === "/admin/customers";
+  const isCustomerOrdersRoute =
+    location.pathname.startsWith("/admin/customers/");
+  const isDashboardRoute = location.pathname === "/admin";
 
   useEffect(() => {
     if (isProductsRoute) {
@@ -140,10 +136,25 @@ const Header = () => {
                 ? "Search Products..."
                 : isOrdersRoute
                   ? "Search Orders..."
-                  : "Search Customers..."
+                  : isCustomersRoute
+                    ? "Search Customers..."
+                    : isDashboardRoute
+                      ? "Search Orders..."
+                      : isCustomerOrdersRoute
+                        ? "Search Orders..."
+                        : "Search..."
             }
-            className="block w-full py-2 pl-10 pr-3 text-sm text-gray-900 placeholder-gray-400 transition-all border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+            className="block w-full py-2 pl-10 pr-8 text-sm text-gray-900 placeholder-gray-400 transition-all border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
           />
+
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm("")}
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 transition-colors hover:text-gray-600"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
 

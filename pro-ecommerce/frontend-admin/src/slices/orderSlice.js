@@ -34,5 +34,11 @@ const orderSlice = createSlice({
     }
 })
 
-export const { setDateRange, setStatus, setPageNumber, setPage, setOrderKeyword } = orderSlice.actions;
+export const {
+    setDateRange,
+    setStatus,
+    setPageNumber,
+    setPage,
+    setOrderKeyword
+} = orderSlice.actions;
 export default orderSlice.reducer

@@ -11,7 +11,6 @@ const authUser = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ email });
 
-  // Check if user exists AND password matches (method from User Model)
   if (user && (await user.matchPassword(password))) {
     const token = generateToken(res, user._id);
 
