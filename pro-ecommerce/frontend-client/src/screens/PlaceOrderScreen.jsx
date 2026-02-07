@@ -45,7 +45,7 @@ const PlaceOrderScreen = () => {
 
     try {
       const res = await createPaymentIntent({
-        totalPrice: cart.totalPrice,
+        orderItems: cart.cartItems,
       }).unwrap();
 
       const clientSecret = res.clientSecret;
