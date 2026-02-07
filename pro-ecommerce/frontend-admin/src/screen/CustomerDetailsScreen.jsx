@@ -10,48 +10,28 @@ import {
   User,
 } from "lucide-react";
 import { useGetUserDetailsQuery } from "../slices/usersApiSlice";
-import { useGetOrdersQuery } from "../slices/ordersApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
-import Pagination from "../components/Pagination";
-import OrderRow from "../components/OrderRow";
 import CustomersOrdersRow from "../components/CustomersOrdersRow";
 
 const CustomerDetailsScreen = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [pageNumber, setPageNumber] = useState(1);
-  const [expandedOrderId, setExpandedOrderId] = useState(null);
 
-  // Fetch User Details
-  const {
-    data: user,
-    isLoading: loadingUser,
-    error: errorUser,
-  } = useGetUserDetailsQuery(id);
+  const { data, isLoading, error } = useGetUserDetailsQuery(id);
 
-  // Fetch User Orders
-  const {
-    data: ordersData,
-    isLoading: loadingOrders,
-    error: errorOrders,
-  } = useGetOrdersQuery({ userId: id, pageNumber });
+  if (isLoading) return <Loader />;
 
-  const toggleRow = (orderId) => {
-    setExpandedOrderId((prev) => (prev === orderId ? null : orderId));
-  };
-
-  const handleCopy = (text) => {
-    navigator.clipboard.writeText(text);
-  };
-
-  if (loadingUser) return <Loader />;
-  if (errorUser)
+  if (error)
     return (
-      <Message variant="danger">
-        {errorUser?.data?.message || "User not found"}
-      </Message>
+      <div className="p-4">
+        <Message variant="danger">
+          {error?.data?.message || "User not found"}
+        </Message>
+      </div>
     );
+
+  const { user, orders } = data;
 
   return (
     <div className="max-w-6xl pb-20 mx-auto space-y-6 md:pb-8">
@@ -75,7 +55,7 @@ const CustomerDetailsScreen = () => {
             <div className="flex items-center justify-between mb-2">
               <h1 className="text-2xl font-bold text-slate-800">{user.name}</h1>
               <span
-                className={`px-3 py-1 text-xs font-bold rounded-full border ${
+                className={`px-3 py-1 text-xs font-bold rounded-full border capitalize ${
                   user.status === "active" || !user.status
                     ? "bg-green-50 text-green-700 border-green-200"
                     : "bg-red-50 text-red-700 border-red-200"
@@ -92,11 +72,11 @@ const CustomerDetailsScreen = () => {
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-gray-400" />
-                {user.phoneNumber || "No phone number"}
+                {user.number || "No phone number"}
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-gray-400" />
-                Joined {new Date(user.createdAt).toLocaleDateString()}
+                Joined {new Date(user.dateJoined).toLocaleDateString()}
               </div>
             </div>
           </div>
@@ -109,7 +89,7 @@ const CustomerDetailsScreen = () => {
               <ShoppingBag className="w-3 h-3" /> Total Orders
             </p>
             <p className="text-xl font-bold text-slate-800">
-              {ordersData?.orders?.length || 0}
+              {orders?.totalOrders || 0}
             </p>
           </div>
           <div className="p-4 border border-gray-100 rounded-lg bg-gray-50">
@@ -117,7 +97,7 @@ const CustomerDetailsScreen = () => {
               <CreditCard className="w-3 h-3" /> Total Spent
             </p>
             <p className="text-xl font-bold text-slate-800">
-              ${user.totalSpent?.toFixed(2) || "0.00"}
+              ${orders?.totalSpent?.toFixed(2) || "0.00"}
             </p>
           </div>
         </div>
@@ -129,13 +109,7 @@ const CustomerDetailsScreen = () => {
           Transaction History
         </h2>
 
-        {loadingOrders ? (
-          <Loader />
-        ) : errorOrders ? (
-          <Message variant="danger">
-            {errorOrders?.data?.message || "Error loading orders"}
-          </Message>
-        ) : ordersData?.orders?.length === 0 ? (
+        {orders?.history?.length === 0 ? (
           <div className="p-8 text-center bg-white border border-gray-200 border-dashed rounded-xl">
             <p className="text-gray-500">No orders found for this customer.</p>
           </div>
@@ -166,24 +140,25 @@ const CustomerDetailsScreen = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {ordersData.orders.map((order) => {
-                    const orderId = order.orderId || order._id;
-                    return <CustomersOrdersRow key={orderId} order={order} />;
+                  {orders.history.map((order) => {
+                    const orderProp = {
+                      ...order,
+                      createdAt: order.dateOrdered,
+                      totalPrice: order.totalAmount,
+                      orderItems: order.items,
+                      isDelivered: order.status === "Shipped",
+                    };
+
+                    return (
+                      <CustomersOrdersRow
+                        key={order.orderId}
+                        order={orderProp}
+                      />
+                    );
                   })}
                 </tbody>
               </table>
             </div>
-
-            {/* Pagination */}
-            {ordersData.pages > 1 && (
-              <div className="p-4 border-t border-gray-100">
-                <Pagination
-                  page={pageNumber}
-                  pages={ordersData.pages}
-                  setItemPages={setPageNumber}
-                />
-              </div>
-            )}
           </div>
         )}
       </div>

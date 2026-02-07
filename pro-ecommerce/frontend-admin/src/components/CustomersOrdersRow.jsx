@@ -1,11 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  MoreHorizontal,
-  ChevronDown,
-  Eye,
-  Package,
-} from "lucide-react";
+import { MoreHorizontal, ChevronDown, Eye, Package } from "lucide-react";
 
 const StatusBadge = ({ isDelivered }) => {
   return (
@@ -91,9 +86,7 @@ const CustomersOrdersRow = ({ order }) => {
                   <li key={idx} className="flex justify-between text-sm">
                     <span className="text-gray-700">
                       {item.name}{" "}
-                      <span className="text-xs text-gray-400">
-                        x{item.qty}
-                      </span>
+                      <span className="text-xs text-gray-400">x{item.qty}</span>
                     </span>
                     <span className="font-medium text-gray-900">
                       ${item.price}
@@ -141,13 +134,13 @@ const CustomersOrdersRow = ({ order }) => {
         </td>
         <td className="relative p-4 text-right">
           <div className="flex justify-end gap-2">
-             <Link
-                to={`/order/${orderId}`}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-             >
-               <Eye className="w-3.5 h-3.5" />
-               View
-             </Link>
+            <Link
+              to={`/order/${orderId}`}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <Eye className="w-3.5 h-3.5" />
+              View
+            </Link>
           </div>
         </td>
       </tr>

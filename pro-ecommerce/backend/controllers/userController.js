@@ -1,5 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import User from '../models/userModel.js';
+import Order from '../models/orderModel.js';
 import generateToken from '../utils/generateToken.js';
 
 // @desc    Auth user & get token
@@ -108,9 +109,35 @@ const getUserDetails = asyncHandler(async (req, res) => {
 })
 
 const getUserById = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.id).select('-password');
+  const user = await User.findById(req.params.id);
+
   if (user) {
-    res.json(user);
+    const orders = await Order.find({ user: user._id });
+
+    const totalSpent = orders.reduce((acc, order) => acc + order.totalPrice, 0);
+    const totalOrders = orders.length;
+
+    res.json({
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        number: user.phoneNumber,
+        dateJoined: user.createdAt,
+        status: user.status || "active",
+      },
+      orders: {
+        totalOrders: totalOrders,
+        totalSpent: totalSpent,
+        history: orders.map(order => ({
+          orderId: order._id,
+          dateOrdered: order.createdAt,
+          items: order.orderItems,
+          totalAmount: order.totalPrice,
+          status: order.isDelivered ? "Shipped" : "Pending",
+        }))
+      }
+    });
   } else {
     res.status(404);
     throw new Error('User not found');
