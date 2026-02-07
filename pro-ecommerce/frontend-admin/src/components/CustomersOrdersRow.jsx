@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { MoreHorizontal, ChevronDown, Eye, Package } from "lucide-react";
+import { MoreHorizontal, ChevronDown, Package, Eye } from "lucide-react";
 
 const StatusBadge = ({ isDelivered }) => {
   return (
@@ -137,8 +137,7 @@ const CustomersOrdersRow = ({ order }) => {
               to={`/order/${orderId}`}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
-              <Eye className="w-3.5 h-3.5" />
-              View
+              <MoreHorizontal className="w-3 h-3" />
             </Link>
           </div>
         </td>

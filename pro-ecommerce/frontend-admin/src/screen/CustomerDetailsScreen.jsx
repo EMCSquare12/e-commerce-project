@@ -1,4 +1,4 @@
-import React, { useState } from "react"; // Import useState
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -79,7 +79,10 @@ const CustomerDetailsScreen = () => {
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-gray-400" />
-                Joined {new Date(user.dateJoined).toLocaleDateString()}
+                Joined{" "}
+                {user.dateJoined
+                  ? new Date(user.dateJoined).toLocaleDateString()
+                  : "N/A"}
               </div>
             </div>
           </div>
@@ -100,7 +103,7 @@ const CustomerDetailsScreen = () => {
               <CreditCard className="w-3 h-3" /> Total Spent
             </p>
             <p className="text-xl font-bold text-slate-800">
-              ${orders?.totalSpent?.toFixed(2) || "0.00"}
+              ${(orders?.totalSpent || 0).toFixed(2)}
             </p>
           </div>
         </div>
@@ -117,10 +120,12 @@ const CustomerDetailsScreen = () => {
             <p className="text-gray-500">No orders found for this customer.</p>
           </div>
         ) : (
-          <div className="overflow-hidden bg-white border border-gray-200 shadow-sm rounded-xl">
+          <div className="bg-white border border-gray-200 shadow-sm rounded-xl">
+            {/* Wrapper div to allow horizontal scroll on desktop tables */}
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
-                <thead className="border-b border-gray-200 bg-gray-50">
+                {/* FIX: Hidden on mobile (md:table-header-group) so headers don't appear above cards */}
+                <thead className="hidden border-b border-gray-200 bg-gray-50 md:table-header-group">
                   <tr>
                     <th className="p-4 text-xs font-bold tracking-wider text-gray-500 uppercase">
                       Order ID
@@ -163,6 +168,7 @@ const CustomerDetailsScreen = () => {
               </table>
             </div>
 
+            {/* Pagination */}
             {orders.pages > 1 && (
               <div className="p-4 border-t border-gray-100">
                 <Pagination

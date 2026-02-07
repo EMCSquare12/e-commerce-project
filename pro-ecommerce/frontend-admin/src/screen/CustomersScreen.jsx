@@ -108,9 +108,13 @@ const CustomersScreen = () => {
                     <StatusBadge status={customer.status} />
                   </div>
                 </div>
-                <button className="p-1 text-gray-400 rounded-full hover:bg-gray-100">
-                  <MoreHorizontal className="w-5 h-5" />
-                </button>
+                <Link
+                  to={`/admin/customers/${customer._id}`}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 border border-blue-100 rounded-lg hover:bg-blue-100 hover:border-blue-200 transition-colors"
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  View
+                </Link>
               </div>
 
               {/* Contact Details */}
