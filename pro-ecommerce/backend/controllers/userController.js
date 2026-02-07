@@ -130,7 +130,7 @@ const getUserById = asyncHandler(async (req, res) => {
         totalOrders: totalOrders,
         totalSpent: totalSpent,
         history: orders.map(order => ({
-          orderId: order._id,
+          orderId: order.orderId,
           dateOrdered: order.createdAt,
           items: order.orderItems,
           totalAmount: order.totalPrice,
