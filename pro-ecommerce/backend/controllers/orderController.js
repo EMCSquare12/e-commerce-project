@@ -104,43 +104,61 @@ const addOrderItems = asyncHandler(async (req, res) => {
     }
 });
 
-const updateOrderToDelivered = asyncHandler(async (req, res) => {
-    const order = await Order.findById(req.params.id)
+const updateStockPromises = createdOrder.orderItems.map((item) => {
+    return Product.findOneAndUpdate(
+        {
+            _id: item.product,
+            countInStock: { $gte: item.qty }
+        },
+        { $inc: { countInStock: -item.qty } },
+        { new: true }
+    );
+});
 
+const updatedProducts = await Promise.all(updateStockPromises);
 
-    if (order) {
-        order.isDelivered = true
-        order.deliveredAt = Date.now()
-        const updatedOrder = await order.save()
-        const user = await User.findById(order.user).select("name");
-        await Notifications.create({
-            recipient: order.user,
-            type: "order",
-            user: user.name,
-            title: "Order Delivered",
-            message: "Your package has arrived! Enjoy your purchase.",
-            relatedId: order._id
-        })
-        req.io.emit('orderStatusUpdated');
-        res.json(updatedOrder)
-    } else {
-        res.status(404)
-        throw new Error("Order not found")
-    }
-})
+if (updatedProducts.includes(null)) {
+
+    await Order.findByIdAndDelete(createdOrder._id);
+    res.status(400);
+    throw new Error('One or more items are no longer available in the requested quantity');
+}
 
 const getOrder = asyncHandler(async (req, res) => {
     const orders = await Order.find({}).populate('user', 'id name email').sort({ createdAt: -1 })
     res.json(orders)
 })
 
-const buildFilter = (query) => {
+const buildFilter = async (query) => {
     const { keyword, status, from, to, userId } = query;
     const filter = {};
 
     if (keyword) {
-        filter.name = { $regex: keyword, $options: 'i' };
+        const keywordRegex = { $regex: keyword, $options: 'i' };
+
+        // Array to hold all OR conditions
+        const orConditions = [
+            // Search Item Names
+            { 'orderItems.name': keywordRegex },
+            // Search Address Fields
+            { 'shippingAddress.address': keywordRegex },
+            { 'shippingAddress.city': keywordRegex },
+            { 'shippingAddress.postalCode': keywordRegex },
+            { 'shippingAddress.country': keywordRegex },
+        ];
+
+        // Search Order ID (only if keyword is a valid number)
+        if (!isNaN(keyword) && keyword.trim() !== '') {
+            orConditions.push({ orderId: Number(keyword) });
+        }
+        const matchingUsers = await User.find({ name: keywordRegex }).select('_id');
+        if (matchingUsers.length > 0) {
+            orConditions.push({ user: { $in: matchingUsers.map(u => u._id) } });
+        }
+
+        filter.$or = orConditions;
     }
+
     if (userId) {
         filter.user = userId
     }
@@ -172,20 +190,21 @@ const buildFilter = (query) => {
 };
 
 const getOrdersAdmin = asyncHandler(async (req, res) => {
-    const pageSize = 10
-    const page = Number(req.query.pageNumber)
+    const pageSize = 10;
+    const page = Number(req.query.pageNumber) || 1;
 
-    const filter = buildFilter(req.query)
+    // Await the async buildFilter function
+    const filter = await buildFilter(req.query);
 
-    const count = await Order.countDocuments(filter)
+    const count = await Order.countDocuments(filter);
     const orders = await Order.find(filter)
         .populate('user', 'name')
         .limit(pageSize)
         .skip(pageSize * (page - 1))
-        .sort({ createdAt: -1 })
+        .sort({ createdAt: -1 });
 
-    res.json({ orders, page, pages: Math.ceil(count / pageSize) })
-})
+    res.json({ orders, page, pages: Math.ceil(count / pageSize) });
+});
 export {
     addOrderItems,
     getOrder,

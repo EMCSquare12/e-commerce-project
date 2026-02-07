@@ -2,23 +2,31 @@ import asyncHandler from 'express-async-handler';
 import Product from '../models/productModel.js';
 import mongoose from 'mongoose';
 
-// --- Helper Functions ---
+//Helper Functions
 const buildFilter = (query) => {
   const { keyword, category, brand, status } = query;
   const filter = {};
 
-  // 1. Keyword Search (Name)
+  //  Keyword Search (Name, SKU, Category)
   if (keyword) {
-    filter.name = { $regex: keyword, $options: 'i' };
+    const searchRegex = { $regex: keyword, $options: 'i' };
+
+    // Apply search across multiple fields
+    filter.$or = [
+      { name: searchRegex },
+      { sku: searchRegex },
+      { category: searchRegex }
+    ];
   }
 
-  // 2. Array-based Filters (Support comma-separated values)
   if (category) filter.category = { $in: category.split(',') };
   if (brand) filter.brand = { $in: brand.split(',') };
   if (status) filter.status = { $in: status.split(',') };
 
   return filter;
 };
+
+// ... (rest of the file remains the same)
 
 /**
  * Generic aggregation to count items grouped by a specific field.

@@ -77,15 +77,25 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 
-const getUserDetails = asyncHandler(async (req, res) => {
-  const pageSize = 10
-  const page = Number(req.query.pageNumber)
-  const filter = {}
 
-  const { keyword, status } = req.query
+const getUserDetails = asyncHandler(async (req, res) => {
+  const pageSize = 10;
+  const page = Number(req.query.pageNumber) || 1;
+  const filter = {};
+
+  const { keyword, status } = req.query;
 
   if (keyword) {
-    filter.name = { $regex: keyword, $options: 'i' };
+    const searchRegex = { $regex: keyword, $options: 'i' };
+
+    filter.$or = [
+      { name: searchRegex },
+      { email: searchRegex }
+    ];
+
+    if (!isNaN(keyword) && keyword.trim() !== '') {
+      filter.$or.push({ phoneNumber: Number(keyword) });
+    }
   }
 
   if (status) {
@@ -96,19 +106,15 @@ const getUserDetails = asyncHandler(async (req, res) => {
     }
   }
 
-  const count = await User.countDocuments(filter)
+  const count = await User.countDocuments(filter);
   const users = await User.find(filter)
     .populate('orders.product', 'name price image')
     .limit(pageSize)
     .skip(pageSize * (page - 1))
-    .sort({ createdAt: -1 })
+    .sort({ createdAt: -1 });
 
-
-  res.json({ users, page, pages: Math.ceil(count / pageSize) })
-
-})
-
-// ... existing imports
+  res.json({ users, page, pages: Math.ceil(count / pageSize) });
+});
 
 // @desc    Get user by ID with PAGINATED Orders
 // @route   GET /api/users/:id
