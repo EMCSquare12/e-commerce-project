@@ -15,6 +15,7 @@ import Loader from "../components/Loader";
 import Message from "../components/Message";
 import Pagination from "../components/Pagination";
 import OrderRow from "../components/OrderRow";
+import CustomersOrdersRow from "../components/CustomersOrdersRow";
 
 const CustomerDetailsScreen = () => {
   const { id } = useParams();
@@ -167,16 +168,7 @@ const CustomerDetailsScreen = () => {
                 <tbody className="divide-y divide-gray-100">
                   {ordersData.orders.map((order) => {
                     const orderId = order.orderId || order._id;
-                    return (
-                      <OrderRow
-                        key={orderId}
-                        order={order}
-                        isExpanded={expandedOrderId === orderId}
-                        onToggle={() => toggleRow(orderId)}
-                        onCopy={handleCopy}
-                        copiedId={null} // Simplified for this view
-                      />
-                    );
+                    return <CustomersOrdersRow key={orderId} order={order} />;
                   })}
                 </tbody>
               </table>
