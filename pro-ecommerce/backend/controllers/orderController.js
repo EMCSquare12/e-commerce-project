@@ -140,6 +140,8 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
         throw new Error('Order not found');
     }
 });
+
+
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -164,7 +166,6 @@ const buildFilter = async (query) => {
         if (!isNaN(cleanKeyword)) {
             orConditions.push({ orderId: Number(cleanKeyword) });
         }
-        orConditions.push({ orderId: cleanKeyword });
 
         if (mongoose.Types.ObjectId.isValid(cleanKeyword)) {
             orConditions.push({ _id: cleanKeyword });
