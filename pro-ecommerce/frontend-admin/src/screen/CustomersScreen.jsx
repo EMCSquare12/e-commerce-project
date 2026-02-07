@@ -224,9 +224,6 @@ const CustomersScreen = () => {
                           <Eye className="w-3.5 h-3.5" />
                           View
                         </Link>
-                        <button className="p-1.5 text-gray-400 rounded-md hover:text-slate-600 hover:bg-gray-100 transition-colors">
-                          <MoreHorizontal className="w-5 h-5" />
-                        </button>
                       </div>
                     </td>
                   </tr>
@@ -248,7 +245,7 @@ const CustomersScreen = () => {
             <Pagination
               page={pageNumber}
               pages={data.pages}
-              setItemPages={setPageNumber}
+              setItemPages={(num) => dispatch(setCustomerPage(num))}
             />
           </div>
         )}
