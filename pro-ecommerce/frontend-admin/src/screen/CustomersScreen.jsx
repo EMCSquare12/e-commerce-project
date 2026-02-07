@@ -7,12 +7,14 @@ import {
   Phone,
   ShoppingBag,
   DollarSign,
+  Eye,
 } from "lucide-react";
 import { useGetUsersQuery } from "../slices/usersApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import Pagination from "../components/Pagination";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { setCustomerStatus, setCustomerPage } from "../slices/customerSlice";
 
 const StatusBadge = ({ status }) => {
@@ -214,9 +216,18 @@ const CustomersScreen = () => {
                       <StatusBadge status={customer.status} />
                     </td>
                     <td className="p-4 text-right">
-                      <button className="p-1.5 text-gray-400 rounded-md hover:text-slate-600 hover:bg-gray-100 transition-colors">
-                        <MoreHorizontal className="w-5 h-5" />
-                      </button>
+                      <div className="flex justify-end gap-2">
+                        <Link
+                          to={`/admin/customers/${customer._id}`}
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 border border-blue-100 rounded-lg hover:bg-blue-100 hover:border-blue-200 transition-colors"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          View
+                        </Link>
+                        <button className="p-1.5 text-gray-400 rounded-md hover:text-slate-600 hover:bg-gray-100 transition-colors">
+                          <MoreHorizontal className="w-5 h-5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

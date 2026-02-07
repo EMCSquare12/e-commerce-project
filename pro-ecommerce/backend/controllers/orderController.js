@@ -135,11 +135,14 @@ const getOrder = asyncHandler(async (req, res) => {
 })
 
 const buildFilter = (query) => {
-    const { keyword, status, from, to } = query;
+    const { keyword, status, from, to, userId } = query;
     const filter = {};
 
     if (keyword) {
         filter.name = { $regex: keyword, $options: 'i' };
+    }
+    if (userId) {
+        filter.user = userId
     }
 
     if (status) {

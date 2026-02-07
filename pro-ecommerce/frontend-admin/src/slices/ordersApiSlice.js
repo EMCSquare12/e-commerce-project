@@ -4,8 +4,8 @@ import { apiSlice } from "./apiSlice";
 const ordersApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getOrders: builder.query({
-            query: ({ keyword, status, from, to, pageNumber }) => ({
-                params: { keyword, status, from, to, pageNumber },
+            query: ({ keyword, status, from, to, pageNumber, userId }) => ({
+                params: { keyword, status, from, to, pageNumber, userId },
                 url: `${ORDERS_URL}/admin`,
             }),
             providesTags: ["Orders"],

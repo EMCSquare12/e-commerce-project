@@ -19,6 +19,7 @@ import DashboardScreen from "./screen/DashboardScreen.jsx";
 import OrdersScreen from "./screen/OrdersScreen.jsx";
 import ProductsScreen from "./screen/ProductsScreen.jsx";
 import CustomersScreen from "./screen/CustomersScreen.jsx";
+import CustomerDetailsScreen from "./screen/CustomerDetailsScreen.jsx";
 import AnalyticsScreen from "./screen/AnalyticsScreen.jsx";
 import MarketingScreen from "./screen/MarketingScreen.jsx";
 import SettingsScreen from "./screen/SettingsScreen.jsx";
@@ -43,13 +44,18 @@ const router = createBrowserRouter(
           <Route path="/admin/orders" element={<OrdersScreen />} />
           <Route path="/admin/products" element={<ProductsScreen />} />
           <Route path="/admin/customers" element={<CustomersScreen />} />
+          <Route
+            path="/admin/customers/:id"
+            element={<CustomerDetailsScreen />}
+          />
+
           <Route path="/admin/analytics" element={<AnalyticsScreen />} />
           <Route path="/admin/marketing" element={<MarketingScreen />} />
           <Route path="/admin/settings" element={<SettingsScreen />} />
         </Route>
       </Route>
-    </Route>
-  )
+    </Route>,
+  ),
 );
 
 createRoot(document.getElementById("root")).render(
@@ -57,5 +63,5 @@ createRoot(document.getElementById("root")).render(
     <Provider store={store}>
       <RouterProvider router={router} />
     </Provider>
-  </StrictMode>
+  </StrictMode>,
 );
