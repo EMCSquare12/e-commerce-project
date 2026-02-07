@@ -108,14 +108,33 @@ const getUserDetails = asyncHandler(async (req, res) => {
 
 })
 
+// ... existing imports
+
+// @desc    Get user by ID with PAGINATED Orders
+// @route   GET /api/users/:id
+// @access  Private/Admin
 const getUserById = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.id);
+  const pageSize = 10; // Number of orders per page
+  const page = Number(req.query.pageNumber) || 1;
+
+  if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+    res.status(404);
+    throw new Error('Invalid User ID');
+  }
+
+  const user = await User.findById(req.params.id).select('name email phoneNumber createdAt status');
 
   if (user) {
-    const orders = await Order.find({ user: user._id });
+    const count = await Order.countDocuments({ user: user._id });
 
-    const totalSpent = orders.reduce((acc, order) => acc + order.totalPrice, 0);
-    const totalOrders = orders.length;
+    const orders = await Order.find({ user: user._id })
+      .sort({ createdAt: -1 })
+      .limit(pageSize)
+      .skip(pageSize * (page - 1));
+
+    const allOrders = await Order.find({ user: user._id }).select('totalPrice');
+    const totalSpent = allOrders.reduce((acc, order) => acc + (order.totalPrice || 0), 0);
+    const totalOrders = count;
 
     res.json({
       user: {
@@ -124,18 +143,20 @@ const getUserById = asyncHandler(async (req, res) => {
         email: user.email,
         number: user.phoneNumber,
         dateJoined: user.createdAt,
-        status: user.status || "active",
+        status: user.status || 'active'
       },
       orders: {
-        totalOrders: totalOrders,
-        totalSpent: totalSpent,
+        totalOrders,
+        totalSpent,
         history: orders.map(order => ({
-          orderId: order.orderId,
+          orderId: order.orderId || order._id,
           dateOrdered: order.createdAt,
           items: order.orderItems,
           totalAmount: order.totalPrice,
-          status: order.isDelivered ? "Shipped" : "Pending",
-        }))
+          status: order.isDelivered ? 'Shipped' : 'Pending'
+        })),
+        page,
+        pages: Math.ceil(count / pageSize)
       }
     });
   } else {

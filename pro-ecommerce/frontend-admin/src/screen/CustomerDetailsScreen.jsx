@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from "react"; // Import useState
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -13,12 +13,15 @@ import { useGetUserDetailsQuery } from "../slices/usersApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import CustomersOrdersRow from "../components/CustomersOrdersRow";
+import Pagination from "../components/Pagination";
 
 const CustomerDetailsScreen = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { data, isLoading, error } = useGetUserDetailsQuery(id);
+  const [pageNumber, setPageNumber] = useState(1);
+
+  const { data, isLoading, error } = useGetUserDetailsQuery({ id, pageNumber });
 
   if (isLoading) return <Loader />;
 
@@ -159,6 +162,16 @@ const CustomerDetailsScreen = () => {
                 </tbody>
               </table>
             </div>
+
+            {orders.pages > 1 && (
+              <div className="p-4 border-t border-gray-100">
+                <Pagination
+                  page={orders.page}
+                  pages={orders.pages}
+                  setItemPages={setPageNumber}
+                />
+              </div>
+            )}
           </div>
         )}
       </div>
