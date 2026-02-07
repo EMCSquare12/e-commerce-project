@@ -20,8 +20,7 @@ const CustomersOrdersRow = ({ order }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
-  const rawId = order.orderId || order._id || "";
-  const orderId = String(rawId);
+  const orderId = order.orderId;
 
   const toggleExpanded = () => setIsExpanded(!isExpanded);
 
@@ -33,7 +32,7 @@ const CustomersOrdersRow = ({ order }) => {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="font-mono text-sm font-bold text-gray-900">
-                #{orderId.substring(0, 8)}...
+                orderId
               </span>
               <StatusBadge isDelivered={order.isDelivered} />
             </div>
