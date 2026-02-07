@@ -25,6 +25,7 @@ import { filterChange } from "../slices/productSlice";
 import { setOrderKeyword } from "../slices/orderSlice";
 import { setCustomerKeyword } from "../slices/customerSlice";
 import { setCustomerByIdKeyword } from "../slices/customerDetailsSlice";
+import { setAdminKeyWord } from "../slices/adminSlice";
 
 const Header = () => {
   const [notificationId, setNotificationId] = useState(null);
@@ -57,6 +58,8 @@ const Header = () => {
       dispatch(setCustomerKeyword(debouncedSearchTerm));
     } else if (isCustomerOrdersRoute) {
       dispatch(setCustomerByIdKeyword(debouncedSearchTerm));
+    } else if (isDashboardRoute) {
+      dispatch(setAdminKeyWord(debouncedSearchTerm));
     }
   }, [
     debouncedSearchTerm,

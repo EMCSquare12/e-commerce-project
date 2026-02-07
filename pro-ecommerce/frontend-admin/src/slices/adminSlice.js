@@ -5,11 +5,11 @@ const initialState = {
     pageNumber: 1,
 };
 
-const customerDetailsSlice = createSlice({
-    name: "customerDetails",
+const adminSlice = createSlice({
+    name: "admin",
     initialState,
     reducers: {
-        setCustomerByIdKeyword: (state, action) => {
+        setAdminKeyWord: (state, action) => {
             state.keyword = action.payload;
             state.pageNumber = 1;
         },
@@ -19,5 +19,5 @@ const customerDetailsSlice = createSlice({
     },
 });
 
-export const { setCustomerByIdKeyword, setPageNumber } = customerDetailsSlice.actions;
-export default customerDetailsSlice.reducer;
+export const { setAdminKeyWord, setPageNumber } = adminSlice.actions;
+export default adminSlice.reducer;

@@ -9,6 +9,8 @@ import StatsCard from "../components/StatsCard";
 import SalesChart from "../components/SalesChart";
 import OrderRow from "../components/OrderRow";
 import { BASE_URL } from "../constants";
+import { setPageNumber } from "../slices/adminSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const formatCurrency = (amount) => {
   return Number(amount || 0).toLocaleString("en-US", {
@@ -34,11 +36,14 @@ const useClipboard = (resetTime = 2000) => {
 
 const DashboardScreen = () => {
   const { copiedId, copyToClipboard } = useClipboard();
-  const [pageNumber, setPageNumber] = useState(1);
+  const { keyword, pageNumber } = useSelector((state) => state.admin);
+  const dispatch = useDispatch();
+
   const [expandedOrderId, setExpandedOrderId] = useState(null);
 
   const { data, isLoading, error, refetch } = useGetDashboardQuery({
     pageNumber,
+    keyword,
   });
 
   useEffect(() => {
@@ -206,7 +211,7 @@ const DashboardScreen = () => {
         {pages > 1 && (
           <div className="mt-6">
             <Pagination
-              setItemPages={(num) => setPageNumber(num)}
+              setItemPages={(num) => dispatch(setPageNumber(num))}
               page={page}
               pages={pages}
             />

@@ -4,8 +4,8 @@ import { apiSlice } from "./apiSlice";
 const adminSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getDashboard: builder.query({
-            query: ({ pageNumber }) => ({
-                params: { pageNumber },
+            query: ({ pageNumber, keyword }) => ({
+                params: { pageNumber, keyword },
                 url: ADMIN_STATS_URL
             }),
             providesTags: ["Orders"],

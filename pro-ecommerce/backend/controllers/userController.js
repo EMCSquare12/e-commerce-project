@@ -162,8 +162,8 @@ const getUserById = asyncHandler(async (req, res) => {
 
     const allOrders = await Order.find({ user: user._id }).select('totalPrice');
     const totalSpent = allOrders.reduce((acc, order) => acc + (order.totalPrice || 0), 0);
-    
-    const totalOrders = count; 
+
+    const totalOrders = count;
 
     res.json({
       user: {
