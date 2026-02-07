@@ -3,6 +3,7 @@ import Order from '../models/orderModel.js';
 import User from '../models/userModel.js';
 import Product from "../models/productModel.js"
 import Notifications from '../models/notificationsModel.js';
+import mongoose from 'mongoose';
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -139,14 +140,19 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
         throw new Error('Order not found');
     }
 });
+function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
-// Helper for filtering
 const buildFilter = async (query) => {
     const { keyword, status, from, to, userId } = query;
     const filter = {};
 
-    if (keyword) {
-        const keywordRegex = { $regex: keyword, $options: 'i' };
+    if (keyword && keyword.trim() !== '') {
+        const cleanKeyword = keyword.trim();
+        const safeKeyword = escapeRegExp(cleanKeyword);
+        const keywordRegex = { $regex: safeKeyword, $options: 'i' };
+
         const orConditions = [
             { 'orderItems.name': keywordRegex },
             { 'shippingAddress.address': keywordRegex },
@@ -155,13 +161,26 @@ const buildFilter = async (query) => {
             { 'shippingAddress.country': keywordRegex },
         ];
 
-        if (!isNaN(keyword) && keyword.trim() !== '') {
-            orConditions.push({ orderId: Number(keyword) });
+        if (!isNaN(cleanKeyword)) {
+            orConditions.push({ orderId: Number(cleanKeyword) });
         }
-        const matchingUsers = await User.find({ name: keywordRegex }).select('_id');
+        orConditions.push({ orderId: cleanKeyword });
+
+        if (mongoose.Types.ObjectId.isValid(cleanKeyword)) {
+            orConditions.push({ _id: cleanKeyword });
+        }
+
+        const matchingUsers = await User.find({
+            $or: [
+                { name: keywordRegex },
+                { email: keywordRegex }
+            ]
+        }).select('_id');
+
         if (matchingUsers.length > 0) {
             orConditions.push({ user: { $in: matchingUsers.map(u => u._id) } });
         }
+
         filter.$or = orConditions;
     }
 
@@ -185,20 +204,21 @@ const buildFilter = async (query) => {
             filter.createdAt.$lte = endDate;
         }
     }
+
+    console.log("Generated Filter:", JSON.stringify(filter, null, 2));
+
     return filter;
 };
 
-// @desc    Get all orders (Admin)
-// @route   GET /api/orders/admin
-// @access  Private/Admin
 const getOrdersAdmin = asyncHandler(async (req, res) => {
     const pageSize = 10;
     const page = Number(req.query.pageNumber) || 1;
+
     const filter = await buildFilter(req.query);
 
     const count = await Order.countDocuments(filter);
     const orders = await Order.find(filter)
-        .populate('user', 'name')
+        .populate('user', 'name email')
         .limit(pageSize)
         .skip(pageSize * (page - 1))
         .sort({ createdAt: -1 });

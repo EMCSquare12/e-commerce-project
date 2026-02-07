@@ -17,6 +17,7 @@ import { toggleSidebar } from "../slices/toggleSlice";
 const Sidebar = () => {
   const location = useLocation();
   const dispatch = useDispatch();
+  const { userInfo } = useSelector((state) => state.auth);
   const { openSidebar } = useSelector((state) => state.toggle);
 
   const menuItems = [
@@ -110,14 +111,14 @@ const Sidebar = () => {
         <div className="p-4 border-t border-gray-100">
           <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-gray-50">
             <div className="flex items-center justify-center w-8 h-8 font-bold text-white rounded-full bg-amber-500">
-              A
+              {userInfo?.name ? userInfo.name.charAt(0).toUpperCase() : "A"}
             </div>
             <div className="overflow-hidden">
               <p className="text-sm font-bold text-gray-900 truncate">
-                Admin User
+                {userInfo?.name || "Admin User"}
               </p>
               <p className="text-xs text-gray-500 truncate">
-                admin@proshop.com
+                {userInfo?.email || "Super Admin"}
               </p>
             </div>
           </div>

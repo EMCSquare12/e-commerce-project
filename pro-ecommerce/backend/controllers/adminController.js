@@ -9,20 +9,25 @@ const getDashboard = asyncHandler(async (req, res) => {
     const pageSize = 10;
     const page = Number(req.query.pageNumber) || 1;
 
+    // 1. Define Today's Date Range
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
 
     const endOfDay = new Date();
     endOfDay.setHours(23, 59, 59, 999);
 
+    // 2. Define Chart Date Range (7 days ago)
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
+    // 3. Build Filter for Lists (Orders/Users)
     const orderFilter = {
         createdAt: { $gte: startOfDay, $lte: endOfDay }
     };
 
     if (req.query.keyword) {
+        // Note: Check if your Order model has a 'name' field. 
+        // If not, you might need to search 'user' via population or 'orderId'.
         orderFilter.name = { $regex: req.query.keyword, $options: 'i' };
     }
 
@@ -33,14 +38,24 @@ const getDashboard = asyncHandler(async (req, res) => {
         dailySales,
         ordersData
     ] = await Promise.all([
+        // A. Count Orders Today
         Order.countDocuments(orderFilter),
 
-        User.countDocuments(orderFilter || {}),
+        // B. Count New Users Today
+        User.countDocuments({ createdAt: { $gte: startOfDay, $lte: endOfDay } }),
 
+        // C. Calculate Revenue TODAY (Fixed)
         Order.aggregate([
-            { $group: { _id: null, total: { $sum: '$totalPrice' } } },
+            {
+                // match only orders from today
+                $match: { createdAt: { $gte: startOfDay, $lte: endOfDay } }
+            },
+            {
+                $group: { _id: null, total: { $sum: '$totalPrice' } }
+            },
         ]),
 
+        // D. Chart Data (Last 7 Days)
         Order.aggregate([
             { $match: { createdAt: { $gte: sevenDaysAgo } } },
             {
@@ -52,6 +67,7 @@ const getDashboard = asyncHandler(async (req, res) => {
             { $sort: { _id: 1 } }
         ]),
 
+        // E. Recent Orders List
         Order.find(orderFilter)
             .populate('user', 'name')
             .limit(pageSize)
