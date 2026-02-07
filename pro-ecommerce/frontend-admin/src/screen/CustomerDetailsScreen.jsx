@@ -14,14 +14,20 @@ import Loader from "../components/Loader";
 import Message from "../components/Message";
 import CustomersOrdersRow from "../components/CustomersOrdersRow";
 import Pagination from "../components/Pagination";
+import { useSelector, useDispatch } from "react-redux";
+import { setPageNumber } from "../slices/customerDetailsSlice";
 
 const CustomerDetailsScreen = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const [pageNumber, setPageNumber] = useState(1);
-
-  const { data, isLoading, error } = useGetUserDetailsQuery({ id, pageNumber });
+  const { pageNumber, keyword } = useSelector((state) => state.customerDetails);
+  const { data, isLoading, error } = useGetUserDetailsQuery({
+    id,
+    pageNumber,
+    keyword,
+  });
 
   if (isLoading) return <Loader />;
 
@@ -121,10 +127,8 @@ const CustomerDetailsScreen = () => {
           </div>
         ) : (
           <div className="bg-white border border-gray-200 shadow-sm rounded-xl">
-            {/* Wrapper div to allow horizontal scroll on desktop tables */}
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
-                {/* FIX: Hidden on mobile (md:table-header-group) so headers don't appear above cards */}
                 <thead className="hidden border-b border-gray-200 bg-gray-50 md:table-header-group">
                   <tr>
                     <th className="p-4 text-xs font-bold tracking-wider text-gray-500 uppercase">
@@ -174,7 +178,7 @@ const CustomerDetailsScreen = () => {
                 <Pagination
                   page={orders.page}
                   pages={orders.pages}
-                  setItemPages={setPageNumber}
+                  setItemPages={(page) => dispatch(setPageNumber(page))}
                 />
               </div>
             )}

@@ -24,6 +24,7 @@ import { toggleSidebar } from "../slices/toggleSlice";
 import { filterChange } from "../slices/productSlice";
 import { setOrderKeyword } from "../slices/orderSlice";
 import { setCustomerKeyword } from "../slices/customerSlice";
+import { setCustomerByIdKeyword } from "../slices/customerDetailsSlice";
 
 const Header = () => {
   const [notificationId, setNotificationId] = useState(null);
@@ -54,6 +55,10 @@ const Header = () => {
       dispatch(setOrderKeyword(debouncedSearchTerm));
     } else if (isCustomersRoute) {
       dispatch(setCustomerKeyword(debouncedSearchTerm));
+    } else if (isCustomerOrdersRoute) {
+      dispatch(setOrderKeyword(debouncedSearchTerm));
+    } else if (isDashboardRoute) {
+      dispatch(setCustomerByIdKeyword(debouncedSearchTerm));
     }
   }, [
     debouncedSearchTerm,
@@ -61,6 +66,8 @@ const Header = () => {
     isProductsRoute,
     isOrdersRoute,
     isCustomersRoute,
+    isCustomerOrdersRoute,
+    isDashboardRoute,
   ]);
 
   useEffect(() => {

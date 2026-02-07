@@ -115,12 +115,17 @@ const getUserDetails = asyncHandler(async (req, res) => {
   res.json({ users, page, pages: Math.ceil(count / pageSize) });
 });
 
+
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 // @desc    Get user by ID with PAGINATED Orders
 // @route   GET /api/users/:id
 // @access  Private/Admin
 const getUserById = asyncHandler(async (req, res) => {
-  const pageSize = 10; // Number of orders per page
+  const pageSize = 10;
   const page = Number(req.query.pageNumber) || 1;
+  const keyword = req.query.keyword;
 
   if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
     res.status(404);
@@ -130,16 +135,35 @@ const getUserById = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id).select('name email phoneNumber createdAt status');
 
   if (user) {
-    const count = await Order.countDocuments({ user: user._id });
+    const orderFilter = { user: user._id };
 
-    const orders = await Order.find({ user: user._id })
+    if (keyword && keyword.trim() !== '') {
+      const cleanKeyword = keyword.trim();
+      const safeKeyword = escapeRegExp(cleanKeyword);
+      const keywordRegex = { $regex: safeKeyword, $options: 'i' };
+
+      const orConditions = [
+        { 'orderItems.name': keywordRegex }
+      ];
+
+      if (!isNaN(cleanKeyword)) {
+        orConditions.push({ orderId: Number(cleanKeyword) });
+      }
+
+      orderFilter.$or = orConditions;
+    }
+
+    const count = await Order.countDocuments(orderFilter);
+
+    const orders = await Order.find(orderFilter)
       .sort({ createdAt: -1 })
       .limit(pageSize)
       .skip(pageSize * (page - 1));
 
     const allOrders = await Order.find({ user: user._id }).select('totalPrice');
     const totalSpent = allOrders.reduce((acc, order) => acc + (order.totalPrice || 0), 0);
-    const totalOrders = count;
+    
+    const totalOrders = count; 
 
     res.json({
       user: {
@@ -169,5 +193,6 @@ const getUserById = asyncHandler(async (req, res) => {
     throw new Error('User not found');
   }
 });
+
 
 export { authUser, registerUser, logoutUser, getUserDetails, getUserById };
