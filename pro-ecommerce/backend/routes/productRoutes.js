@@ -15,22 +15,22 @@ import {
 } from '../controllers/productController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
 
-router.get('/categories', getCategories);
-router.get('/brands', getBrands)
-router.get('/status', getStockStatus)
+router.get('/categories', protect, getCategories);
+router.get('/brands', protect, getBrands)
+router.get('/status', protect, getStockStatus)
 
 router
-    .route('/').get(getProducts)
+    .route('/').get(protect, getProducts)
     .post(protect, admin, createProduct)
 
-router.get('/admin', getProductsAdmin);
-router.get('/:id/navigation', getProductNavigation)
+router.get('/admin', protect, admin, getProductsAdmin);
+router.get('/:id/navigation', protect, getProductNavigation)
 router.post('/:id/reviews', protect, submitReview);
 
 
 router
     .route('/:id')
-    .get(getProductById)
+    .get(protect, getProductById)
     .delete(protect, admin, deleteProduct)
     .put(protect, admin, updateProduct)
 

@@ -4,7 +4,7 @@ import { addOrderItems, getOrdersAdmin, updateOrderToDelivered } from '../contro
 import { protect, admin } from '../middleware/authMiddleware.js';
 
 router.route('/').post(protect, addOrderItems);
-router.route('/admin').get(protect, getOrdersAdmin)
+router.route('/admin').get(protect, admin, getOrdersAdmin)
 router.put("/:id", protect, admin, updateOrderToDelivered)
 
 
