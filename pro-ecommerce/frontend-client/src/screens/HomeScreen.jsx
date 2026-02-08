@@ -72,6 +72,24 @@ const HomeScreen = () => {
     dispatch(clearFilter());
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4">
+        <Message variant="danger">
+          {error?.data?.message || error.error || "Something went wrong"}
+        </Message>
+      </div>
+    );
+  }
+
   return (
     <>
       <HeroSlider />
@@ -108,32 +126,24 @@ const HomeScreen = () => {
             )}
           </div>
 
-          {isLoading ? (
-            <Loader />
-          ) : error ? (
-            <Message variant="danger">
-              {error?.data?.message || error.error}
-            </Message>
-          ) : (
-            <InfiniteScroll
-              dataLength={data?.products?.length || 0}
-              next={fetchMoreData}
-              hasMore={pageNumber < (data?.pages || 0)}
-              loader={<Loader />}
-              endMessage={
-                <p className="py-10 font-medium text-center text-gray-500">
-                  You have seen all products!
-                </p>
-              }
-              scrollThreshold={0.9}
-            >
-              <div className="grid grid-cols-2 gap-3 px-1 md:gap-8 md:grid-cols-3 lg:grid-cols-4">
-                {data?.products?.map((product) => (
-                  <Product key={product._id} product={product} />
-                ))}
-              </div>
-            </InfiniteScroll>
-          )}
+          <InfiniteScroll
+            dataLength={data?.products?.length || 0}
+            next={fetchMoreData}
+            hasMore={pageNumber < (data?.pages || 0)}
+            loader={<Loader />}
+            endMessage={
+              <p className="py-10 font-medium text-center text-gray-500">
+                You have seen all products!
+              </p>
+            }
+            scrollThreshold={0.9}
+          >
+            <div className="grid grid-cols-2 gap-3 px-1 md:gap-8 md:grid-cols-3 lg:grid-cols-4">
+              {data?.products?.map((product) => (
+                <Product key={product._id} product={product} />
+              ))}
+            </div>
+          </InfiniteScroll>
         </>
       )}
     </>

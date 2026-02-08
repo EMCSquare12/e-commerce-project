@@ -86,6 +86,24 @@ const NotificationsScreen = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4">
+        <Message variant="danger">
+          {error?.data?.message || error.error || "Something went wrong"}
+        </Message>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl px-4 py-6 pb-24 mx-auto md:pb-8">
       {/* Header Section */}
@@ -130,84 +148,74 @@ const NotificationsScreen = () => {
         )}
       </div>
 
-      {isLoading ? (
-        <Loader />
-      ) : error ? (
-        <Message variant="danger">
-          {error?.data?.message || "Error loading notifications"}
-        </Message>
-      ) : (
-        <div className="overflow-hidden bg-white border border-gray-200 shadow-sm rounded-xl">
-          {data?.length === 0 ? (
-            <div className="flex flex-col items-center justify-center p-12 text-center">
-              <div className="p-4 mb-4 rounded-full bg-gray-50">
-                <Bell className="w-8 h-8 text-gray-400" />
-              </div>
-              <h3 className="text-lg font-bold text-slate-800">
-                All caught up!
-              </h3>
-              <p className="text-gray-500">You have no new notifications.</p>
+      <div className="overflow-hidden bg-white border border-gray-200 shadow-sm rounded-xl">
+        {data?.length === 0 ? (
+          <div className="flex flex-col items-center justify-center p-12 text-center">
+            <div className="p-4 mb-4 rounded-full bg-gray-50">
+              <Bell className="w-8 h-8 text-gray-400" />
             </div>
-          ) : (
-            <div className="divide-y divide-gray-100">
-              {data?.map((item) => (
-                <div
-                  key={item._id}
-                  className={`relative p-4 md:p-5 transition-colors hover:bg-gray-50 ${
-                    !item.read ? "bg-blue-50/50" : ""
-                  }`}
-                >
-                  <div className="flex items-start gap-4">
-                    {/* Icon Box */}
-                    <div className="flex-shrink-0 p-2.5 bg-white border border-gray-100 rounded-xl shadow-sm">
-                      {getIcon(item.type)}
-                    </div>
+            <h3 className="text-lg font-bold text-slate-800">All caught up!</h3>
+            <p className="text-gray-500">You have no new notifications.</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-gray-100">
+            {data?.map((item) => (
+              <div
+                key={item._id}
+                className={`relative p-4 md:p-5 transition-colors hover:bg-gray-50 ${
+                  !item.read ? "bg-blue-50/50" : ""
+                }`}
+              >
+                <div className="flex items-start gap-4">
+                  {/* Icon Box */}
+                  <div className="flex-shrink-0 p-2.5 bg-white border border-gray-100 rounded-xl shadow-sm">
+                    {getIcon(item.type)}
+                  </div>
 
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                        <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${getTypeStyle(
-                            item.type
-                          )}`}
-                        >
-                          {item.type}
-                        </span>
-                        <span className="flex items-center gap-1 text-xs text-gray-400">
-                          <Clock className="w-3 h-3" />
-                          {new Date(item.createdAt).toLocaleString()}
-                        </span>
-                      </div>
-
-                      <Link
-                        to={`/notifications/${item._id}`}
-                        onClick={() => handleMarkNotificationsRead(item._id)}
-                        className={`block text-sm md:text-base mb-2 hover:text-blue-600 ${
-                          !item.read
-                            ? "font-bold text-slate-900"
-                            : "font-medium text-slate-700"
-                        }`}
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                      <span
+                        className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${getTypeStyle(
+                          item.type,
+                        )}`}
                       >
-                        {item.message}
-                      </Link>
-
-                      {/* Action Button (Mobile Friendly) */}
-                      {!item.read && (
-                        <button
-                          onClick={() => handleMarkNotificationsRead(item._id)}
-                          className="inline-flex items-center text-xs font-bold text-blue-600 transition-colors hover:text-blue-800 hover:underline"
-                        >
-                          Mark as read
-                        </button>
-                      )}
+                        {item.type}
+                      </span>
+                      <span className="flex items-center gap-1 text-xs text-gray-400">
+                        <Clock className="w-3 h-3" />
+                        {new Date(item.createdAt).toLocaleString()}
+                      </span>
                     </div>
+
+                    <Link
+                      to={`/notifications/${item._id}`}
+                      onClick={() => handleMarkNotificationsRead(item._id)}
+                      className={`block text-sm md:text-base mb-2 hover:text-blue-600 ${
+                        !item.read
+                          ? "font-bold text-slate-900"
+                          : "font-medium text-slate-700"
+                      }`}
+                    >
+                      {item.message}
+                    </Link>
+
+                    {/* Action Button (Mobile Friendly) */}
+                    {!item.read && (
+                      <button
+                        onClick={() => handleMarkNotificationsRead(item._id)}
+                        className="inline-flex items-center text-xs font-bold text-blue-600 transition-colors hover:text-blue-800 hover:underline"
+                      >
+                        Mark as read
+                      </button>
+                    )}
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

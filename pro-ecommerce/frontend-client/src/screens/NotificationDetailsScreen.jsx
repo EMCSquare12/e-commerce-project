@@ -78,16 +78,23 @@ const NotificationDetailsScreen = () => {
     setReviewModalOpen(true);
   };
 
-  if (isLoading) return <Loader />;
-  if (error)
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (error) {
     return (
       <div className="p-4">
         <Message variant="danger">
-          {error?.data?.message || "Error loading notification"}
+          {error?.data?.message || error.error || "Something went wrong"}
         </Message>
       </div>
     );
-
+  }
   const theme = getTheme(data?.type);
 
   return (
