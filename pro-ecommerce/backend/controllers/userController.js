@@ -32,6 +32,7 @@ const authUser = asyncHandler(async (req, res) => {
 const authGoogleUser = asyncHandler(async (req, res) => {
   const { token } = req.body;
 
+  const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
   const ticket = await client.verifyIdToken({
     idToken: token,
     audience: process.env.GOOGLE_CLIENT_ID,
