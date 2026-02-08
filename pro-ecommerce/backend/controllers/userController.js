@@ -27,6 +27,50 @@ const authUser = asyncHandler(async (req, res) => {
   }
 });
 
+
+const authGoogleUser = asyncHandler(async (req, res) => {
+  const { token } = req.body;
+
+  const ticket = await client.verifyIdToken({
+    idToken: token,
+    audience: process.env.GOOGLE_CLIENT_ID,
+  });
+  const { email, name } = ticket.getPayload();
+
+  let user = await User.findOne({ email });
+
+  if (user) {
+    const token = generateToken(res, user._id);
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      token: token
+    });
+  } else {
+    const randomPassword = Math.random().toString(36).slice(-8);
+    user = await User.create({
+      name,
+      email,
+      password: randomPassword
+    });
+
+    if (user) {
+      res.status(201).json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin,
+      });
+    } else {
+      res.status(400);
+      throw new Error('Failed to create user');
+    }
+  }
+});
+
+
 // @desc    Register user
 // @route   POST /api/users
 // @access  Public
@@ -195,4 +239,11 @@ const getUserById = asyncHandler(async (req, res) => {
 });
 
 
-export { authUser, registerUser, logoutUser, getUserDetails, getUserById };
+export {
+  authUser,
+  registerUser,
+  logoutUser,
+  getUserDetails,
+  getUserById,
+  authGoogleUser
+};

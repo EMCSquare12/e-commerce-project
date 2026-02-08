@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
+        required: false,
     },
     isAdmin: {
         type: Boolean,
@@ -21,20 +21,20 @@ const userSchema = new mongoose.Schema({
         default: false,
     },
     phoneNumber: {
-        type: Number, // Note: String is often better for phones (e.g., "+639...")
-        required: true,
-        unique: true
+        type: Number,
+        required: false,
+        unique: true,
+        sparse: true
     },
     totalSpent: {
         type: Number,
         required: true,
         default: 0
     },
-    // --- Updated Field ---
     orders: [{
         product: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Product', // Links to your Product model
+            ref: 'Product',
             required: true
         },
         quantity: {
@@ -51,19 +51,17 @@ const userSchema = new mongoose.Schema({
     status: {
         type: String,
         required: true,
-        default: 'active', // Added default to prevent creation errors
-        enum: ['active', 'inactive', 'suspended'] // Optional: Good practice
+        default: 'active',
+        enum: ['active', 'inactive', 'suspended']
     }
 }, {
     timestamps: true,
 });
 
-// Method to check password during login
 userSchema.methods.matchPassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };
 
-// Middleware to hash password before saving (during registration)
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) {
         next();

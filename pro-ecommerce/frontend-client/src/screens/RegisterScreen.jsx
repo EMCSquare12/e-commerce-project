@@ -6,6 +6,8 @@ import Loader from "../components/Loader";
 import { useRegisterMutation } from "../slices/usersApiSlice";
 import { setCredentials } from "../slices/authSlice";
 import { toast } from "react-toastify";
+import { GoogleLogin } from "@react-oauth/google";
+import { useGoogleLoginMutation } from "../slices/usersApiSlice";
 
 const RegisterScreen = () => {
   const [name, setName] = useState("");
@@ -18,6 +20,8 @@ const RegisterScreen = () => {
   const navigate = useNavigate();
 
   const [register, { isLoading }] = useRegisterMutation();
+  const [googleLogin, { isLoading: isGoogleLoading }] =
+    useGoogleLoginMutation();
   const { userInfo } = useSelector((state) => state.auth);
 
   const { search } = useLocation();
@@ -51,6 +55,18 @@ const RegisterScreen = () => {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const res = await googleLogin({
+        token: credentialResponse.credential,
+      }).unwrap();
+      dispatch(setCredentials({ ...res }));
+      navigate(redirect);
+      toast.success("Login Successful");
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
+  };
   return (
     <div className="flex items-center justify-center min-h-[80vh] bg-gray-50 px-4 py-8 pb-24 md:py-10 md:pb-10">
       {/* Card Container */}
@@ -202,6 +218,24 @@ const RegisterScreen = () => {
             )}
           </button>
 
+          <div className="relative flex items-center justify-center">
+            <div className="w-full border-t border-gray-200"></div>
+            <span className="absolute px-3 text-xs text-gray-500 uppercase bg-white">
+              Or Register With Email
+            </span>
+          </div>
+          {/* Google Login Section */}
+          <div className="flex justify-center w-full">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => {
+                toast.error("Google Login Failed");
+              }}
+              width="100%"
+              theme="filled_black"
+              shape="pill"
+            />
+          </div>
           {isLoading && <Loader />}
         </form>
 
