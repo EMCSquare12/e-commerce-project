@@ -13,11 +13,11 @@ const router = express.Router();
 
 
 router.get('/admin', protect, admin, getUserDetails)
-router.post('/', registerUser)
-router.post('/logout', logoutUser)
-router.post('/login', authUser)
-router.post('/google', authGoogleUser)
-router.get('/admin/customers/:id', admin, getUserById)
+router.post('/', protect, registerUser)
+router.post('/logout', protect, logoutUser)
+router.post('/login', protect, authUser)
+router.post('/google', protect, authGoogleUser)
+router.get('/admin/customers/:id', protect, getUserById)
 
 
 
