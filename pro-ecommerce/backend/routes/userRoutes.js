@@ -17,7 +17,7 @@ router.post('/', protect, registerUser)
 router.post('/logout', protect, logoutUser)
 router.post('/login', protect, authUser)
 router.post('/google', protect, authGoogleUser)
-router.get('/admin/customers/:id', protect, getUserById)
+router.get('/admin/customers/:id', protect, admin, getUserById)
 
 
 
