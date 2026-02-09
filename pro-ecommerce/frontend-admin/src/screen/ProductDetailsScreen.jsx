@@ -50,6 +50,7 @@ const ProductDetailsScreen = () => {
     isLoading: loadingOrders,
     error: errorOrders,
   } = useGetProductOrderHistoryQuery({ productId: id, pageNumber, keyword });
+  console.log("Fetched Orders for Product:", ordersRaw);
 
   // Add Keyboard support (Left/Right arrow keys)
   useEffect(() => {
@@ -80,13 +81,7 @@ const ProductDetailsScreen = () => {
       </div>
     );
 
-  // Pagination Logic
-  const itemsPerPage = 10;
   const totalOrders = ordersRaw?.orders?.length || 0;
-  const pages = Math.ceil(totalOrders / itemsPerPage);
-  const startIndex = (pageNumber - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedOrders = ordersRaw?.orders?.slice(startIndex, endIndex) || [];
 
   return (
     <div className="max-w-6xl pb-20 mx-auto space-y-6 md:pb-8">
@@ -229,7 +224,7 @@ const ProductDetailsScreen = () => {
           Order History containing this item
         </h2>
 
-        {paginatedOrders.length === 0 ? (
+        {ordersRaw.orders.length === 0 ? (
           <div className="p-8 text-center bg-white border border-gray-200 border-dashed rounded-xl">
             <p className="text-gray-500">
               No orders found for this product yet.
@@ -268,7 +263,7 @@ const ProductDetailsScreen = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {paginatedOrders.map((order) => {
+                  {ordersRaw.orders.map((order) => {
                     const id = order.orderId || order._id || "";
                     return (
                       <OrderRow
@@ -285,11 +280,11 @@ const ProductDetailsScreen = () => {
               </table>
             </div>
 
-            {pages > 1 && (
+            {ordersRaw.pages > 1 && (
               <div className="p-4 border-t border-gray-100">
                 <Pagination
-                  page={pageNumber}
-                  pages={pages}
+                  page={ordersRaw.page}
+                  pages={ordersRaw.pages}
                   setItemPages={(page) => dispatch(setProductPageNumber(page))}
                 />
               </div>
