@@ -56,7 +56,7 @@ const authGoogleUser = asyncHandler(async (req, res) => {
   let user = await User.findOne({ email });
 
   if (user) {
-    generateToken(res, user._id);
+    const jwtToken = generateToken(res, user._id);
     res.json({
       _id: user._id,
       name: user.name,
@@ -64,6 +64,7 @@ const authGoogleUser = asyncHandler(async (req, res) => {
       isAdmin: user.isAdmin,
       phoneNumber: user.phoneNumber,
       totalSpent: user.totalSpent,
+      token: jwtToken,
     });
   } else {
     const randomPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
@@ -75,13 +76,14 @@ const authGoogleUser = asyncHandler(async (req, res) => {
     });
 
     if (user) {
-      generateToken(res, user._id);
+      const jwtToken = generateToken(res, user._id);
       res.status(201).json({
         _id: user._id,
         name: user.name,
         email: user.email,
         isAdmin: user.isAdmin,
         phoneNumber: user.phoneNumber,
+        token: jwtToken,
       });
     } else {
       res.status(400);
