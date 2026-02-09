@@ -88,6 +88,13 @@ export const productsApiSlice = apiSlice.injectEndpoints({
       }),
       keepUnusedDataFor: 5,
     }),
+    getProductDetailsNavigation: builder.query({
+      query: (productId) => ({
+        url: `${PRODUCTS_URL}/${productId}/navigation`,
+      }),
+      providesTags: ["Product"],
+      keepUnusedDataFor: 5,
+    }),
   }),
 });
 
@@ -102,4 +109,5 @@ export const {
   useGetProductBrandsQuery,
   useGetProductStatusQuery,
   useGetProductOrderHistoryQuery,
+  useGetProductDetailsNavigationQuery,
 } = productsApiSlice;

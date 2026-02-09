@@ -1,5 +1,5 @@
-import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect } from "react"; // Added useEffect
+import { useParams, useNavigate, Link } from "react-router-dom"; // Added Link
 import {
   ArrowLeft,
   Package,
@@ -8,10 +8,13 @@ import {
   Layers,
   Star,
   ShoppingBag,
+  ChevronLeft, // Added
+  ChevronRight, // Added
 } from "lucide-react";
 import {
   useGetProductDetailsQuery,
   useGetProductOrderHistoryQuery,
+  useGetProductDetailsNavigationQuery,
 } from "../slices/productsApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
@@ -34,6 +37,9 @@ const ProductDetailsScreen = () => {
     error: errorProduct,
   } = useGetProductDetailsQuery(id);
 
+  // Fetch Navigation (Next/Prev IDs)
+  const { data: navigation } = useGetProductDetailsNavigationQuery(id);
+
   // Fetch Order History for this Product
   const {
     data: ordersRaw,
@@ -41,7 +47,19 @@ const ProductDetailsScreen = () => {
     error: errorOrders,
   } = useGetProductOrderHistoryQuery({ productId: id, pageNumber, keyword });
 
-  console.log("ordersRaw:", ordersRaw);
+  // Add Keyboard support (Left/Right arrow keys)
+  useEffect(() => {
+    const handleArrowKey = (e) => {
+      if (e.key === "ArrowRight" && navigation?.next) {
+        navigate(`/admin/products/${navigation.next._id}`);
+      }
+      if (e.key === "ArrowLeft" && navigation?.prev) {
+        navigate(`/admin/products/${navigation.prev._id}`);
+      }
+    };
+    window.addEventListener("keydown", handleArrowKey);
+    return () => window.removeEventListener("keydown", handleArrowKey);
+  }, [navigation, navigate]);
 
   if (loadingProduct || loadingOrders) return <Loader />;
 
@@ -54,15 +72,55 @@ const ProductDetailsScreen = () => {
       </div>
     );
 
-  // --- Client-Side Pagination Logic ---
+  // Pagination Logic
   const itemsPerPage = 10;
   const totalOrders = ordersRaw?.orders?.length || 0;
   const pages = Math.ceil(totalOrders / itemsPerPage);
   const startIndex = (pageNumber - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedOrders = ordersRaw?.orders?.slice(startIndex, endIndex) || [];
+
+  // Arrow style constant
+  const arrowBtnStyle =
+    "fixed top-1/2 transform -translate-y-1/2 z-10 hidden xl:flex items-center justify-center w-14 h-14 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-full shadow-lg text-slate-600 hover:text-amber-500 hover:scale-110 transition-all duration-200";
+
   return (
-    <div className="max-w-6xl pb-20 mx-auto space-y-6 md:pb-8">
+    <div className="relative max-w-6xl pb-20 mx-auto space-y-6 md:pb-8">
+      {/* Navigation Arrows */}
+      {navigation?.prev ? (
+        <Link
+          to={`/admin/products/${navigation.prev._id}`}
+          className={`${arrowBtnStyle} -left-20`} // Adjusted position to be outside container
+          title="Previous Product"
+        >
+          <ChevronLeft size={28} />
+        </Link>
+      ) : (
+        <button
+          className={`${arrowBtnStyle} -left-20 opacity-30 cursor-not-allowed`}
+          disabled
+        >
+          <ChevronLeft size={28} />
+        </button>
+      )}
+
+      {navigation?.next ? (
+        <Link
+          to={`/admin/products/${navigation.next._id}`}
+          className={`${arrowBtnStyle} -right-20`}
+          title="Next Product"
+        >
+          <ChevronRight size={28} />
+        </Link>
+      ) : (
+        <button
+          className={`${arrowBtnStyle} -right-20 opacity-30 cursor-not-allowed`}
+          disabled
+        >
+          <ChevronRight size={28} />
+        </button>
+      )}
+
       {/* Back Button */}
       <button
         onClick={() => navigate("/admin/products")}
@@ -74,7 +132,6 @@ const ProductDetailsScreen = () => {
       {/* Product Profile Card */}
       <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
         <div className="flex flex-col gap-6 md:flex-row md:items-center">
-          {/* Product Image */}
           <div className="flex-shrink-0 w-24 h-24 overflow-hidden border border-gray-200 rounded-lg bg-gray-50">
             {product.image?.[0] ? (
               <img
@@ -123,7 +180,7 @@ const ProductDetailsScreen = () => {
           </div>
         </div>
 
-        {/* Quick Stats */}
+        {/* Quick Stats Grid */}
         <div className="grid grid-cols-2 gap-4 mt-6 md:grid-cols-4">
           <div className="p-4 border border-gray-100 rounded-lg bg-gray-50">
             <p className="flex items-center gap-2 mb-1 text-xs font-bold text-gray-400 uppercase">
@@ -199,14 +256,13 @@ const ProductDetailsScreen = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {paginatedOrders.map((order) => {
-                    return <CustomersOrdersRow key={order._id} order={order} />;
-                  })}
+                  {paginatedOrders.map((order) => (
+                    <CustomersOrdersRow key={order._id} order={order} />
+                  ))}
                 </tbody>
               </table>
             </div>
 
-            {/* Pagination */}
             {pages > 1 && (
               <div className="p-4 border-t border-gray-100">
                 <Pagination
