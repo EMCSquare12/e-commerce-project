@@ -11,7 +11,7 @@ import OrderRow from "../components/OrderRow";
 import { BASE_URL } from "../constants";
 import { setPageNumber } from "../slices/adminSlice";
 import { useDispatch, useSelector } from "react-redux";
-import {useClipboard} from "../hooks/useClipboard";
+import useClipboard  from "../hooks/useClipboard";
 
 const formatCurrency = (amount) => {
   return Number(amount || 0).toLocaleString("en-US", {
@@ -19,7 +19,6 @@ const formatCurrency = (amount) => {
     currency: "USD",
   });
 };
-
 
 const DashboardScreen = () => {
   const { copiedId, copyToClipboard } = useClipboard();
