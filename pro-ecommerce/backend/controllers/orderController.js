@@ -4,6 +4,7 @@ import User from '../models/userModel.js';
 import Product from "../models/productModel.js"
 import Notifications from '../models/notificationsModel.js';
 import mongoose from 'mongoose';
+import { escapeRegExp } from '../utils/utils.js';
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -142,9 +143,6 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
 });
 
 
-function escapeRegExp(string) {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
 
 const buildFilter = async (query) => {
     const { keyword, status, from, to, userId } = query;

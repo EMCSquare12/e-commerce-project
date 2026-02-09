@@ -1,10 +1,8 @@
 import asyncHandler from 'express-async-handler';
 import Order from '../models/orderModel.js';
 import User from '../models/userModel.js';
+import escapeRegExp from '../utils/utils.js';
 
-function escapeRegExp(string) {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
 
 // @desc    Get Dashboard Data (Stats, Charts, and Recent Orders)
 // @route   GET /api/admin/dashboard

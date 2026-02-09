@@ -39,7 +39,7 @@ const ProductDetailsScreen = () => {
     data: ordersRaw,
     isLoading: loadingOrders,
     error: errorOrders,
-  } = useGetProductOrderHistoryQuery({ id, pageNumber, keyword });
+  } = useGetProductOrderHistoryQuery({ productId: id, pageNumber, keyword });
 
   console.log("ordersRaw:", ordersRaw);
 
@@ -56,11 +56,11 @@ const ProductDetailsScreen = () => {
 
   // --- Client-Side Pagination Logic ---
   const itemsPerPage = 10;
-  const totalOrders = ordersRaw?.length || 0;
+  const totalOrders = ordersRaw?.orders?.length || 0;
   const pages = Math.ceil(totalOrders / itemsPerPage);
   const startIndex = (pageNumber - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const paginatedOrders = ordersRaw?.slice(startIndex, endIndex) || [];
+  const paginatedOrders = ordersRaw?.orders?.slice(startIndex, endIndex) || [];
   return (
     <div className="max-w-6xl pb-20 mx-auto space-y-6 md:pb-8">
       {/* Back Button */}

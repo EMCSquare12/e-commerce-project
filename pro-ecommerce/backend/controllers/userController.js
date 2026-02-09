@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler';
 import User from '../models/userModel.js';
 import Order from '../models/orderModel.js';
 import generateToken from '../utils/generateToken.js';
+import escapeRegExp from '../utils/utils.js';
 import { OAuth2Client } from 'google-auth-library';
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -187,10 +188,6 @@ const getUserDetails = asyncHandler(async (req, res) => {
   res.json({ users, page, pages: Math.ceil(count / pageSize) });
 });
 
-
-function escapeRegExp(string) {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
 // @desc    Get user by ID with PAGINATED Orders
 // @route   GET /api/users/:id
 // @access  Private/Admin

@@ -1,7 +1,9 @@
 import asyncHandler from 'express-async-handler';
 import Product from '../models/productModel.js';
 import Order from '../models/orderModel.js';
+import User from '../models/userModel.js';
 import mongoose from 'mongoose';
+import { escapeRegExp } from '../utils/utils.js';
 
 //Helper Functions
 const buildFilter = (query) => {
@@ -248,29 +250,24 @@ const getProductOrderHistory = asyncHandler(async (req, res) => {
     throw new Error('Product not found');
   }
 
-  // Base filter: Orders containing this specific product
   const filter = { 'orderItems.product': product };
 
-  // Apply Search Filter if keyword exists
   if (keyword && keyword.trim() !== '') {
     const cleanKeyword = keyword.trim();
     const safeKeyword = escapeRegExp(cleanKeyword);
     const keywordRegex = { $regex: safeKeyword, $options: 'i' };
 
     const orConditions = [
-      // Search Address Fields
       { 'shippingAddress.address': keywordRegex },
       { 'shippingAddress.city': keywordRegex },
       { 'shippingAddress.postalCode': keywordRegex },
       { 'shippingAddress.country': keywordRegex },
     ];
 
-    // Search Order ID (if numeric)
     if (!isNaN(cleanKeyword)) {
       orConditions.push({ orderId: Number(cleanKeyword) });
     }
 
-    // Search Customer (Name OR Email)
     const matchingUsers = await User.find({
       $or: [
         { name: keywordRegex },
@@ -282,16 +279,13 @@ const getProductOrderHistory = asyncHandler(async (req, res) => {
       orConditions.push({ user: { $in: matchingUsers.map(u => u._id) } });
     }
 
-    // Combine product filter with search conditions
     if (orConditions.length > 0) {
       filter.$or = orConditions;
     }
   }
 
-  // Get Total Count for Pagination
   const count = await Order.countDocuments(filter);
 
-  // Fetch Paginated Orders
   const orders = await Order.find(filter)
     .populate('user', 'name email')
     .sort({ createdAt: -1 })
