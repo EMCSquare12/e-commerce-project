@@ -7,21 +7,7 @@ import Pagination from "../components/Pagination";
 import OrderRow from "../components/OrderRow";
 import { useDispatch, useSelector } from "react-redux";
 import { setDateRange, setStatus, setPageNumber } from "../slices/orderSlice";
-
-const useClipboard = (resetTime = 2000) => {
-  const [copiedId, setCopiedId] = useState(null);
-
-  const copyToClipboard = async (text, id) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedId(id);
-      setTimeout(() => setCopiedId(null), resetTime);
-    } catch (err) {
-      console.error("Failed to copy:", err);
-    }
-  };
-  return { copiedId, copyToClipboard };
-};
+import { useClipboard } from "../hooks/useClipboard";
 
 const OrdersScreen = () => {
   const dispatch = useDispatch();

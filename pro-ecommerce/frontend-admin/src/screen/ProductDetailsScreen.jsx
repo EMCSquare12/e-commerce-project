@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -18,15 +18,19 @@ import {
 } from "../slices/productsApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
-import CustomersOrdersRow from "../components/CustomersOrdersRow";
+import OrderRow from "../components/OrderRow";
 import Pagination from "../components/Pagination";
 import { useSelector, useDispatch } from "react-redux";
 import { setProductPageNumber } from "../slices/productDetailsSlice";
+import useClipboard from "../hooks/useClipboard";
 
 const ProductDetailsScreen = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const [expandedOrderId, setExpandedOrderId] = useState(null);
+  const { copiedId, copyToClipboard } = useClipboard();
 
   const { pageNumber, keyword } = useSelector((state) => state.productDetails);
 
@@ -60,6 +64,10 @@ const ProductDetailsScreen = () => {
     window.addEventListener("keydown", handleArrowKey);
     return () => window.removeEventListener("keydown", handleArrowKey);
   }, [navigation, navigate]);
+
+  const toggleRow = (orderId) => {
+    setExpandedOrderId((prev) => (prev === orderId ? null : orderId));
+  };
 
   if (loadingProduct || loadingOrders) return <Loader />;
 
@@ -237,6 +245,9 @@ const ProductDetailsScreen = () => {
                       Order ID
                     </th>
                     <th className="p-4 text-xs font-bold tracking-wider text-gray-500 uppercase">
+                      Customer
+                    </th>
+                    <th className="p-4 text-xs font-bold tracking-wider text-gray-500 uppercase">
                       Date
                     </th>
                     <th className="p-4 text-xs font-bold tracking-wider text-gray-500 uppercase">
@@ -244,6 +255,9 @@ const ProductDetailsScreen = () => {
                     </th>
                     <th className="p-4 text-xs font-bold tracking-wider text-gray-500 uppercase">
                       Total
+                    </th>
+                    <th className="p-4 text-xs font-bold tracking-wider text-gray-500 uppercase">
+                      Address
                     </th>
                     <th className="p-4 text-xs font-bold tracking-wider text-gray-500 uppercase">
                       Status
@@ -254,9 +268,19 @@ const ProductDetailsScreen = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {paginatedOrders.map((order) => (
-                    <CustomersOrdersRow key={order._id} order={order} />
-                  ))}
+                  {paginatedOrders.map((order) => {
+                    const id = order.orderId || order._id || "";
+                    return (
+                      <OrderRow
+                        key={id}
+                        order={order}
+                        isExpanded={expandedOrderId === id}
+                        onToggle={() => toggleRow(id)}
+                        copiedId={copiedId}
+                        onCopy={copyToClipboard}
+                      />
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

@@ -11,6 +11,7 @@ import OrderRow from "../components/OrderRow";
 import { BASE_URL } from "../constants";
 import { setPageNumber } from "../slices/adminSlice";
 import { useDispatch, useSelector } from "react-redux";
+import {useClipboard} from "../hooks/useClipboard";
 
 const formatCurrency = (amount) => {
   return Number(amount || 0).toLocaleString("en-US", {
@@ -19,20 +20,6 @@ const formatCurrency = (amount) => {
   });
 };
 
-const useClipboard = (resetTime = 2000) => {
-  const [copiedId, setCopiedId] = useState(null);
-
-  const copyToClipboard = async (text, id) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedId(id);
-      setTimeout(() => setCopiedId(null), resetTime);
-    } catch (err) {
-      console.error("Failed to copy:", err);
-    }
-  };
-  return { copiedId, copyToClipboard };
-};
 
 const DashboardScreen = () => {
   const { copiedId, copyToClipboard } = useClipboard();
