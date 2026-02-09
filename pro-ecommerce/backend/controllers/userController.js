@@ -3,6 +3,8 @@ import User from '../models/userModel.js';
 import Order from '../models/orderModel.js';
 import generateToken from '../utils/generateToken.js';
 import { OAuth2Client } from 'google-auth-library';
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
 
 // @desc    Auth user & get token
 // @route   POST /api/users/login
@@ -31,24 +33,27 @@ const authUser = asyncHandler(async (req, res) => {
 
 const authGoogleUser = asyncHandler(async (req, res) => {
   const { token } = req.body;
+  if (!token) {
+    res.status(400);
+    throw new Error('Google token is missing');
+  }
 
-  const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
   const ticket = await client.verifyIdToken({
     idToken: token,
     audience: process.env.GOOGLE_CLIENT_ID,
   });
+
   const { email, name } = ticket.getPayload();
-
   let user = await User.findOne({ email });
-
   if (user) {
-    const token = generateToken(res, user._id);
+    generateToken(res, user._id);
     res.json({
       _id: user._id,
       name: user.name,
       email: user.email,
       isAdmin: user.isAdmin,
-      token: token
+      phoneNumber: user.phoneNumber,
+      totalSpent: user.totalSpent,
     });
   } else {
     const randomPassword = Math.random().toString(36).slice(-8);
@@ -59,11 +64,13 @@ const authGoogleUser = asyncHandler(async (req, res) => {
     });
 
     if (user) {
+      generateToken(res, user._id);
       res.status(201).json({
         _id: user._id,
         name: user.name,
         email: user.email,
         isAdmin: user.isAdmin,
+        phoneNumber: user.phoneNumber,
       });
     } else {
       res.status(400);
