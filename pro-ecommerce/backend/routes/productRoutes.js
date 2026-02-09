@@ -27,7 +27,7 @@ router
 router.get('/admin', protect, admin, getProductsAdmin);
 router.get('/:id/navigation', protect, getProductNavigation)
 router.post('/:id/reviews', protect, submitReview);
-router.get('/:id/orders', protect, getProductOrderHistory);
+router.get('/admin/products/:id', protect, getProductOrderHistory);
 
 router
     .route('/:id')
