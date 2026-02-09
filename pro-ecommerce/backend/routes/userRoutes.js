@@ -11,12 +11,12 @@ import {
 
 const router = express.Router();
 
+router.post('/', registerUser)
+router.post('/login', authUser)
+router.post('/google', authGoogleUser)
 
-router.get('/admin', protect, admin, getUserDetails)
-router.post('/', protect, registerUser)
 router.post('/logout', protect, logoutUser)
-router.post('/login', protect, authUser)
-router.post('/google', protect, authGoogleUser)
+router.get('/admin', protect, admin, getUserDetails)
 router.get('/admin/customers/:id', protect, admin, getUserById)
 
 

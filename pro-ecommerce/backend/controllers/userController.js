@@ -79,8 +79,14 @@ const authGoogleUser = asyncHandler(async (req, res) => {
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password, phoneNumber } = req.body;
 
-  const userExists = await User.findOne({ email });
 
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+  if (!passwordRegex.test(password)) {
+    res.status(400);
+    throw new Error('Password must be at least 8 characters long and contain both uppercase and lowercase letters');
+  }
+
+  const userExists = await User.findOne({ email });
   if (userExists) {
     res.status(400);
     throw new Error('User already exists');
