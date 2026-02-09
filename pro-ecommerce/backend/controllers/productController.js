@@ -1,5 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import Product from '../models/productModel.js';
+import Order from '../models/orderModel.js';
 import mongoose from 'mongoose';
 
 //Helper Functions
@@ -231,6 +232,22 @@ const submitReview = asyncHandler(async (req, res) => {
   res.status(201).json({ message: 'Review added' });
 });
 
+
+const getProductOrderHistory = asyncHandler(async (req, res) => {
+  const product = req.params.id;
+
+  if (!product) {
+    res.status(404);
+    throw new Error('Product not found');
+  }
+
+  const orders = await Order.find({ 'orderItems.product': product })
+    .populate('user', 'name email')
+    .sort({ createdAt: -1 });
+  res.json(orders);
+
+});
+
 export {
   getProducts,
   getProductsAdmin,
@@ -242,5 +259,6 @@ export {
   getBrands,
   getStockStatus,
   getProductNavigation,
-  submitReview
+  submitReview,
+  getProductOrderHistory
 };

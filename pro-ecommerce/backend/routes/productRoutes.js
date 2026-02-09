@@ -11,7 +11,8 @@ import {
     updateProduct,
     createProduct,
     getProductNavigation,
-    submitReview
+    submitReview,
+    getProductOrderHistory
 } from '../controllers/productController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
 
@@ -26,7 +27,7 @@ router
 router.get('/admin', protect, admin, getProductsAdmin);
 router.get('/:id/navigation', protect, getProductNavigation)
 router.post('/:id/reviews', protect, submitReview);
-
+router.get('/:id/orders', protect, getProductOrderHistory);
 
 router
     .route('/:id')

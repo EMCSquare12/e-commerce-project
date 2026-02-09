@@ -1,4 +1,5 @@
-import { MoreHorizontal, Package, Edit, Trash2 } from "lucide-react";
+import { MoreHorizontal, Package, Edit, Trash2, Eye } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const StatusBadge = ({ status }) => {
   const styles = {
@@ -129,6 +130,14 @@ const ProductRow = ({ product, isOpen, onToggle, onDelete, onUpdate }) => {
               <div className="fixed inset-0 z-10" onClick={onToggle} />
               <div className="absolute z-20 overflow-hidden origin-top-right bg-white border border-gray-100 rounded-lg shadow-xl w-36 right-4 top-12 animate-in fade-in zoom-in-95">
                 <div className="py-1">
+                  <Link
+                    to={`/admin/products/${product._id}`}
+                    onClick={onToggle}
+                    className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors gap-2"
+                  >
+                    <Eye className="w-4 h-4" />
+                    View Details
+                  </Link>
                   <button
                     onClick={onUpdate}
                     className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors gap-2"

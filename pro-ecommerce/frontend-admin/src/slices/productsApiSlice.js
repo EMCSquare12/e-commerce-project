@@ -1,3 +1,4 @@
+import { use } from "react";
 import { PRODUCTS_URL } from "../constants"; // Assumes '/api/products'
 import { apiSlice } from "./apiSlice";
 
@@ -48,7 +49,7 @@ export const productsApiSlice = apiSlice.injectEndpoints({
         url: `${PRODUCTS_URL}/${productId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Product"], 
+      invalidatesTags: ["Product"],
     }),
 
     // --- UPLOAD: Handle Image Uploads ---
@@ -80,6 +81,12 @@ export const productsApiSlice = apiSlice.injectEndpoints({
       keepUnusedDataFor: 5,
     }),
 
+    getProductOrderHistory: builder.query({
+      query: (productId) => ({
+        url: `${PRODUCTS_URL}/${productId}/orders`,
+      }),
+      keepUnusedDataFor: 5,
+    }),
   }),
 });
 
@@ -92,5 +99,6 @@ export const {
   useUploadProductImageMutation,
   useGetProductCategoriesQuery,
   useGetProductBrandsQuery,
-  useGetProductStatusQuery
+  useGetProductStatusQuery,
+  useGetProductOrderHistoryQuery,
 } = productsApiSlice;
