@@ -4,6 +4,7 @@ import Order from '../models/orderModel.js';
 import generateToken from '../utils/generateToken.js';
 import { escapeRegExp } from '../utils/escapeRegExp.js';
 import { OAuth2Client } from 'google-auth-library';
+import mongoose from 'mongoose';
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 
@@ -263,6 +264,27 @@ const getUserById = asyncHandler(async (req, res) => {
   }
 });
 
+const getUserNavigation = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    res.status(404);
+    throw new Error('Invalid User ID');
+  }
+
+  const objectId = new mongoose.Types.ObjectId(id);
+
+  const [prev, next] = await Promise.all([
+    User.findOne({ _id: { $lt: objectId } })
+      .sort({ _id: -1 }),
+
+    User.findOne({ _id: { $gt: objectId } })
+      .sort({ _id: 1 })
+  ]);
+
+  res.json({ prev, next });
+});
+
 
 export {
   authUser,
@@ -270,5 +292,6 @@ export {
   logoutUser,
   getUserDetails,
   getUserById,
-  authGoogleUser
+  authGoogleUser,
+  getUserNavigation
 };

@@ -6,7 +6,8 @@ import {
     logoutUser,
     getUserDetails,
     getUserById,
-    authGoogleUser
+    authGoogleUser,
+    getUserNavigation
 } from '../controllers/userController.js'
 
 const router = express.Router();
@@ -17,6 +18,7 @@ router.post('/google', authGoogleUser)
 
 router.post('/logout', protect, logoutUser)
 router.get('/admin', protect, admin, getUserDetails)
+router.get('/admin/customers/:id/navigation', protect, admin, getUserNavigation)
 router.get('/admin/customers/:id', protect, admin, getUserById)
 
 

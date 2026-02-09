@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeft,
   Mail,
@@ -8,8 +8,13 @@ import {
   ShoppingBag,
   CreditCard,
   User,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
-import { useGetUserDetailsQuery } from "../slices/usersApiSlice";
+import {
+  useGetUserDetailsQuery,
+  useGetUserNavigationQuery,
+} from "../slices/usersApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import CustomersOrdersRow from "../components/CustomersOrdersRow";
@@ -23,11 +28,30 @@ const CustomerDetailsScreen = () => {
   const dispatch = useDispatch();
 
   const { pageNumber, keyword } = useSelector((state) => state.customerDetails);
+
+  // Fetch Customer Details
   const { data, isLoading, error } = useGetUserDetailsQuery({
     id,
     pageNumber,
     keyword,
   });
+
+  // Fetch Navigation (Next/Prev IDs)
+  const { data: navigation } = useGetUserNavigationQuery(id);
+
+  // Keyboard support (Left/Right arrow keys)
+  useEffect(() => {
+    const handleArrowKey = (e) => {
+      if (e.key === "ArrowRight" && navigation?.next) {
+        navigate(`/admin/customers/${navigation.next._id}`);
+      }
+      if (e.key === "ArrowLeft" && navigation?.prev) {
+        navigate(`/admin/customers/${navigation.prev._id}`);
+      }
+    };
+    window.addEventListener("keydown", handleArrowKey);
+    return () => window.removeEventListener("keydown", handleArrowKey);
+  }, [navigation, navigate]);
 
   if (isLoading) return <Loader />;
 
@@ -44,18 +68,54 @@ const CustomerDetailsScreen = () => {
 
   return (
     <div className="max-w-6xl pb-20 mx-auto space-y-6 md:pb-8">
-      {/* Back Button */}
-      <button
-        onClick={() => navigate("/admin/customers")}
-        className="flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-slate-800"
-      >
-        <ArrowLeft className="w-4 h-4" /> Back to Customers
-      </button>
+      {/* Navigation Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <button
+          onClick={() => navigate("/admin/customers")}
+          className="flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-slate-800"
+        >
+          <ArrowLeft className="w-4 h-4" /> Back to Customers
+        </button>
+
+        {/* Next/Prev Button Group */}
+        <div className="flex items-center gap-2">
+          {navigation?.prev ? (
+            <Link
+              to={`/admin/customers/${navigation.prev._id}/navigation`}
+              className="flex items-center gap-1 px-3 py-1.5 text-sm font-bold text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all active:scale-95"
+            >
+              <ChevronLeft className="w-4 h-4" /> Prev
+            </Link>
+          ) : (
+            <button
+              className="flex items-center gap-1 px-3 py-1.5 text-sm font-bold text-gray-300 bg-gray-50 border border-gray-100 rounded-lg cursor-not-allowed"
+              disabled
+            >
+              <ChevronLeft className="w-4 h-4" /> Prev
+            </button>
+          )}
+
+          {navigation?.next ? (
+            <Link
+              to={`/admin/customers/${navigation.next._id}/navigation`}
+              className="flex items-center gap-1 px-3 py-1.5 text-sm font-bold text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all active:scale-95"
+            >
+              Next <ChevronRight className="w-4 h-4" />
+            </Link>
+          ) : (
+            <button
+              className="flex items-center gap-1 px-3 py-1.5 text-sm font-bold text-gray-300 bg-gray-50 border border-gray-100 rounded-lg cursor-not-allowed"
+              disabled
+            >
+              Next <ChevronRight className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+      </div>
 
       {/* Customer Profile Card */}
       <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
         <div className="flex flex-col gap-6 md:flex-row md:items-center">
-          {/* Avatar Placeholder */}
           <div className="flex items-center justify-center w-20 h-20 rounded-full bg-slate-100 text-slate-400">
             <User className="w-10 h-10" />
           </div>
@@ -94,7 +154,6 @@ const CustomerDetailsScreen = () => {
           </div>
         </div>
 
-        {/* Quick Stats */}
         <div className="grid grid-cols-2 gap-4 mt-6 md:grid-cols-4">
           <div className="p-4 border border-gray-100 rounded-lg bg-gray-50">
             <p className="flex items-center gap-2 mb-1 text-xs font-bold text-gray-400 uppercase">
@@ -120,7 +179,6 @@ const CustomerDetailsScreen = () => {
         <h2 className="mb-4 text-lg font-bold text-slate-800">
           Transaction History
         </h2>
-
         {orders?.history?.length === 0 ? (
           <div className="p-8 text-center bg-white border border-gray-200 border-dashed rounded-xl">
             <p className="text-gray-500">No orders found for this customer.</p>
@@ -160,7 +218,6 @@ const CustomerDetailsScreen = () => {
                       orderItems: order.items,
                       isDelivered: order.status === "Shipped",
                     };
-
                     return (
                       <CustomersOrdersRow
                         key={order.orderId}
@@ -172,7 +229,6 @@ const CustomerDetailsScreen = () => {
               </table>
             </div>
 
-            {/* Pagination */}
             {orders.pages > 1 && (
               <div className="p-4 border-t border-gray-100">
                 <Pagination

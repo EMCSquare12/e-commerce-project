@@ -1,5 +1,5 @@
-import React, { useEffect } from "react"; // Added useEffect
-import { useParams, useNavigate, Link } from "react-router-dom"; // Added Link
+import React, { useEffect } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeft,
   Package,
@@ -8,8 +8,8 @@ import {
   Layers,
   Star,
   ShoppingBag,
-  ChevronLeft, // Added
-  ChevronRight, // Added
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import {
   useGetProductDetailsQuery,
@@ -80,55 +80,54 @@ const ProductDetailsScreen = () => {
   const endIndex = startIndex + itemsPerPage;
   const paginatedOrders = ordersRaw?.orders?.slice(startIndex, endIndex) || [];
 
-  // Arrow style constant
-  const arrowBtnStyle =
-    "fixed top-1/2 transform -translate-y-1/2 z-10 hidden xl:flex items-center justify-center w-14 h-14 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-full shadow-lg text-slate-600 hover:text-amber-500 hover:scale-110 transition-all duration-200";
-
   return (
-    <div className="relative max-w-6xl pb-20 mx-auto space-y-6 md:pb-8">
-      {/* Navigation Arrows */}
-      {navigation?.prev ? (
-        <Link
-          to={`/admin/products/${navigation.prev._id}`}
-          className={`${arrowBtnStyle} -left-20`} // Adjusted position to be outside container
-          title="Previous Product"
-        >
-          <ChevronLeft size={28} />
-        </Link>
-      ) : (
+    <div className="max-w-6xl pb-20 mx-auto space-y-6 md:pb-8">
+      {/* Navigation Header: Aligns Back button and Nav arrows in one row */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <button
-          className={`${arrowBtnStyle} -left-20 opacity-30 cursor-not-allowed`}
-          disabled
+          onClick={() => navigate("/admin/products")}
+          className="flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors w-fit hover:text-slate-800"
         >
-          <ChevronLeft size={28} />
+          <ArrowLeft className="w-4 h-4" /> Back to Products
         </button>
-      )}
 
-      {navigation?.next ? (
-        <Link
-          to={`/admin/products/${navigation.next._id}`}
-          className={`${arrowBtnStyle} -right-20`}
-          title="Next Product"
-        >
-          <ChevronRight size={28} />
-        </Link>
-      ) : (
-        <button
-          className={`${arrowBtnStyle} -right-20 opacity-30 cursor-not-allowed`}
-          disabled
-        >
-          <ChevronRight size={28} />
-        </button>
-      )}
+        {/* Next/Prev Button Group */}
+        <div className="flex items-center gap-2">
+          {navigation?.prev ? (
+            <Link
+              to={`/admin/products/${navigation.prev._id}`}
+              className="flex items-center gap-1 px-3 py-1.5 text-sm font-bold text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all active:scale-95"
+              title="Previous Product"
+            >
+              <ChevronLeft className="w-4 h-4" /> Prev
+            </Link>
+          ) : (
+            <button
+              className="flex items-center gap-1 px-3 py-1.5 text-sm font-bold text-gray-300 bg-gray-50 border border-gray-100 rounded-lg cursor-not-allowed"
+              disabled
+            >
+              <ChevronLeft className="w-4 h-4" /> Prev
+            </button>
+          )}
 
-      {/* Back Button */}
-      <button
-        onClick={() => navigate("/admin/products")}
-        className="flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-slate-800"
-      >
-        <ArrowLeft className="w-4 h-4" /> Back to Products
-      </button>
-
+          {navigation?.next ? (
+            <Link
+              to={`/admin/products/${navigation.next._id}`}
+              className="flex items-center gap-1 px-3 py-1.5 text-sm font-bold text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all active:scale-95"
+              title="Next Product"
+            >
+              Next <ChevronRight className="w-4 h-4" />
+            </Link>
+          ) : (
+            <button
+              className="flex items-center gap-1 px-3 py-1.5 text-sm font-bold text-gray-300 bg-gray-50 border border-gray-100 rounded-lg cursor-not-allowed"
+              disabled
+            >
+              Next <ChevronRight className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+      </div>
       {/* Product Profile Card */}
       <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
         <div className="flex flex-col gap-6 md:flex-row md:items-center">
@@ -216,7 +215,6 @@ const ProductDetailsScreen = () => {
           </div>
         </div>
       </div>
-
       {/* Transaction History */}
       <div>
         <h2 className="mb-4 text-lg font-bold text-slate-800">

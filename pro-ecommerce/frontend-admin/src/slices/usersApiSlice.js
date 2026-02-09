@@ -38,6 +38,13 @@ export const usersApiSlice = apiSlice.injectEndpoints({
             }),
             keepUnusedDataFor: 5,
         }),
+        getUserNavigation: builder.query({
+            query: (userId) => ({
+                url: `${USERS_URL}/admin/customers/${userId}/navigation`,
+            }),
+            providesTags: ["User"],
+            keepUnusedDataFor: 5,
+        }),
     }),
 });
 
@@ -46,5 +53,6 @@ export const {
     useRegisterMutation,
     useLogoutMutation,
     useGetUsersQuery,
-    useGetUserDetailsQuery
+    useGetUserDetailsQuery,
+    useGetUserNavigationQuery
 } = usersApiSlice;
