@@ -32,18 +32,14 @@ const ProductDetailsScreen = () => {
     data: product,
     isLoading: loadingProduct,
     error: errorProduct,
-  } = useGetProductDetailsQuery({
-    id,
-    keyword,
-    pageNumber,
-  });
+  } = useGetProductDetailsQuery(id);
 
   // Fetch Order History for this Product
   const {
     data: ordersRaw,
     isLoading: loadingOrders,
     error: errorOrders,
-  } = useGetProductOrderHistoryQuery(id);
+  } = useGetProductOrderHistoryQuery({ id, pageNumber, keyword });
 
   console.log("ordersRaw:", ordersRaw);
 
