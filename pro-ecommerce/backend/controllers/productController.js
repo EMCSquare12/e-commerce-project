@@ -3,7 +3,7 @@ import Product from '../models/productModel.js';
 import Order from '../models/orderModel.js';
 import User from '../models/userModel.js';
 import mongoose from 'mongoose';
-import { escapeRegExp } from '../utils/utils.js';
+import { escapeRegExp } from '../utils/escapeRegExp.js';
 
 //Helper Functions
 const buildFilter = (query) => {

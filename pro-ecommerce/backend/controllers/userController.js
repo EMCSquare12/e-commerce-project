@@ -2,7 +2,7 @@ import asyncHandler from 'express-async-handler';
 import User from '../models/userModel.js';
 import Order from '../models/orderModel.js';
 import generateToken from '../utils/generateToken.js';
-import escapeRegExp from '../utils/utils.js';
+import { escapeRegExp } from '../utils/escapeRegExp.js';
 import { OAuth2Client } from 'google-auth-library';
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
