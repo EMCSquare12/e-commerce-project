@@ -30,21 +30,31 @@ const authUser = asyncHandler(async (req, res) => {
   }
 });
 
-
+// @desc    Auth user & get token via Google
+// @route   POST /api/users/google
+// @access  Public
 const authGoogleUser = asyncHandler(async (req, res) => {
   const { token } = req.body;
+
   if (!token) {
     res.status(400);
     throw new Error('Google token is missing');
   }
 
-  const ticket = await client.verifyIdToken({
-    idToken: token,
-    audience: process.env.GOOGLE_CLIENT_ID,
+  const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+    headers: { Authorization: `Bearer ${token}` },
   });
 
-  const { email, name } = ticket.getPayload();
+  if (!response.ok) {
+    res.status(400);
+    throw new Error('Invalid Google Token');
+  }
+
+  const googleUser = await response.json();
+  const { email, name } = googleUser;
+
   let user = await User.findOne({ email });
+
   if (user) {
     generateToken(res, user._id);
     res.json({
@@ -56,7 +66,8 @@ const authGoogleUser = asyncHandler(async (req, res) => {
       totalSpent: user.totalSpent,
     });
   } else {
-    const randomPassword = Math.random().toString(36).slice(-8);
+    const randomPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+
     user = await User.create({
       name,
       email,
@@ -74,7 +85,7 @@ const authGoogleUser = asyncHandler(async (req, res) => {
       });
     } else {
       res.status(400);
-      throw new Error('Failed to create user');
+      throw new Error('Invalid user data');
     }
   }
 });
