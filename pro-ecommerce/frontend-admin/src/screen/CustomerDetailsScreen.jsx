@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -17,15 +17,32 @@ import {
 } from "../slices/usersApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
-import CustomersOrdersRow from "../components/CustomersOrdersRow";
 import Pagination from "../components/Pagination";
 import { useSelector, useDispatch } from "react-redux";
 import { setPageNumber } from "../slices/customerDetailsSlice";
+import OrderRow from "../components/OrderRow";
+
+const useClipboard = (resetTime = 2000) => {
+  const [copiedId, setCopiedId] = useState(null);
+
+  const copyToClipboard = async (text, id) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), resetTime);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  };
+  return { copiedId, copyToClipboard };
+};
 
 const CustomerDetailsScreen = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [expandedOrderId, setExpandedOrderId] = useState(null);
+  const { copiedId, copyToClipboard } = useClipboard();
 
   const { pageNumber, keyword } = useSelector((state) => state.customerDetails);
 
@@ -38,6 +55,10 @@ const CustomerDetailsScreen = () => {
 
   // Fetch Navigation (Next/Prev IDs)
   const { data: navigation } = useGetUserNavigationQuery(id);
+
+  const toggleRow = (orderId) => {
+    setExpandedOrderId((prev) => (prev === orderId ? null : orderId));
+  };
 
   // Keyboard support (Left/Right arrow keys)
   useEffect(() => {
@@ -218,10 +239,15 @@ const CustomerDetailsScreen = () => {
                       orderItems: order.items,
                       isDelivered: order.status === "Shipped",
                     };
+                    const id = order.orderId || order._id || "";
                     return (
-                      <CustomersOrdersRow
+                      <OrderRow
                         key={order.orderId}
                         order={orderProp}
+                        isExpanded={expandedOrderId === id}
+                        onToggle={() => toggleRow(id)}
+                        copiedId={copiedId}
+                        onCopy={copyToClipboard}
                       />
                     );
                   })}
