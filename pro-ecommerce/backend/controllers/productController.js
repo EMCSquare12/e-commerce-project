@@ -233,19 +233,76 @@ const submitReview = asyncHandler(async (req, res) => {
 });
 
 
+// @desc    Get order history for a specific product
+// @route   GET /api/products/:id/orders
+// @access  Private/Admin
 const getProductOrderHistory = asyncHandler(async (req, res) => {
+  const pageSize = 10;
+  const page = Number(req.query.pageNumber) || 1;
+
   const product = req.params.id;
+  const { keyword } = req.query;
 
   if (!product) {
     res.status(404);
     throw new Error('Product not found');
   }
 
-  const orders = await Order.find({ 'orderItems.product': product })
-    .populate('user', 'name email')
-    .sort({ createdAt: -1 });
-  res.json(orders);
+  // Base filter: Orders containing this specific product
+  const filter = { 'orderItems.product': product };
 
+  // Apply Search Filter if keyword exists
+  if (keyword && keyword.trim() !== '') {
+    const cleanKeyword = keyword.trim();
+    const safeKeyword = escapeRegExp(cleanKeyword);
+    const keywordRegex = { $regex: safeKeyword, $options: 'i' };
+
+    const orConditions = [
+      // Search Address Fields
+      { 'shippingAddress.address': keywordRegex },
+      { 'shippingAddress.city': keywordRegex },
+      { 'shippingAddress.postalCode': keywordRegex },
+      { 'shippingAddress.country': keywordRegex },
+    ];
+
+    // Search Order ID (if numeric)
+    if (!isNaN(cleanKeyword)) {
+      orConditions.push({ orderId: Number(cleanKeyword) });
+    }
+
+    // Search Customer (Name OR Email)
+    const matchingUsers = await User.find({
+      $or: [
+        { name: keywordRegex },
+        { email: keywordRegex }
+      ]
+    }).select('_id');
+
+    if (matchingUsers.length > 0) {
+      orConditions.push({ user: { $in: matchingUsers.map(u => u._id) } });
+    }
+
+    // Combine product filter with search conditions
+    if (orConditions.length > 0) {
+      filter.$or = orConditions;
+    }
+  }
+
+  // Get Total Count for Pagination
+  const count = await Order.countDocuments(filter);
+
+  // Fetch Paginated Orders
+  const orders = await Order.find(filter)
+    .populate('user', 'name email')
+    .sort({ createdAt: -1 })
+    .limit(pageSize)
+    .skip(pageSize * (page - 1));
+
+  res.json({
+    orders,
+    page,
+    pages: Math.ceil(count / pageSize)
+  });
 });
 
 export {

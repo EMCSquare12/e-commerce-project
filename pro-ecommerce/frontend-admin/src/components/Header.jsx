@@ -26,6 +26,7 @@ import { setOrderKeyword } from "../slices/orderSlice";
 import { setCustomerKeyword } from "../slices/customerSlice";
 import { setCustomerByIdKeyword } from "../slices/customerDetailsSlice";
 import { setAdminKeyWord } from "../slices/adminSlice";
+import { setProductKeyword } from "../slices/productDetailsSlice";
 
 const Header = () => {
   const [notificationId, setNotificationId] = useState(null);
@@ -47,6 +48,8 @@ const Header = () => {
   const isCustomersRoute = location.pathname === "/admin/customers";
   const isCustomerOrdersRoute =
     location.pathname.startsWith("/admin/customers/");
+  const isProductDetailsRoute =
+    location.pathname.startsWith("/admin/products/");
   const isDashboardRoute = location.pathname === "/admin";
 
   useEffect(() => {
@@ -60,6 +63,8 @@ const Header = () => {
       dispatch(setCustomerByIdKeyword(debouncedSearchTerm));
     } else if (isDashboardRoute) {
       dispatch(setAdminKeyWord(debouncedSearchTerm));
+    } else if (isProductDetailsRoute) {
+      dispatch(setProductKeyword(debouncedSearchTerm));
     }
   }, [
     debouncedSearchTerm,
@@ -69,6 +74,7 @@ const Header = () => {
     isCustomersRoute,
     isCustomerOrdersRoute,
     isDashboardRoute,
+    isProductDetailsRoute,
   ]);
 
   useEffect(() => {
@@ -147,10 +153,12 @@ const Header = () => {
                   : isCustomersRoute
                     ? "Search Customers..."
                     : isDashboardRoute
-                      ? "Search Orders..."
+                      ? "Search Recent Orders..."
                       : isCustomerOrdersRoute
-                        ? "Search Orders..."
-                        : "Search..."
+                        ? "Search Customer Orders..."
+                        : isProductDetailsRoute
+                          ? "Search Products Orders..."
+                          : "Search..."
             }
             className="block w-full py-2 pl-10 pr-8 text-sm text-gray-900 placeholder-gray-400 transition-all border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
           />

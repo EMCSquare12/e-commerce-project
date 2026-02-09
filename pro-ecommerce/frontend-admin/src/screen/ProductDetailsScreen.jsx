@@ -25,14 +25,18 @@ const ProductDetailsScreen = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { pageNumber } = useSelector((state) => state.productDetails);
+  const { pageNumber, keyword } = useSelector((state) => state.productDetails);
 
   // Fetch Product Info
   const {
     data: product,
     isLoading: loadingProduct,
     error: errorProduct,
-  } = useGetProductDetailsQuery(id);
+  } = useGetProductDetailsQuery({
+    id,
+    keyword,
+    pageNumber,
+  });
 
   // Fetch Order History for this Product
   const {

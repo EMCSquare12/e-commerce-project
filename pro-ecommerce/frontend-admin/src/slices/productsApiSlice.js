@@ -82,8 +82,9 @@ export const productsApiSlice = apiSlice.injectEndpoints({
     }),
 
     getProductOrderHistory: builder.query({
-      query: (productId) => ({
+      query: ({ productId, keyword, pageNumber }) => ({
         url: `${PRODUCTS_URL}/admin/products/${productId}`,
+        params: { keyword, pageNumber },
       }),
       keepUnusedDataFor: 5,
     }),
