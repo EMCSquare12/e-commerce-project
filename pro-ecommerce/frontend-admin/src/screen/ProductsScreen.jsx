@@ -6,6 +6,7 @@ import {
   ChevronDown,
   Plus,
   Filter,
+  Eye,
   Search,
   MoreHorizontal,
   Edit,
@@ -28,6 +29,7 @@ import UpdateProductModal from "../components/modal/UpdateProductModal";
 import CreateProductModal from "../components/modal/CreateProductModal";
 import ProductRow from "../components/ProductRow";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import {
   filterChange,
   setDeleteModal,
@@ -344,6 +346,14 @@ const ProductsScreen = () => {
                         />
                         <div className="absolute right-0 z-20 w-40 mt-1 bg-white border border-gray-100 rounded-lg shadow-xl animate-in fade-in zoom-in-95">
                           <div className="p-1">
+                            <Link
+                              to={`/admin/products/${product._id}`}
+                              // onClick={onToggle}
+                              className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors gap-2"
+                            >
+                              <Eye className="w-4 h-4" />
+                              View Details
+                            </Link>
                             <button
                               onClick={() => {
                                 dispatch(
@@ -351,9 +361,9 @@ const ProductsScreen = () => {
                                 );
                                 closeMenu();
                               }}
-                              className="flex items-center w-full gap-2 px-3 py-2.5 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-50"
+                              className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors gap-2"
                             >
-                              <Edit className="w-4 h-4 text-blue-600" /> Edit
+                              <Edit className="w-4 h-4" /> Edit
                             </button>
                             <button
                               onClick={() => {
@@ -366,7 +376,7 @@ const ProductsScreen = () => {
                                 );
                                 closeMenu();
                               }}
-                              className="flex items-center w-full gap-2 px-3 py-2.5 text-sm font-medium text-red-600 rounded-md hover:bg-red-50"
+                              className="flex items-center w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors gap-2"
                             >
                               <Trash2 className="w-4 h-4" /> Delete
                             </button>

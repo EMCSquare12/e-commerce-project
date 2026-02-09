@@ -81,7 +81,7 @@ const CustomerDetailsScreen = () => {
         <div className="flex items-center gap-2">
           {navigation?.prev ? (
             <Link
-              to={`/admin/customers/${navigation.prev._id}/navigation`}
+              to={`/admin/customers/${navigation.prev._id}`}
               className="flex items-center gap-1 px-3 py-1.5 text-sm font-bold text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all active:scale-95"
             >
               <ChevronLeft className="w-4 h-4" /> Prev
@@ -97,7 +97,7 @@ const CustomerDetailsScreen = () => {
 
           {navigation?.next ? (
             <Link
-              to={`/admin/customers/${navigation.next._id}/navigation`}
+              to={`/admin/customers/${navigation.next._id}`}
               className="flex items-center gap-1 px-3 py-1.5 text-sm font-bold text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all active:scale-95"
             >
               Next <ChevronRight className="w-4 h-4" />
