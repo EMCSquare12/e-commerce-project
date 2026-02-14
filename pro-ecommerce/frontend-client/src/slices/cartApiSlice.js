@@ -10,7 +10,7 @@ export const cartApiSlice = apiSlice.injectEndpoints({
             providesTags: ["Cart"],
             keepUnusedDataFor: 5
         }),
-        addCartItem: builder.mutation({
+        syncCart: builder.mutation({
             query: (cartItem) => ({
                 url: `${CART_URL}`,
                 method: "POST",
@@ -18,13 +18,11 @@ export const cartApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Cart"]
         }),
-        
+
     })
 });
 
 export const {
     useGetCartQuery,
-    useAddCartItemMutation,
-    useUpdateCartItemQuantityMutation,
-    useRemoveCartItemMutation
+    useSyncCartMutation,
 } = cartApiSlice;

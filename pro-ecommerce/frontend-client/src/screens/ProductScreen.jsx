@@ -7,6 +7,7 @@ import {
 } from "../slices/productsApiSlice";
 import { useSyncCartMutation } from "../slices/cartApiSlice";
 import { addToCart } from "../slices/cartSlice";
+import { useSelector } from "react-redux";
 import Rating from "../components/Rating";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
@@ -28,6 +29,8 @@ const ProductScreen = () => {
 
   const [syncCart] = useSyncCartMutation();
   const { data: navigation } = useGetProductNavigationQuery(productId);
+  const { cartItems } = useSelector((state) => state.cart);
+  const { userInfo } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (product?.image?.length > 0) {
@@ -52,6 +55,12 @@ const ProductScreen = () => {
       window.removeEventListener("keydown", handleArrowKey);
     };
   }, [navigation]);
+
+  useEffect(() => {
+    if (userInfo) {
+      syncCart(cartItems);
+    }
+  }, [cartItems, syncCart, userInfo]);
 
   const addToCartHandler = async () => {
     dispatch(addToCart({ ...product, qty }));
