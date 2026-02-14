@@ -5,6 +5,7 @@ import {
   useGetProductDetailsQuery,
   useGetProductNavigationQuery,
 } from "../slices/productsApiSlice";
+import { useAddCartItemMutation } from "../slices/cartApiSlice";
 import { addToCart } from "../slices/cartSlice";
 import Rating from "../components/Rating";
 import Loader from "../components/Loader";
@@ -25,6 +26,7 @@ const ProductScreen = () => {
     error,
   } = useGetProductDetailsQuery(productId);
 
+  const [addCartItem, { isLoading: isCartLoading }] = useAddCartItemMutation();
   const { data: navigation } = useGetProductNavigationQuery(productId);
 
   useEffect(() => {
@@ -51,8 +53,13 @@ const ProductScreen = () => {
     };
   }, [navigation]);
 
-  const addToCartHandler = () => {
+  const addToCartHandler = async () => {
     dispatch(addToCart({ ...product, qty }));
+    try {
+      await addCartItem({ productId, qty }).unwrap();
+    } catch (err) {
+      console.error("Failed to add to cart:", err);
+    }
     navigate("/cart");
   };
 

@@ -5,5 +5,7 @@ export const ORDERS_URL = '/api/orders';
 export const PAYPAL_URL = '/api/config/paypal';
 export const NOTIFCATIONS_URL = '/api/notifications';
 export const RATINGS_URL = '/api/ratings';
+export const CART_URL = '/api/cart';
+
 
 

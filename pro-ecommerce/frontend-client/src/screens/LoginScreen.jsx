@@ -11,7 +11,6 @@ import { setCredentials } from "../slices/authSlice";
 import { toast } from "react-toastify";
 import { Mail, Lock, LogIn } from "lucide-react";
 import { useGoogleLogin } from "@react-oauth/google";
-import { retreieCartFromStorage } from "../slices/cartSlice";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
