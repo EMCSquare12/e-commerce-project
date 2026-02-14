@@ -11,6 +11,7 @@ import { setCredentials } from "../slices/authSlice";
 import { toast } from "react-toastify";
 import { Mail, Lock, LogIn } from "lucide-react";
 import { useGoogleLogin } from "@react-oauth/google";
+import { retreieCartFromStorage } from "../slices/cartSlice";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
@@ -24,6 +25,7 @@ const LoginScreen = () => {
     useGoogleLoginMutation();
 
   const { userInfo } = useSelector((state) => state.auth);
+  const { cartItems } = useSelector((state) => state.cart);
 
   const { search } = useLocation();
   const sp = new URLSearchParams(search);
@@ -39,6 +41,9 @@ const LoginScreen = () => {
     e.preventDefault();
     try {
       const res = await login({ email, password }).unwrap();
+      if (userInfo.email === email) {
+        dispatch(retreieCartFromStorage());
+      }
       dispatch(setCredentials({ ...res }));
       navigate(redirect);
     } catch (err) {
