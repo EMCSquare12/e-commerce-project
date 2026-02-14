@@ -1,4 +1,4 @@
-import asyncHandler from '../middleware/asyncHandler.js';
+import asyncHandler from 'express-async-handler';
 import Cart from '../models/cartModel.js';
 
 // @desc    Get user cart

@@ -18,21 +18,7 @@ export const cartApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Cart"]
         }),
-        updateCartItemQuantity: builder.mutation({
-            query: ({ cartItemId, quantity }) => ({
-                url: `${CART_URL}/${cartItemId}`,
-                method: "PUT",
-                body: { quantity }
-            }),
-            invalidatesTags: ["Cart"]
-        }),
-        removeCartItem: builder.mutation({
-            query: (cartItemId) => ({
-                url: `${CART_URL}/${cartItemId}`,
-                method: "DELETE"
-            }),
-            invalidatesTags: ["Cart"]
-        })
+        
     })
 });
 
