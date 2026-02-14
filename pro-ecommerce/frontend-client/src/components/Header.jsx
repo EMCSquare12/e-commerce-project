@@ -21,6 +21,7 @@ import {
   useGetNotificationsQuery,
   useMarkNotificationsReadMutation,
 } from "../slices/notificationsApiSlice";
+import { clearCartItems } from "../slices/cartSlice";
 
 const Header = () => {
   const [notificationId, setNotificationId] = useState(null);
@@ -56,6 +57,7 @@ const Header = () => {
     try {
       await logoutApiCall().unwrap();
       dispatch(logout());
+      dispatch(clearCartItems());
       navigate("/login");
       setProfileOpen(false);
     } catch (err) {
