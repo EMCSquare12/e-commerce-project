@@ -25,7 +25,6 @@ const LoginScreen = () => {
     useGoogleLoginMutation();
 
   const { userInfo } = useSelector((state) => state.auth);
-  const { cartItems } = useSelector((state) => state.cart);
 
   const { search } = useLocation();
   const sp = new URLSearchParams(search);
@@ -41,9 +40,7 @@ const LoginScreen = () => {
     e.preventDefault();
     try {
       const res = await login({ email, password }).unwrap();
-      if (userInfo.email === email) {
-        dispatch(retreieCartFromStorage());
-      }
+
       dispatch(setCredentials({ ...res }));
       navigate(redirect);
     } catch (err) {

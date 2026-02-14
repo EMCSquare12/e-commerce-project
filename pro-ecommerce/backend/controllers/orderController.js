@@ -3,6 +3,7 @@ import Order from '../models/orderModel.js';
 import User from '../models/userModel.js';
 import Product from "../models/productModel.js"
 import Notifications from '../models/notificationsModel.js';
+import Cart from '../models/cartModel.js';
 import mongoose from 'mongoose';
 import { escapeRegExp } from '../utils/escapeRegExp.js';
 
@@ -71,6 +72,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
             $push: { orders: createdOrder }
         });
 
+        await Cart.findOneAndDelete({ user: req.user._id });
         // Notifications Logic
         const admins = await User.find({ isAdmin: true });
         if (admins.length > 0) {

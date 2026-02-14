@@ -52,13 +52,7 @@ const cartSlice = createSlice({
       state.cartItems = [];
       return updateCart(state);
     },
-    retreieCartFromStorage: (state, action) => {
-      const { cartItems, shippingAddress, paymentMethod } = action.payload;
-      state.cartItems = cartItems || [];
-      state.shippingAddress = shippingAddress || {};
-      state.paymentMethod = paymentMethod || "PayPal";
-      return updateCart(state);
-    },
+    
   },
 });
 
@@ -68,7 +62,6 @@ export const {
   saveShippingAddress,
   savePaymentMethod,
   clearCartItems,
-  retreieCartFromStorage
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

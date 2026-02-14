@@ -15,6 +15,7 @@ import paymentRoutes from './routes/paymentRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import imageRoutes from './routes/imageRoutes.js';
 import notificationsRoutes from './routes/notificationsRoutes.js';
+import cartRoutes from './routes/cartRoutes.js';
 
 connectDB();
 
@@ -55,6 +56,8 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/upload', imageRoutes);
 app.use('/api/notifications', notificationsRoutes);
+app.use('/api/cart', cartRoutes);
+
 
 app.use(notFound);
 app.use(errorHandler);
