@@ -8,7 +8,18 @@ const getUserCart = asyncHandler(async (req, res) => {
     const cart = await Cart.findOne({ user: req.user._id }).populate('cartItems.product');
 
     if (cart) {
-        res.json(cart.cartItems);
+        const formattedItems = cart.cartItems.map(item => {
+            // Safety check in case a product was deleted from DB but exists in cart
+            if (!item.product) return null;
+
+            return {
+                ...item.product.toObject(),
+                _id: item.product._id,
+                qty: item.qty
+            };
+        }).filter(item => item !== null);
+
+        res.json(formattedItems);
     } else {
         res.json([]);
     }
@@ -20,18 +31,23 @@ const getUserCart = asyncHandler(async (req, res) => {
 const syncCart = asyncHandler(async (req, res) => {
     const { cartItems } = req.body;
 
+    const dbCartItems = cartItems.map(item => ({
+        product: item._id,
+        qty: item.qty
+    }));
+
     const cart = await Cart.findOne({ user: req.user._id });
 
     if (cart) {
-        // If cart exists, update it
-        cart.cartItems = cartItems;
+        // Update existing cart
+        cart.cartItems = dbCartItems;
         const updatedCart = await cart.save();
         res.json(updatedCart);
     } else {
-        // If no cart exists, create one
+        // Create new cart
         const newCart = await Cart.create({
             user: req.user._id,
-            cartItems: cartItems,
+            cartItems: dbCartItems,
         });
         res.json(newCart);
     }
