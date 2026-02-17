@@ -26,6 +26,7 @@ const cartSlice = createSlice({
       } else {
         state.cartItems = [...state.cartItems, item];
       }
+
       return updateCart(state);
     },
     removeFromCart: (state, action) => {
@@ -40,9 +41,13 @@ const cartSlice = createSlice({
       state.paymentMethod = action.payload;
       return updateCart(state);
     },
-
     clearCartItems: (state, action) => {
       state.cartItems = [];
+      return updateCart(state);
+    },
+    // --- NEW REDUCER TO SET CART FROM DB ---
+    setCart: (state, action) => {
+      state.cartItems = action.payload;
       return updateCart(state);
     },
   },
@@ -54,6 +59,7 @@ export const {
   saveShippingAddress,
   savePaymentMethod,
   clearCartItems,
+  setCart, // Export the new action
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

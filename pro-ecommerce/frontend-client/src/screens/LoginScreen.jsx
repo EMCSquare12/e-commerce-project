@@ -7,12 +7,13 @@ import {
   useLoginMutation,
   useGoogleLoginMutation,
 } from "../slices/usersApiSlice";
-import { useMergeCartMutation } from "../slices/cartApiSlice";
-import { addToCart } from "../slices/cartSlice";
 import { setCredentials } from "../slices/authSlice";
 import { toast } from "react-toastify";
 import { Mail, Lock, LogIn } from "lucide-react";
 import { useGoogleLogin } from "@react-oauth/google";
+// Import setCart
+import { setCart } from "../slices/cartSlice";
+import { useMergeCartMutation } from "../slices/cartApiSlice";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
@@ -40,15 +41,12 @@ const LoginScreen = () => {
   }, [navigate, redirect, userInfo]);
 
   const handleMergeCart = async () => {
-    if (cartItems.length > 0) {
-      try {
-        const res = await mergeCart({ cartItems }).unwrap();
-        res.forEach((item) => {
-          dispatch(addToCart({ ...item, qty: item.qty }));
-        });
-      } catch (err) {
-        console.error("Cart merge failed", err);
-      }
+    try {
+      const res = await mergeCart({ cartItems }).unwrap();
+
+      dispatch(setCart(res));
+    } catch (err) {
+      console.error("Cart sync failed", err);
     }
   };
 
@@ -59,13 +57,13 @@ const LoginScreen = () => {
       dispatch(setCredentials({ ...res }));
 
       await handleMergeCart();
+
       navigate(redirect);
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
   };
 
-  // Google Login Handler
   const googleLoginHandler = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
@@ -75,6 +73,7 @@ const LoginScreen = () => {
         dispatch(setCredentials({ ...res }));
 
         await handleMergeCart();
+
         navigate(redirect);
         toast.success("Login Successful");
       } catch (err) {
@@ -95,7 +94,6 @@ const LoginScreen = () => {
         </div>
 
         <form onSubmit={submitHandler} className="space-y-5">
-          {/* Email Input */}
           <div>
             <label
               className="block mb-1 text-sm font-bold text-gray-700"
@@ -118,7 +116,6 @@ const LoginScreen = () => {
             </div>
           </div>
 
-          {/* Password Input */}
           <div>
             <label
               className="block mb-1 text-sm font-bold text-gray-700"
@@ -160,7 +157,6 @@ const LoginScreen = () => {
           {isLoading && <Loader />}
         </form>
 
-        {/* Divider */}
         <div className="relative flex items-center justify-center py-2 mt-4">
           <div className="w-full border-t border-gray-200"></div>
           <span className="absolute px-3 text-xs font-medium text-gray-500 uppercase bg-white">
@@ -168,13 +164,13 @@ const LoginScreen = () => {
           </span>
         </div>
 
-        {/* Google Login Button */}
         <button
           type="button"
           onClick={() => googleLoginHandler()}
           disabled={isGoogleLoading}
           className="flex items-center justify-center w-full gap-3 px-4 py-3.5 mt-4 text-sm font-bold text-gray-700 transition-all duration-300 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 hover:shadow-md active:scale-95 disabled:opacity-70"
         >
+          {/* SVG Icon truncated for brevity */}
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
