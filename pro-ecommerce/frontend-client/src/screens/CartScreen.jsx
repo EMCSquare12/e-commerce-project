@@ -5,21 +5,12 @@ import { Trash2, ArrowLeft } from "lucide-react";
 import Message from "../components/Message";
 import { addToCart, removeFromCart } from "../slices/cartSlice";
 import { useAddToCartMutation } from "../slices/cartApiSlice";
-import { useEffect } from "react";
 const CartScreen = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const cart = useSelector((state) => state.cart);
   const { cartItems } = cart;
-  const { userInfo } = useSelector((state) => state.auth);
-  const [addItemToCart] = useAddToCartMutation();
-
-  useEffect(() => {
-    if (userInfo) {
-      addItemToCart(cartItems);
-    }
-  }, [cartItems, addItemToCart, userInfo]);
 
   const addToCartHandler = async (product, qty) => {
     dispatch(addToCart({ ...product, qty }));

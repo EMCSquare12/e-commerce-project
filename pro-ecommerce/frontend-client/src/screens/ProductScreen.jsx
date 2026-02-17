@@ -7,7 +7,6 @@ import {
 } from "../slices/productsApiSlice";
 import { useAddToCartMutation } from "../slices/cartApiSlice";
 import { addToCart } from "../slices/cartSlice";
-import { useSelector } from "react-redux";
 import Rating from "../components/Rating";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
@@ -29,8 +28,6 @@ const ProductScreen = () => {
 
   const [addItemsToCart] = useAddToCartMutation();
   const { data: navigation } = useGetProductNavigationQuery(productId);
-  const { cartItems } = useSelector((state) => state.cart);
-  const { userInfo } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (product?.image?.length > 0) {
@@ -56,11 +53,11 @@ const ProductScreen = () => {
     };
   }, [navigation]);
 
-  useEffect(() => {
-    if (userInfo) {
-      addItemsToCart(cartItems);
-    }
-  }, [cartItems, addItemsToCart, userInfo]);
+  // useEffect(() => {
+  //   if (userInfo) {
+  //     addItemsToCart(cartItems);
+  //   }
+  // }, [cartItems, addItemsToCart, userInfo]);
 
   const addToCartHandler = async () => {
     dispatch(addToCart({ ...product, qty }));
