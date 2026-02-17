@@ -258,17 +258,13 @@ const getProductOrderHistory = asyncHandler(async (req, res) => {
     const keywordRegex = { $regex: safeKeyword, $options: 'i' };
 
     const orConditions = [
+      { orderId: keywordRegex },
       { 'shippingAddress.address': keywordRegex },
       { 'shippingAddress.city': keywordRegex },
       { 'shippingAddress.postalCode': keywordRegex },
       { 'shippingAddress.country': keywordRegex },
     ];
 
-    if (!isNaN(cleanKeyword)) {
-      orConditions.push({
-        $where: `/^${cleanKeyword}/.test(this.orderId)`
-      });
-    }
 
     const matchingUsers = await User.find({
       $or: [

@@ -4,7 +4,7 @@ import Counter from './counterModel.js';
 const orderSchema = mongoose.Schema(
     {
         orderId: {
-            type: Number,
+            type: String,
             unique: true
         },
         user: {

@@ -213,15 +213,9 @@ const getUserById = asyncHandler(async (req, res) => {
       const keywordRegex = { $regex: safeKeyword, $options: 'i' };
 
       const orConditions = [
+        { orderId: keywordRegex },
         { 'orderItems.name': keywordRegex }
       ];
-
-      if (!isNaN(cleanKeyword)) {
-        orConditions.push({
-          $where: `/^${cleanKeyword}/.test(this.orderId)`
-        });
-      }
-
       orderFilter.$or = orConditions;
     }
 
