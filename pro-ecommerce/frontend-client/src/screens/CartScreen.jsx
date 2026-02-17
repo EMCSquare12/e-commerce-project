@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Trash2, ArrowLeft } from "lucide-react";
 import Message from "../components/Message";
 import { addToCart, removeFromCart } from "../slices/cartSlice";
-import { useSyncCartMutation } from "../slices/cartApiSlice";
+import { useAddToCartMutation } from "../slices/cartApiSlice";
 import { useEffect } from "react";
 const CartScreen = () => {
   const navigate = useNavigate();
@@ -13,13 +13,13 @@ const CartScreen = () => {
   const cart = useSelector((state) => state.cart);
   const { cartItems } = cart;
   const { userInfo } = useSelector((state) => state.auth);
-  const [syncCart] = useSyncCartMutation();
+  const [addItemToCart] = useAddToCartMutation();
 
   useEffect(() => {
     if (userInfo) {
-      syncCart(cartItems);
+      addItemToCart(cartItems);
     }
-  }, [cartItems, syncCart, userInfo]);
+  }, [cartItems, addItemToCart, userInfo]);
 
   const addToCartHandler = async (product, qty) => {
     dispatch(addToCart({ ...product, qty }));

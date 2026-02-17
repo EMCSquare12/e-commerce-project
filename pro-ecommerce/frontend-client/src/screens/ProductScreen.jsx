@@ -5,7 +5,7 @@ import {
   useGetProductDetailsQuery,
   useGetProductNavigationQuery,
 } from "../slices/productsApiSlice";
-import { useSyncCartMutation } from "../slices/cartApiSlice";
+import { useAddToCartMutation } from "../slices/cartApiSlice";
 import { addToCart } from "../slices/cartSlice";
 import { useSelector } from "react-redux";
 import Rating from "../components/Rating";
@@ -27,7 +27,7 @@ const ProductScreen = () => {
     error,
   } = useGetProductDetailsQuery(productId);
 
-  const [syncCart] = useSyncCartMutation();
+  const [addItemsToCart] = useAddToCartMutation();
   const { data: navigation } = useGetProductNavigationQuery(productId);
   const { cartItems } = useSelector((state) => state.cart);
   const { userInfo } = useSelector((state) => state.auth);
@@ -58,14 +58,21 @@ const ProductScreen = () => {
 
   useEffect(() => {
     if (userInfo) {
-      syncCart(cartItems);
+      addItemsToCart(cartItems);
     }
-  }, [cartItems, syncCart, userInfo]);
+  }, [cartItems, addItemsToCart, userInfo]);
 
   const addToCartHandler = async () => {
     dispatch(addToCart({ ...product, qty }));
     try {
-      await syncCart({ productId, qty }).unwrap();
+      await addItemsToCart({
+        cartItems: [
+          {
+            _id: product._id,
+            qty,
+          },
+        ],
+      }).unwrap();
     } catch (err) {
       console.error("Failed to add to cart:", err);
     }

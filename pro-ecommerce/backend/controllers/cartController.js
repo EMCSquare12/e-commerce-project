@@ -28,7 +28,7 @@ const getUserCart = asyncHandler(async (req, res) => {
 // @desc    Update/Sync user cart
 // @route   POST /api/cart
 // @access  Private
-const syncCart = asyncHandler(async (req, res) => {
+const addToCart = asyncHandler(async (req, res) => {
     const { cartItems } = req.body;
 
     const dbCartItems = cartItems.map(item => ({
@@ -53,4 +53,4 @@ const syncCart = asyncHandler(async (req, res) => {
     }
 });
 
-export { getUserCart, syncCart };
+export { getUserCart, addToCart };
