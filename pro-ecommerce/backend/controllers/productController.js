@@ -265,7 +265,9 @@ const getProductOrderHistory = asyncHandler(async (req, res) => {
     ];
 
     if (!isNaN(cleanKeyword)) {
-      orConditions.push({ orderId: Number(cleanKeyword) });
+      orConditions.push({
+        $where: `/^${cleanKeyword}/.test(this.orderId)`
+      });
     }
 
     const matchingUsers = await User.find({
