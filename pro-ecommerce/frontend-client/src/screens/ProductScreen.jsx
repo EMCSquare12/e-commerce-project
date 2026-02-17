@@ -60,18 +60,21 @@ const ProductScreen = () => {
   };
 
   useEffect(() => {
+    if (cartItems.length === 0) return;
     const handleAddItemsToCart = async () => {
       try {
-        addItemsToCart({
-          cartItems,
-        }).unwrap();
+        await addItemsToCart({ cartItems }).unwrap();
       } catch (err) {
-        console.error("Failed to add to cart:", err);
+        console.error("Failed to sync cart:", err);
       }
     };
 
-    handleAddItemsToCart();
-  }, [cartItems, dispatch]);
+    const timeoutId = setTimeout(() => {
+      handleAddItemsToCart();
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [cartItems]);
 
   const arrowBtnStyle =
     "fixed top-1/2 transform -translate-y-1/2 z-10 hidden md:flex items-center justify-center w-14 h-14 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-full shadow-lg text-slate-600 hover:text-amber-500 hover:scale-110 transition-all duration-200";

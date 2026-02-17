@@ -8,13 +8,13 @@ const getUserCart = asyncHandler(async (req, res) => {
     const cart = await Cart.findOne({ user: req.user._id }).populate('cartItems.product');
 
     if (cart) {
-        const formattedItems = cart.cartItems.map(item => {
-            if (!item.product) return null; // Safety check
-
+        const formattedItems = cart.cartItems.map((item) => {
+            // Filter out null products (in case product was deleted from DB)
+            if (!item.product) return null;
             return {
                 ...item.product.toObject(),
                 _id: item.product._id,
-                qty: item.qty
+                qty: item.qty,
             };
         }).filter(item => item !== null);
 
@@ -24,60 +24,49 @@ const getUserCart = asyncHandler(async (req, res) => {
     }
 });
 
-// @desc    Update/Sync user cart
+// @desc    Sync user cart (Overwrite DB with Frontend State)
 // @route   POST /api/cart
 // @access  Private
 const addToCart = asyncHandler(async (req, res) => {
     const { cartItems } = req.body;
 
+    // Validation
     if (!cartItems || !Array.isArray(cartItems)) {
         res.status(400);
         throw new Error('Invalid cart data');
     }
 
-    const cart = await Cart.findOne({ user: req.user._id });
+    const dbCartItems = cartItems.map((item) => ({
+        product: item._id,
+        qty: item.qty,
+    }));
+
+    let cart = await Cart.findOne({ user: req.user._id });
 
     if (cart) {
-        cartItems.forEach((newItem) => {
-            const existingItem = cart.cartItems.find(
-                (item) => item.product.toString() === newItem._id
-            );
-
-            if (existingItem) {
-                existingItem.qty = newItem.qty;
-            } else {
-                cart.cartItems.push({
-                    product: newItem._id,
-                    qty: newItem.qty
-                });
-            }
-        });
-
-        await cart.save();
+        cart.cartItems = dbCartItems;
     } else {
-        const dbCartItems = cartItems.map(item => ({
-            product: item._id,
-            qty: item.qty
-        }));
-
-        await Cart.create({
+        // Create new cart
+        cart = new Cart({
             user: req.user._id,
             cartItems: dbCartItems,
         });
     }
 
-    const updatedCart = await Cart.findOne({ user: req.user._id }).populate('cartItems.product');
+    await cart.save();
 
-    const formattedResponse = updatedCart.cartItems.map(item => {
+    await cart.populate('cartItems.product');
+
+    const formattedItems = cart.cartItems.map((item) => {
         if (!item.product) return null;
         return {
             ...item.product.toObject(),
             _id: item.product._id,
-            qty: item.qty
+            qty: item.qty,
         };
     }).filter(item => item !== null);
 
-    res.json(formattedResponse);
+    res.json(formattedItems);
 });
 
 export { getUserCart, addToCart };
