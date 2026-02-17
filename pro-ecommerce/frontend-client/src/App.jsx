@@ -1,12 +1,30 @@
 import { Outlet } from "react-router-dom";
-import { useSelector } from "react-redux"; // Import useSelector
+import { useSelector } from "react-redux";
+import { useEffect } from "react";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Drawer from "./components/Drawer";
-import BottomNavigation from "./components/BottomNavigation"; // 1. Import BottomNavigation
+import BottomNavigation from "./components/BottomNavigation";
+import { useAddToCartMutation } from "./slices/cartApiSlice";
 
 const App = () => {
   const isOpen = useSelector((state) => state.toggle.isOpen);
+  const { cartItems } = useSelector((state) => state.cart);
+  const { userInfo } = useSelector((state) => state.auth);
+
+  const [syncCart] = useAddToCartMutation();
+
+  useEffect(() => {
+    if (userInfo) {
+      const syncTimeout = setTimeout(() => {
+        syncCart({ cartItems })
+          .unwrap()
+          .catch((err) => console.error("Sync failed", err));
+      }, 500);
+
+      return () => clearTimeout(syncTimeout);
+    }
+  }, [cartItems, userInfo, syncCart]);
 
   return (
     <div className="flex flex-row w-full min-h-screen">

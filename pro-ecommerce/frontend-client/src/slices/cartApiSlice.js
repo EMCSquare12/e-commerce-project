@@ -11,18 +11,26 @@ export const cartApiSlice = apiSlice.injectEndpoints({
             keepUnusedDataFor: 5
         }),
         addToCart: builder.mutation({
-            query: (cartItem) => ({
+            query: ({ cartItems }) => ({
                 url: `${CART_URL}`,
                 method: "POST",
-                body: cartItem
+                body: { cartItems }
             }),
             invalidatesTags: ["Cart"]
         }),
-
+        mergeCart: builder.mutation({ 
+            query: ({ cartItems }) => ({
+                url: `${CART_URL}/merge`,
+                method: "POST",
+                body: { cartItems }
+            }),
+            invalidatesTags: ["Cart"]
+        }),
     })
 });
 
 export const {
     useGetCartQuery,
     useAddToCartMutation,
+    useMergeCartMutation
 } = cartApiSlice;

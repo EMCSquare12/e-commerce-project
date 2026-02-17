@@ -7,6 +7,8 @@ import {
   useLoginMutation,
   useGoogleLoginMutation,
 } from "../slices/usersApiSlice";
+import { useMergeCartMutation } from "../slices/cartApiSlice";
+import { addToCart } from "../slices/cartSlice";
 import { setCredentials } from "../slices/authSlice";
 import { toast } from "react-toastify";
 import { Mail, Lock, LogIn } from "lucide-react";
@@ -22,8 +24,10 @@ const LoginScreen = () => {
   const [login, { isLoading }] = useLoginMutation();
   const [googleLogin, { isLoading: isGoogleLoading }] =
     useGoogleLoginMutation();
+  const [mergeCart] = useMergeCartMutation();
 
   const { userInfo } = useSelector((state) => state.auth);
+  const { cartItems } = useSelector((state) => state.cart);
 
   const { search } = useLocation();
   const sp = new URLSearchParams(search);
@@ -35,12 +39,26 @@ const LoginScreen = () => {
     }
   }, [navigate, redirect, userInfo]);
 
+  const handleMergeCart = async () => {
+    if (cartItems.length > 0) {
+      try {
+        const res = await mergeCart({ cartItems }).unwrap();
+        res.forEach((item) => {
+          dispatch(addToCart({ ...item, qty: item.qty }));
+        });
+      } catch (err) {
+        console.error("Cart merge failed", err);
+      }
+    }
+  };
+
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
       const res = await login({ email, password }).unwrap();
-
       dispatch(setCredentials({ ...res }));
+
+      await handleMergeCart();
       navigate(redirect);
     } catch (err) {
       toast.error(err?.data?.message || err.error);
@@ -55,6 +73,8 @@ const LoginScreen = () => {
           token: tokenResponse.access_token,
         }).unwrap();
         dispatch(setCredentials({ ...res }));
+
+        await handleMergeCart();
         navigate(redirect);
         toast.success("Login Successful");
       } catch (err) {
