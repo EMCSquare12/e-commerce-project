@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   useGetProductDetailsQuery,
   useGetProductNavigationQuery,
@@ -15,6 +15,7 @@ import { ChevronLeft, ChevronRight, ArrowLeft, User } from "lucide-react";
 const ProductScreen = () => {
   const { id: productId } = useParams();
   const dispatch = useDispatch();
+  const { cartItems } = useSelector((state) => state.cart);
   const navigate = useNavigate();
 
   const [qty, setQty] = useState(1);
@@ -53,28 +54,24 @@ const ProductScreen = () => {
     };
   }, [navigation]);
 
-  // useEffect(() => {
-  //   if (userInfo) {
-  //     addItemsToCart(cartItems);
-  //   }
-  // }, [cartItems, addItemsToCart, userInfo]);
-
   const addToCartHandler = async () => {
     dispatch(addToCart({ ...product, qty }));
-    try {
-      await addItemsToCart({
-        cartItems: [
-          {
-            _id: product._id,
-            qty,
-          },
-        ],
-      }).unwrap();
-    } catch (err) {
-      console.error("Failed to add to cart:", err);
-    }
     navigate("/cart");
   };
+
+  useEffect(() => {
+    const handleAddItemsToCart = async () => {
+      try {
+        addItemsToCart({
+          cartItems,
+        }).unwrap();
+      } catch (err) {
+        console.error("Failed to add to cart:", err);
+      }
+    };
+
+    handleAddItemsToCart();
+  }, [cartItems, dispatch]);
 
   const arrowBtnStyle =
     "fixed top-1/2 transform -translate-y-1/2 z-10 hidden md:flex items-center justify-center w-14 h-14 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-full shadow-lg text-slate-600 hover:text-amber-500 hover:scale-110 transition-all duration-200";
